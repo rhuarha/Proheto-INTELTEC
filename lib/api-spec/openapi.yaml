@@ -3,20 +3,34 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: INTELTEC Production Control API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: auth
+    description: Authentication operations
+  - name: users
+    description: User management
+  - name: clientes
+    description: Client management
+  - name: produtos
+    description: Product management
+  - name: producao
+    description: Production order management
+  - name: producao-items
+    description: Production item management
+  - name: dashboard
+    description: Dashboard and summary endpoints
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,7 +38,735 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Login with email and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginBody"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current authenticated user
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Current user info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /users:
+    get:
+      operationId: listUsers
+      tags: [users]
+      summary: List all users (admin only)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+    post:
+      operationId: createUser
+      tags: [users]
+      summary: Create a new user (admin only)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUserBody"
+      responses:
+        "201":
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /users/{id}:
+    get:
+      operationId: getUser
+      tags: [users]
+      summary: Get a user by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: User found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+    put:
+      operationId: updateUser
+      tags: [users]
+      summary: Update a user (admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserBody"
+      responses:
+        "200":
+          description: User updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /clientes:
+    get:
+      operationId: listClientes
+      tags: [clientes]
+      summary: List all clients
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: List of clients
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Cliente"
+    post:
+      operationId: createCliente
+      tags: [clientes]
+      summary: Create a new client (admin only)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateClienteBody"
+      responses:
+        "201":
+          description: Client created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cliente"
+
+  /clientes/{id}:
+    get:
+      operationId: getCliente
+      tags: [clientes]
+      summary: Get a client by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Client found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cliente"
+    put:
+      operationId: updateCliente
+      tags: [clientes]
+      summary: Update a client (admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateClienteBody"
+      responses:
+        "200":
+          description: Client updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cliente"
+
+  /produtos:
+    get:
+      operationId: listProdutos
+      tags: [produtos]
+      summary: List all products
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Produto"
+    post:
+      operationId: createProduto
+      tags: [produtos]
+      summary: Create a new product (admin only)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProdutoBody"
+      responses:
+        "201":
+          description: Product created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Produto"
+
+  /produtos/{id}:
+    get:
+      operationId: getProduto
+      tags: [produtos]
+      summary: Get a product by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Product found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Produto"
+    put:
+      operationId: updateProduto
+      tags: [produtos]
+      summary: Update a product (admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProdutoBody"
+      responses:
+        "200":
+          description: Product updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Produto"
+
+  /producao:
+    get:
+      operationId: listProducao
+      tags: [producao]
+      summary: List production orders with filters
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: clienteId
+          in: query
+          schema:
+            type: integer
+        - name: dataInicio
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: dataFim
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: List of production orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProducaoWithCliente"
+    post:
+      operationId: createProducao
+      tags: [producao]
+      summary: Create a new production order (Recebimento)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProducaoBody"
+      responses:
+        "201":
+          description: Production order created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProducaoWithCliente"
+
+  /producao/{id}:
+    get:
+      operationId: getProducao
+      tags: [producao]
+      summary: Get a production order with all items
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Production order with items
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProducaoDetail"
+    put:
+      operationId: updateProducao
+      tags: [producao]
+      summary: Update production order status or info
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProducaoBody"
+      responses:
+        "200":
+          description: Production order updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProducaoWithCliente"
+
+  /producao/{id}/concluir-processamento:
+    post:
+      operationId: concluirProcessamento
+      tags: [producao]
+      summary: Conclude processing stage and advance order status
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Status updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProducaoWithCliente"
+
+  /producao/{id}/cancelar:
+    post:
+      operationId: cancelarProducao
+      tags: [producao]
+      summary: Cancel a production order
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Production order cancelled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProducaoWithCliente"
+
+  /producao/{id}/items:
+    get:
+      operationId: listProducaoItems
+      tags: [producao-items]
+      summary: List items of a production order
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProducaoItemWithProduto"
+    post:
+      operationId: addProducaoItem
+      tags: [producao-items]
+      summary: Add an item to a production order (Processamento)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProducaoItemBody"
+      responses:
+        "201":
+          description: Item added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProducaoItemWithProduto"
+
+  /producao/{id}/items/{itemId}:
+    put:
+      operationId: updateProducaoItem
+      tags: [producao-items]
+      summary: Update a production item
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProducaoItemBody"
+      responses:
+        "200":
+          description: Item updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProducaoItemWithProduto"
+    delete:
+      operationId: deleteProducaoItem
+      tags: [producao-items]
+      summary: Remove an item from a production order
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Item removed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /impressao/items:
+    get:
+      operationId: listImpressaoItems
+      tags: [producao-items]
+      summary: List items pending printing (produto.impresso=true, not yet printed)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Items pending printing
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProducaoItemWithProduto"
+
+  /impressao/marcar:
+    post:
+      operationId: marcarImpresso
+      tags: [producao-items]
+      summary: Mark items as printed
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MarcarItemsBody"
+      responses:
+        "200":
+          description: Items marked as printed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /envelopamento/items:
+    get:
+      operationId: listEnvelopamentoItems
+      tags: [producao-items]
+      summary: List items pending enveloping
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Items pending enveloping
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProducaoItemWithProduto"
+
+  /envelopamento/marcar:
+    post:
+      operationId: marcarEnvelopado
+      tags: [producao-items]
+      summary: Mark items as enveloped
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MarcarItemsBody"
+      responses:
+        "200":
+          description: Items marked as enveloped
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /embalagem/items:
+    get:
+      operationId: listEmbalagemItems
+      tags: [producao-items]
+      summary: List items ready for packing
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Items ready for packing
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProducaoItemWithProduto"
+
+  /embalagem/marcar:
+    post:
+      operationId: marcarEmbalado
+      tags: [producao-items]
+      summary: Mark items as packed
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MarcarItemsBody"
+      responses:
+        "200":
+          description: Items marked as packed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /despacho/items:
+    get:
+      operationId: listDespachoItems
+      tags: [producao-items]
+      summary: List items ready for dispatch (packed but not dispatched)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Items ready for dispatch
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProducaoItemWithProduto"
+
+  /despacho/marcar:
+    post:
+      operationId: marcarDespachado
+      tags: [producao-items]
+      summary: Mark items as dispatched
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MarcarItemsBody"
+      responses:
+        "200":
+          description: Items marked as dispatched
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /dashboard/resumo:
+    get:
+      operationId: getDashboardResumo
+      tags: [dashboard]
+      summary: Get dashboard summary with order counts by status
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardResumo"
+
+  /dashboard/pendentes:
+    get:
+      operationId: getDashboardPendentes
+      tags: [dashboard]
+      summary: Get count of pending items per production stage
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Pending items by stage
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PendentesPorEtapa"
+
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
     HealthStatus:
       type: object
@@ -34,3 +776,457 @@ components:
       required:
         - status
 
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+      required:
+        - error
+
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+      required:
+        - success
+
+    LoginBody:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+      required:
+        - email
+        - password
+
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+      required:
+        - token
+        - user
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+          enum: [admin, apontador, cliente]
+        clienteId:
+          type: integer
+          nullable: true
+        ativo:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - email
+        - role
+        - ativo
+        - createdAt
+
+    CreateUserBody:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+        role:
+          type: string
+          enum: [admin, apontador, cliente]
+        clienteId:
+          type: integer
+          nullable: true
+        ativo:
+          type: boolean
+      required:
+        - name
+        - email
+        - password
+        - role
+
+    UpdateUserBody:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+          enum: [admin, apontador, cliente]
+        clienteId:
+          type: integer
+          nullable: true
+        ativo:
+          type: boolean
+        password:
+          type: string
+
+    Cliente:
+      type: object
+      properties:
+        id:
+          type: integer
+        nomeRazaoSocial:
+          type: string
+        nomeFantasia:
+          type: string
+          nullable: true
+        nomeInterno:
+          type: string
+          nullable: true
+        emailContato:
+          type: string
+          nullable: true
+        emailProdutoFinalizado:
+          type: string
+          nullable: true
+        ativo:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - nomeRazaoSocial
+        - ativo
+        - createdAt
+
+    CreateClienteBody:
+      type: object
+      properties:
+        nomeRazaoSocial:
+          type: string
+        nomeFantasia:
+          type: string
+        nomeInterno:
+          type: string
+        emailContato:
+          type: string
+        emailProdutoFinalizado:
+          type: string
+        ativo:
+          type: boolean
+      required:
+        - nomeRazaoSocial
+
+    UpdateClienteBody:
+      type: object
+      properties:
+        nomeRazaoSocial:
+          type: string
+        nomeFantasia:
+          type: string
+        nomeInterno:
+          type: string
+        emailContato:
+          type: string
+        emailProdutoFinalizado:
+          type: string
+        ativo:
+          type: boolean
+
+    Produto:
+      type: object
+      properties:
+        id:
+          type: integer
+        descricao:
+          type: string
+        impresso:
+          type: boolean
+        envelopado:
+          type: boolean
+        ativo:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - descricao
+        - impresso
+        - envelopado
+        - ativo
+        - createdAt
+
+    CreateProdutoBody:
+      type: object
+      properties:
+        descricao:
+          type: string
+        impresso:
+          type: boolean
+        envelopado:
+          type: boolean
+        ativo:
+          type: boolean
+      required:
+        - descricao
+
+    UpdateProdutoBody:
+      type: object
+      properties:
+        descricao:
+          type: string
+        impresso:
+          type: boolean
+        envelopado:
+          type: boolean
+        ativo:
+          type: boolean
+
+    ProducaoStatus:
+      type: string
+      enum:
+        - RECEBIDA
+        - EM_PROCESSAMENTO
+        - PROCESSADA
+        - EM_PRODUCAO
+        - EMBALADA
+        - FINALIZADA
+        - CANCELADA
+
+    ProducaoWithCliente:
+      type: object
+      properties:
+        id:
+          type: integer
+        clienteId:
+          type: integer
+        dataRecebimento:
+          type: string
+          format: date
+        observacoes:
+          type: string
+          nullable: true
+        status:
+          $ref: "#/components/schemas/ProducaoStatus"
+        cliente:
+          $ref: "#/components/schemas/Cliente"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - clienteId
+        - dataRecebimento
+        - status
+        - cliente
+        - createdAt
+        - updatedAt
+
+    ProducaoDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+        clienteId:
+          type: integer
+        dataRecebimento:
+          type: string
+          format: date
+        observacoes:
+          type: string
+          nullable: true
+        status:
+          $ref: "#/components/schemas/ProducaoStatus"
+        cliente:
+          $ref: "#/components/schemas/Cliente"
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProducaoItemWithProduto"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - clienteId
+        - dataRecebimento
+        - status
+        - cliente
+        - items
+        - createdAt
+        - updatedAt
+
+    CreateProducaoBody:
+      type: object
+      properties:
+        clienteId:
+          type: integer
+        dataRecebimento:
+          type: string
+          format: date
+        observacoes:
+          type: string
+      required:
+        - clienteId
+        - dataRecebimento
+
+    UpdateProducaoBody:
+      type: object
+      properties:
+        clienteId:
+          type: integer
+        dataRecebimento:
+          type: string
+          format: date
+        observacoes:
+          type: string
+        status:
+          $ref: "#/components/schemas/ProducaoStatus"
+
+    ProducaoItemWithProduto:
+      type: object
+      properties:
+        id:
+          type: integer
+        producaoId:
+          type: integer
+        produtoId:
+          type: integer
+        itemNumero:
+          type: integer
+        quantidade:
+          type: integer
+        multiplicador:
+          type: number
+        impresso:
+          type: boolean
+        envelopado:
+          type: boolean
+        embalado:
+          type: boolean
+        despachado:
+          type: boolean
+        dataUltimoStatus:
+          type: string
+          format: date-time
+          nullable: true
+        produto:
+          $ref: "#/components/schemas/Produto"
+        producao:
+          $ref: "#/components/schemas/ProducaoWithCliente"
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - producaoId
+        - produtoId
+        - itemNumero
+        - quantidade
+        - multiplicador
+        - impresso
+        - envelopado
+        - embalado
+        - despachado
+        - produto
+        - producao
+        - createdAt
+
+    CreateProducaoItemBody:
+      type: object
+      properties:
+        produtoId:
+          type: integer
+        quantidade:
+          type: integer
+        multiplicador:
+          type: number
+      required:
+        - produtoId
+        - quantidade
+
+    UpdateProducaoItemBody:
+      type: object
+      properties:
+        produtoId:
+          type: integer
+        quantidade:
+          type: integer
+        multiplicador:
+          type: number
+
+    MarcarItemsBody:
+      type: object
+      properties:
+        itemIds:
+          type: array
+          items:
+            type: integer
+      required:
+        - itemIds
+
+    DashboardResumo:
+      type: object
+      properties:
+        totalOrdens:
+          type: integer
+        porStatus:
+          type: object
+          additionalProperties:
+            type: integer
+        ordensHoje:
+          type: integer
+        ordensFinalizadasHoje:
+          type: integer
+      required:
+        - totalOrdens
+        - porStatus
+        - ordensHoje
+        - ordensFinalizadasHoje
+
+    PendentesPorEtapa:
+      type: object
+      properties:
+        impressao:
+          type: integer
+        envelopamento:
+          type: integer
+        embalagem:
+          type: integer
+        despacho:
+          type: integer
+        processamento:
+          type: integer
+      required:
+        - impressao
+        - envelopamento
+        - embalagem
+        - despacho
+        - processamento

@@ -1,0 +1,309 @@
+Você é um programador sênior fullstack. Crie uma aplicação web fullstack para a empresa INTELTEC, com foco inicial em um MVP de controle de produção.
+
+OBJETIVO DO MVP
+Criar um sistema com:
+1. Tela de login
+2. Controle de usuários por perfil
+3. Menu superior pós-login
+4. Módulo de Produção com as etapas:
+   - Recebimento
+   - Processamento
+   - Impressão
+   - Envelopamento
+   - Embalagem
+   - Despacho
+
+TECNOLOGIAS
+Use:
+- Backend: Node.js com Express
+- Frontend: React
+- Banco de dados: MySQL ou MariaDB
+- Autenticação: JWT
+- Senhas com bcrypt
+- ORM ou query builder: Prisma, Sequelize ou Knex
+- Layout limpo, profissional e responsivo
+
+PERFIS DE USUÁRIO
+Criar três perfis:
+
+1. admin
+   - acesso total ao sistema
+
+2. apontador
+   - acesso ao módulo de produção
+   - pode incluir, editar e avançar etapas da produção
+
+3. cliente
+   - acesso restrito
+   - pode apenas visualizar suas próprias ordens de produção
+
+TELA DE LOGIN
+Criar tela de login com:
+- e-mail
+- senha
+- botão Entrar
+- mensagem de erro em caso de login inválido
+- botão Sair/Logout após autenticação
+
+Após login:
+- admin e apontador entram no módulo Produção
+- cliente entra em uma tela simples de consulta de suas ordens
+
+BANCO DE DADOS
+
+Criar as seguintes tabelas:
+
+users:
+- id
+- name
+- email
+- password_hash
+- role: admin, apontador ou cliente
+- cliente_id nullable
+- ativo boolean
+- created_at
+- updated_at
+
+clientes:
+- id
+- nome_razao_social
+- nome_fantasia
+- nome_interno
+- email_contato
+- email_produto_finalizado
+- ativo boolean
+- created_at
+- updated_at
+
+produtos:
+- id
+- descricao
+- impresso boolean
+- envelopado boolean
+- ativo boolean
+- created_at
+- updated_at
+
+producao:
+- id
+- cliente_id
+- data_recebimento
+- observacoes
+- status
+- created_at
+- updated_at
+
+producao_item:
+- id
+- producao_id
+- produto_id
+- item_numero
+- quantidade
+- multiplicador
+- impresso boolean default false
+- envelopado boolean default false
+- embalado boolean default false
+- despachado boolean default false
+- data_ultimo_status
+- created_at
+- updated_at
+
+logs:
+- id
+- user_id
+- acao
+- entidade
+- entidade_id
+- descricao
+- created_at
+
+REGRAS GERAIS
+- Toda ordem de produção nasce no Recebimento.
+- Toda ordem nasce sem itens.
+- Os itens são incluídos na etapa de Processamento.
+- Uma ordem pode ter um ou vários itens.
+- Cada item pertence a uma única ordem de produção.
+- Cada ordem pertence a um único cliente.
+- Não permitir exclusão física de registros; usar soft delete se necessário.
+- Registrar log nas ações principais.
+
+MENU SUPERIOR
+Após login, exibir menu superior.
+
+Para admin e apontador:
+- Recebimento
+- Processamento
+- Impressão
+- Envelopamento
+- Embalagem
+- Despacho
+- Sair
+
+Para cliente:
+- Minhas Ordens
+- Sair
+
+RECEBIMENTO
+Tela para cadastrar nova Ordem de Produção.
+
+Campos:
+- Cliente: dropdown obrigatório
+- Data de recebimento: sugerir data atual, mas permitir alteração
+- Observações: opcional
+
+Ao salvar:
+- criar registro em producao
+- status inicial: RECEBIDA
+- registrar log
+
+PROCESSAMENTO
+Exibir ordens com status RECEBIDA ou EM_PROCESSAMENTO.
+Permitir incluir um ou mais itens e continuar depois
+
+Ao selecionar uma ordem:
+- permitir incluir itens
+
+Campos do item:
+- Produto: dropdown
+- Quantidade: número obrigatório
+- Multiplicador
+- Item número: gerado automaticamente dentro da ordem
+
+Ao concluir processamento:
+- se a ordem tiver ao menos um item, mudar status para PROCESSADA
+- registrar log
+
+IMPRESSÃO
+Exibir itens de ordens processadas cujo produto tenha impresso = true e ainda não estejam impressos.
+
+Permitir marcar um ou mais itens como impressos.
+
+Ao confirmar:
+- atualizar impresso = true
+- atualizar data_ultimo_status
+- registrar log
+
+Se todos os itens imprimíveis de uma ordem forem impressos, a ordem pode avançar.
+
+ENVELOPAMENTO
+Exibir itens que:
+- tenham produto.envelopado = true
+- já estejam impressos, quando o produto exigir impressão
+- ainda não estejam envelopados
+
+Permitir marcar um ou mais itens como envelopados.
+
+Ao confirmar:
+- atualizar envelopado = true
+- atualizar data_ultimo_status
+- registrar log
+
+EMBALAGEM
+Exibir itens que estejam prontos para embalagem.
+
+Um item está pronto para embalagem quando:
+- se produto.impresso = true, então impresso deve ser true
+- se produto.envelopado = true, então envelopado deve ser true
+
+Permitir marcar itens como embalados.
+
+Ao confirmar:
+- atualizar embalado = true
+- atualizar data_ultimo_status
+- registrar log
+
+DESPACHO
+Exibir itens embalados e ainda não despachados.
+
+Permitir marcar itens como despachados.
+
+Ao confirmar:
+- atualizar despachado = true
+- atualizar data_ultimo_status
+- registrar log
+
+Quando todos os itens da ordem estiverem despachados:
+- mudar status da ordem para FINALIZADA
+
+STATUS DA ORDEM
+Usar os seguintes status:
+- RECEBIDA
+- EM_PROCESSAMENTO
+- PROCESSADA
+- EM_PRODUCAO
+- EMBALADA
+- FINALIZADA
+- CANCELADA
+
+CONSULTA DO CLIENTE
+Usuário com role cliente deve ver apenas ordens vinculadas ao seu cliente_id.
+
+Tela:
+- número da ordem
+- data de recebimento
+- status
+- itens
+- produto
+- quantidade
+- impresso
+- envelopado
+- embalado
+- despachado
+
+FILTROS
+Criar filtros básicos:
+- por cliente
+- por número da ordem
+- por data de recebimento
+- por status
+
+INTERFACE
+Criar interface limpa e funcional:
+- menu superior fixo
+- tabelas simples
+- botões claros
+- formulários em modal ou página dedicada
+- mensagens de sucesso e erro
+- confirmação antes de cancelar ou alterar status
+
+ATALHOS
+Não é obrigatório implementar atalhos de teclado neste MVP, mas deixe a estrutura preparada para futura implementação.
+
+IMPORTANTE
+Não implementar neste MVP:
+- faturamento
+- NFSe
+- boleto
+- XML
+- REM
+- FTP real
+- envio real de e-mail
+- controle de estoque
+- relatórios em PDF
+
+Esses módulos serão fases futuras.
+
+ENTREGÁVEIS
+Gerar:
+1. Estrutura completa do projeto
+2. Backend funcional
+3. Frontend funcional
+4. Migrations ou scripts SQL
+5. Dados iniciais de teste:
+   - 1 usuário admin
+   - 1 usuário apontador
+   - 1 usuário cliente
+   - 2 clientes
+   - 3 produtos
+6. README com instruções para rodar localmente
+
+PRIORIDADE
+Priorize código simples, seguro, organizado e fácil de manter.
+Use boas práticas de arquitetura, separando:
+- rotas
+- controllers
+- services
+- models
+- middlewares
+- componentes React
+- páginas React
