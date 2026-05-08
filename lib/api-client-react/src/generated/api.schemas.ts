@@ -83,29 +83,178 @@ export interface UpdateUserBody {
   ativo?: boolean;
 }
 
+export type ClienteTipoFaturamento =
+  | (typeof ClienteTipoFaturamento)[keyof typeof ClienteTipoFaturamento]
+  | null;
+
+export const ClienteTipoFaturamento = {
+  N: "N",
+  R: "R",
+} as const;
+
+export type ClienteTipoFechamento =
+  | (typeof ClienteTipoFechamento)[keyof typeof ClienteTipoFechamento]
+  | null;
+
+export const ClienteTipoFechamento = {
+  IMEDIATO: "IMEDIATO",
+  POR_VALOR: "POR_VALOR",
+  POR_VALOR_OU_PRAZO: "POR_VALOR_OU_PRAZO",
+  POR_PRAZO: "POR_PRAZO",
+  MENSAL_FIXO: "MENSAL_FIXO",
+} as const;
+
 export interface Cliente {
   id: number;
   nomeRazaoSocial: string;
+  nomeFantasia?: string | null;
+  nomeInterno?: string | null;
+  juridica: boolean;
   cnpjCpf?: string | null;
-  email?: string | null;
+  inscrEstadual?: string | null;
+  inscrMunicipal?: string | null;
   telefone?: string | null;
+  logradouro?: string | null;
+  numero?: string | null;
+  complemento?: string | null;
+  bairro?: string | null;
+  cidade?: string | null;
+  cep?: string | null;
+  /** @maxLength 2 */
+  uf?: string | null;
+  emailNfse?: string | null;
+  nomeContato?: string | null;
+  emailContato?: string | null;
+  emailAprovaDemonstrativo?: string | null;
+  emailInformaProdutoEmbalado?: string | null;
+  tipoFaturamento?: ClienteTipoFaturamento;
+  emiteBoleto: boolean;
+  exigeDemonstrativo: boolean;
+  pedidoCompra: boolean;
+  diretorioProducao?: string | null;
+  diretorioDemonstrativo?: string | null;
+  prazoPagamento?: number | null;
+  tipoFechamento?: ClienteTipoFechamento;
+  valorAlvo?: string | null;
+  valorMinimo?: string | null;
+  prazoMaximoDias?: number | null;
+  diaFechamento?: string | null;
+  fecharAoDisponibilizar: boolean;
   ativo: boolean;
   createdAt: string;
 }
 
+export type CreateClienteBodyTipoFaturamento =
+  (typeof CreateClienteBodyTipoFaturamento)[keyof typeof CreateClienteBodyTipoFaturamento];
+
+export const CreateClienteBodyTipoFaturamento = {
+  N: "N",
+  R: "R",
+} as const;
+
+export type CreateClienteBodyTipoFechamento =
+  (typeof CreateClienteBodyTipoFechamento)[keyof typeof CreateClienteBodyTipoFechamento];
+
+export const CreateClienteBodyTipoFechamento = {
+  IMEDIATO: "IMEDIATO",
+  POR_VALOR: "POR_VALOR",
+  POR_VALOR_OU_PRAZO: "POR_VALOR_OU_PRAZO",
+  POR_PRAZO: "POR_PRAZO",
+  MENSAL_FIXO: "MENSAL_FIXO",
+} as const;
+
 export interface CreateClienteBody {
   nomeRazaoSocial: string;
+  nomeFantasia?: string;
+  nomeInterno?: string;
+  juridica: boolean;
   cnpjCpf?: string;
-  email?: string;
+  inscrEstadual?: string;
+  inscrMunicipal?: string;
   telefone?: string;
+  logradouro?: string;
+  numero?: string;
+  complemento?: string;
+  bairro?: string;
+  cidade?: string;
+  cep?: string;
+  /** @maxLength 2 */
+  uf?: string;
+  emailNfse?: string;
+  nomeContato?: string;
+  emailContato?: string;
+  emailAprovaDemonstrativo?: string;
+  emailInformaProdutoEmbalado?: string;
+  tipoFaturamento?: CreateClienteBodyTipoFaturamento;
+  emiteBoleto?: boolean;
+  exigeDemonstrativo?: boolean;
+  pedidoCompra?: boolean;
+  diretorioProducao?: string;
+  diretorioDemonstrativo?: string;
+  prazoPagamento?: number;
+  tipoFechamento?: CreateClienteBodyTipoFechamento;
+  valorAlvo?: string;
+  valorMinimo?: string;
+  prazoMaximoDias?: number;
+  diaFechamento?: string;
+  fecharAoDisponibilizar?: boolean;
   ativo?: boolean;
 }
 
+export type UpdateClienteBodyTipoFaturamento =
+  (typeof UpdateClienteBodyTipoFaturamento)[keyof typeof UpdateClienteBodyTipoFaturamento];
+
+export const UpdateClienteBodyTipoFaturamento = {
+  N: "N",
+  R: "R",
+} as const;
+
+export type UpdateClienteBodyTipoFechamento =
+  (typeof UpdateClienteBodyTipoFechamento)[keyof typeof UpdateClienteBodyTipoFechamento];
+
+export const UpdateClienteBodyTipoFechamento = {
+  IMEDIATO: "IMEDIATO",
+  POR_VALOR: "POR_VALOR",
+  POR_VALOR_OU_PRAZO: "POR_VALOR_OU_PRAZO",
+  POR_PRAZO: "POR_PRAZO",
+  MENSAL_FIXO: "MENSAL_FIXO",
+} as const;
+
 export interface UpdateClienteBody {
   nomeRazaoSocial?: string;
+  nomeFantasia?: string;
+  nomeInterno?: string;
+  juridica?: boolean;
   cnpjCpf?: string;
-  email?: string;
+  inscrEstadual?: string;
+  inscrMunicipal?: string;
   telefone?: string;
+  logradouro?: string;
+  numero?: string;
+  complemento?: string;
+  bairro?: string;
+  cidade?: string;
+  cep?: string;
+  /** @maxLength 2 */
+  uf?: string;
+  emailNfse?: string;
+  nomeContato?: string;
+  emailContato?: string;
+  emailAprovaDemonstrativo?: string;
+  emailInformaProdutoEmbalado?: string;
+  tipoFaturamento?: UpdateClienteBodyTipoFaturamento;
+  emiteBoleto?: boolean;
+  exigeDemonstrativo?: boolean;
+  pedidoCompra?: boolean;
+  diretorioProducao?: string;
+  diretorioDemonstrativo?: string;
+  prazoPagamento?: number;
+  tipoFechamento?: UpdateClienteBodyTipoFechamento;
+  valorAlvo?: string;
+  valorMinimo?: string;
+  prazoMaximoDias?: number;
+  diaFechamento?: string;
+  fecharAoDisponibilizar?: boolean;
   ativo?: boolean;
 }
 

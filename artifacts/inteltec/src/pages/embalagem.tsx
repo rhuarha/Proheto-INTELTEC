@@ -5,7 +5,6 @@ import {
   getListEmbalagemItemsQueryKey,
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { format } from "date-fns";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,6 +20,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { Box, CheckSquare } from "lucide-react";
+import { formatLocalDate, nomeCliente } from "@/lib/date";
 
 export default function EmbalagemPage() {
   const { data: items, isLoading } = useListEmbalagemItems();
@@ -106,13 +106,12 @@ export default function EmbalagemPage() {
                   <TableHead>Data/Hora</TableHead>
                   <TableHead className="text-right">Qtd</TableHead>
                   <TableHead className="text-right">Mult.</TableHead>
-                  <TableHead className="text-right">Total</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {items?.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                    <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
                       Nenhum item na fila de embalagem.
                     </TableCell>
                   </TableRow>
@@ -131,19 +130,16 @@ export default function EmbalagemPage() {
                       <TableCell className="font-medium">
                         #{item.producaoId}-{item.itemNumero}
                       </TableCell>
-                      <TableCell>{item.producao.cliente.nomeRazaoSocial}</TableCell>
+                      <TableCell>{nomeCliente(item.producao.cliente as any)}</TableCell>
                       <TableCell>{item.produto.descricao}</TableCell>
                       <TableCell className="text-muted-foreground text-sm">
-                        {format(new Date(item.producao.dataRecebimento), "dd/MM/yyyy")}
+                        {formatLocalDate(item.producao.dataRecebimento)}
                         {(item.producao as any).horaRecebimento
                           ? ` ${(item.producao as any).horaRecebimento}`
                           : ""}
                       </TableCell>
                       <TableCell className="text-right">{item.quantidade}</TableCell>
                       <TableCell className="text-right">{item.multiplicador}</TableCell>
-                      <TableCell className="text-right font-medium">
-                        {item.quantidade * item.multiplicador}
-                      </TableCell>
                     </TableRow>
                   ))
                 )}

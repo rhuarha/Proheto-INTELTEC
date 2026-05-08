@@ -120,12 +120,51 @@ export const UpdateUserResponse = zod.object({
 /**
  * @summary List all clients
  */
+export const listClientesResponseUfMax = 2;
+
 export const ListClientesResponseItem = zod.object({
   id: zod.number(),
   nomeRazaoSocial: zod.string(),
+  nomeFantasia: zod.string().nullish(),
+  nomeInterno: zod.string().nullish(),
+  juridica: zod.boolean(),
   cnpjCpf: zod.string().nullish(),
-  email: zod.string().nullish(),
+  inscrEstadual: zod.string().nullish(),
+  inscrMunicipal: zod.string().nullish(),
   telefone: zod.string().nullish(),
+  logradouro: zod.string().nullish(),
+  numero: zod.string().nullish(),
+  complemento: zod.string().nullish(),
+  bairro: zod.string().nullish(),
+  cidade: zod.string().nullish(),
+  cep: zod.string().nullish(),
+  uf: zod.string().max(listClientesResponseUfMax).nullish(),
+  emailNfse: zod.string().nullish(),
+  nomeContato: zod.string().nullish(),
+  emailContato: zod.string().nullish(),
+  emailAprovaDemonstrativo: zod.string().nullish(),
+  emailInformaProdutoEmbalado: zod.string().nullish(),
+  tipoFaturamento: zod.enum(["N", "R"]).nullish(),
+  emiteBoleto: zod.boolean(),
+  exigeDemonstrativo: zod.boolean(),
+  pedidoCompra: zod.boolean(),
+  diretorioProducao: zod.string().nullish(),
+  diretorioDemonstrativo: zod.string().nullish(),
+  prazoPagamento: zod.number().nullish(),
+  tipoFechamento: zod
+    .enum([
+      "IMEDIATO",
+      "POR_VALOR",
+      "POR_VALOR_OU_PRAZO",
+      "POR_PRAZO",
+      "MENSAL_FIXO",
+    ])
+    .nullish(),
+  valorAlvo: zod.string().nullish(),
+  valorMinimo: zod.string().nullish(),
+  prazoMaximoDias: zod.number().nullish(),
+  diaFechamento: zod.string().nullish(),
+  fecharAoDisponibilizar: zod.boolean(),
   ativo: zod.boolean(),
   createdAt: zod.coerce.date(),
 });
@@ -134,11 +173,50 @@ export const ListClientesResponse = zod.array(ListClientesResponseItem);
 /**
  * @summary Create a new client (admin only)
  */
+export const createClienteBodyUfMax = 2;
+
 export const CreateClienteBody = zod.object({
   nomeRazaoSocial: zod.string(),
+  nomeFantasia: zod.string().optional(),
+  nomeInterno: zod.string().optional(),
+  juridica: zod.boolean(),
   cnpjCpf: zod.string().optional(),
-  email: zod.string().email().optional(),
+  inscrEstadual: zod.string().optional(),
+  inscrMunicipal: zod.string().optional(),
   telefone: zod.string().optional(),
+  logradouro: zod.string().optional(),
+  numero: zod.string().optional(),
+  complemento: zod.string().optional(),
+  bairro: zod.string().optional(),
+  cidade: zod.string().optional(),
+  cep: zod.string().optional(),
+  uf: zod.string().max(createClienteBodyUfMax).optional(),
+  emailNfse: zod.string().optional(),
+  nomeContato: zod.string().optional(),
+  emailContato: zod.string().optional(),
+  emailAprovaDemonstrativo: zod.string().optional(),
+  emailInformaProdutoEmbalado: zod.string().optional(),
+  tipoFaturamento: zod.enum(["N", "R"]).optional(),
+  emiteBoleto: zod.boolean().optional(),
+  exigeDemonstrativo: zod.boolean().optional(),
+  pedidoCompra: zod.boolean().optional(),
+  diretorioProducao: zod.string().optional(),
+  diretorioDemonstrativo: zod.string().optional(),
+  prazoPagamento: zod.number().optional(),
+  tipoFechamento: zod
+    .enum([
+      "IMEDIATO",
+      "POR_VALOR",
+      "POR_VALOR_OU_PRAZO",
+      "POR_PRAZO",
+      "MENSAL_FIXO",
+    ])
+    .optional(),
+  valorAlvo: zod.string().optional(),
+  valorMinimo: zod.string().optional(),
+  prazoMaximoDias: zod.number().optional(),
+  diaFechamento: zod.string().optional(),
+  fecharAoDisponibilizar: zod.boolean().optional(),
   ativo: zod.boolean().optional(),
 });
 
@@ -149,12 +227,51 @@ export const GetClienteParams = zod.object({
   id: zod.coerce.number(),
 });
 
+export const getClienteResponseUfMax = 2;
+
 export const GetClienteResponse = zod.object({
   id: zod.number(),
   nomeRazaoSocial: zod.string(),
+  nomeFantasia: zod.string().nullish(),
+  nomeInterno: zod.string().nullish(),
+  juridica: zod.boolean(),
   cnpjCpf: zod.string().nullish(),
-  email: zod.string().nullish(),
+  inscrEstadual: zod.string().nullish(),
+  inscrMunicipal: zod.string().nullish(),
   telefone: zod.string().nullish(),
+  logradouro: zod.string().nullish(),
+  numero: zod.string().nullish(),
+  complemento: zod.string().nullish(),
+  bairro: zod.string().nullish(),
+  cidade: zod.string().nullish(),
+  cep: zod.string().nullish(),
+  uf: zod.string().max(getClienteResponseUfMax).nullish(),
+  emailNfse: zod.string().nullish(),
+  nomeContato: zod.string().nullish(),
+  emailContato: zod.string().nullish(),
+  emailAprovaDemonstrativo: zod.string().nullish(),
+  emailInformaProdutoEmbalado: zod.string().nullish(),
+  tipoFaturamento: zod.enum(["N", "R"]).nullish(),
+  emiteBoleto: zod.boolean(),
+  exigeDemonstrativo: zod.boolean(),
+  pedidoCompra: zod.boolean(),
+  diretorioProducao: zod.string().nullish(),
+  diretorioDemonstrativo: zod.string().nullish(),
+  prazoPagamento: zod.number().nullish(),
+  tipoFechamento: zod
+    .enum([
+      "IMEDIATO",
+      "POR_VALOR",
+      "POR_VALOR_OU_PRAZO",
+      "POR_PRAZO",
+      "MENSAL_FIXO",
+    ])
+    .nullish(),
+  valorAlvo: zod.string().nullish(),
+  valorMinimo: zod.string().nullish(),
+  prazoMaximoDias: zod.number().nullish(),
+  diaFechamento: zod.string().nullish(),
+  fecharAoDisponibilizar: zod.boolean(),
   ativo: zod.boolean(),
   createdAt: zod.coerce.date(),
 });
@@ -166,20 +283,98 @@ export const UpdateClienteParams = zod.object({
   id: zod.coerce.number(),
 });
 
+export const updateClienteBodyUfMax = 2;
+
 export const UpdateClienteBody = zod.object({
   nomeRazaoSocial: zod.string().optional(),
+  nomeFantasia: zod.string().optional(),
+  nomeInterno: zod.string().optional(),
+  juridica: zod.boolean().optional(),
   cnpjCpf: zod.string().optional(),
-  email: zod.string().email().optional(),
+  inscrEstadual: zod.string().optional(),
+  inscrMunicipal: zod.string().optional(),
   telefone: zod.string().optional(),
+  logradouro: zod.string().optional(),
+  numero: zod.string().optional(),
+  complemento: zod.string().optional(),
+  bairro: zod.string().optional(),
+  cidade: zod.string().optional(),
+  cep: zod.string().optional(),
+  uf: zod.string().max(updateClienteBodyUfMax).optional(),
+  emailNfse: zod.string().optional(),
+  nomeContato: zod.string().optional(),
+  emailContato: zod.string().optional(),
+  emailAprovaDemonstrativo: zod.string().optional(),
+  emailInformaProdutoEmbalado: zod.string().optional(),
+  tipoFaturamento: zod.enum(["N", "R"]).optional(),
+  emiteBoleto: zod.boolean().optional(),
+  exigeDemonstrativo: zod.boolean().optional(),
+  pedidoCompra: zod.boolean().optional(),
+  diretorioProducao: zod.string().optional(),
+  diretorioDemonstrativo: zod.string().optional(),
+  prazoPagamento: zod.number().optional(),
+  tipoFechamento: zod
+    .enum([
+      "IMEDIATO",
+      "POR_VALOR",
+      "POR_VALOR_OU_PRAZO",
+      "POR_PRAZO",
+      "MENSAL_FIXO",
+    ])
+    .optional(),
+  valorAlvo: zod.string().optional(),
+  valorMinimo: zod.string().optional(),
+  prazoMaximoDias: zod.number().optional(),
+  diaFechamento: zod.string().optional(),
+  fecharAoDisponibilizar: zod.boolean().optional(),
   ativo: zod.boolean().optional(),
 });
+
+export const updateClienteResponseUfMax = 2;
 
 export const UpdateClienteResponse = zod.object({
   id: zod.number(),
   nomeRazaoSocial: zod.string(),
+  nomeFantasia: zod.string().nullish(),
+  nomeInterno: zod.string().nullish(),
+  juridica: zod.boolean(),
   cnpjCpf: zod.string().nullish(),
-  email: zod.string().nullish(),
+  inscrEstadual: zod.string().nullish(),
+  inscrMunicipal: zod.string().nullish(),
   telefone: zod.string().nullish(),
+  logradouro: zod.string().nullish(),
+  numero: zod.string().nullish(),
+  complemento: zod.string().nullish(),
+  bairro: zod.string().nullish(),
+  cidade: zod.string().nullish(),
+  cep: zod.string().nullish(),
+  uf: zod.string().max(updateClienteResponseUfMax).nullish(),
+  emailNfse: zod.string().nullish(),
+  nomeContato: zod.string().nullish(),
+  emailContato: zod.string().nullish(),
+  emailAprovaDemonstrativo: zod.string().nullish(),
+  emailInformaProdutoEmbalado: zod.string().nullish(),
+  tipoFaturamento: zod.enum(["N", "R"]).nullish(),
+  emiteBoleto: zod.boolean(),
+  exigeDemonstrativo: zod.boolean(),
+  pedidoCompra: zod.boolean(),
+  diretorioProducao: zod.string().nullish(),
+  diretorioDemonstrativo: zod.string().nullish(),
+  prazoPagamento: zod.number().nullish(),
+  tipoFechamento: zod
+    .enum([
+      "IMEDIATO",
+      "POR_VALOR",
+      "POR_VALOR_OU_PRAZO",
+      "POR_PRAZO",
+      "MENSAL_FIXO",
+    ])
+    .nullish(),
+  valorAlvo: zod.string().nullish(),
+  valorMinimo: zod.string().nullish(),
+  prazoMaximoDias: zod.number().nullish(),
+  diaFechamento: zod.string().nullish(),
+  fecharAoDisponibilizar: zod.boolean(),
   ativo: zod.boolean(),
   createdAt: zod.coerce.date(),
 });
@@ -261,6 +456,8 @@ export const ListProducaoQueryParams = zod.object({
   dataFim: zod.date().optional(),
 });
 
+export const listProducaoResponseClienteUfMax = 2;
+
 export const ListProducaoResponseItem = zod.object({
   id: zod.number(),
   clienteId: zod.number(),
@@ -279,9 +476,46 @@ export const ListProducaoResponseItem = zod.object({
   cliente: zod.object({
     id: zod.number(),
     nomeRazaoSocial: zod.string(),
+    nomeFantasia: zod.string().nullish(),
+    nomeInterno: zod.string().nullish(),
+    juridica: zod.boolean(),
     cnpjCpf: zod.string().nullish(),
-    email: zod.string().nullish(),
+    inscrEstadual: zod.string().nullish(),
+    inscrMunicipal: zod.string().nullish(),
     telefone: zod.string().nullish(),
+    logradouro: zod.string().nullish(),
+    numero: zod.string().nullish(),
+    complemento: zod.string().nullish(),
+    bairro: zod.string().nullish(),
+    cidade: zod.string().nullish(),
+    cep: zod.string().nullish(),
+    uf: zod.string().max(listProducaoResponseClienteUfMax).nullish(),
+    emailNfse: zod.string().nullish(),
+    nomeContato: zod.string().nullish(),
+    emailContato: zod.string().nullish(),
+    emailAprovaDemonstrativo: zod.string().nullish(),
+    emailInformaProdutoEmbalado: zod.string().nullish(),
+    tipoFaturamento: zod.enum(["N", "R"]).nullish(),
+    emiteBoleto: zod.boolean(),
+    exigeDemonstrativo: zod.boolean(),
+    pedidoCompra: zod.boolean(),
+    diretorioProducao: zod.string().nullish(),
+    diretorioDemonstrativo: zod.string().nullish(),
+    prazoPagamento: zod.number().nullish(),
+    tipoFechamento: zod
+      .enum([
+        "IMEDIATO",
+        "POR_VALOR",
+        "POR_VALOR_OU_PRAZO",
+        "POR_PRAZO",
+        "MENSAL_FIXO",
+      ])
+      .nullish(),
+    valorAlvo: zod.string().nullish(),
+    valorMinimo: zod.string().nullish(),
+    prazoMaximoDias: zod.number().nullish(),
+    diaFechamento: zod.string().nullish(),
+    fecharAoDisponibilizar: zod.boolean(),
     ativo: zod.boolean(),
     createdAt: zod.coerce.date(),
   }),
@@ -307,6 +541,10 @@ export const GetProducaoParams = zod.object({
   id: zod.coerce.number(),
 });
 
+export const getProducaoResponseClienteUfMax = 2;
+
+export const getProducaoResponseItemsItemProducaoClienteUfMax = 2;
+
 export const GetProducaoResponse = zod.object({
   id: zod.number(),
   clienteId: zod.number(),
@@ -325,9 +563,46 @@ export const GetProducaoResponse = zod.object({
   cliente: zod.object({
     id: zod.number(),
     nomeRazaoSocial: zod.string(),
+    nomeFantasia: zod.string().nullish(),
+    nomeInterno: zod.string().nullish(),
+    juridica: zod.boolean(),
     cnpjCpf: zod.string().nullish(),
-    email: zod.string().nullish(),
+    inscrEstadual: zod.string().nullish(),
+    inscrMunicipal: zod.string().nullish(),
     telefone: zod.string().nullish(),
+    logradouro: zod.string().nullish(),
+    numero: zod.string().nullish(),
+    complemento: zod.string().nullish(),
+    bairro: zod.string().nullish(),
+    cidade: zod.string().nullish(),
+    cep: zod.string().nullish(),
+    uf: zod.string().max(getProducaoResponseClienteUfMax).nullish(),
+    emailNfse: zod.string().nullish(),
+    nomeContato: zod.string().nullish(),
+    emailContato: zod.string().nullish(),
+    emailAprovaDemonstrativo: zod.string().nullish(),
+    emailInformaProdutoEmbalado: zod.string().nullish(),
+    tipoFaturamento: zod.enum(["N", "R"]).nullish(),
+    emiteBoleto: zod.boolean(),
+    exigeDemonstrativo: zod.boolean(),
+    pedidoCompra: zod.boolean(),
+    diretorioProducao: zod.string().nullish(),
+    diretorioDemonstrativo: zod.string().nullish(),
+    prazoPagamento: zod.number().nullish(),
+    tipoFechamento: zod
+      .enum([
+        "IMEDIATO",
+        "POR_VALOR",
+        "POR_VALOR_OU_PRAZO",
+        "POR_PRAZO",
+        "MENSAL_FIXO",
+      ])
+      .nullish(),
+    valorAlvo: zod.string().nullish(),
+    valorMinimo: zod.string().nullish(),
+    prazoMaximoDias: zod.number().nullish(),
+    diaFechamento: zod.string().nullish(),
+    fecharAoDisponibilizar: zod.boolean(),
     ativo: zod.boolean(),
     createdAt: zod.coerce.date(),
   }),
@@ -371,9 +646,49 @@ export const GetProducaoResponse = zod.object({
         cliente: zod.object({
           id: zod.number(),
           nomeRazaoSocial: zod.string(),
+          nomeFantasia: zod.string().nullish(),
+          nomeInterno: zod.string().nullish(),
+          juridica: zod.boolean(),
           cnpjCpf: zod.string().nullish(),
-          email: zod.string().nullish(),
+          inscrEstadual: zod.string().nullish(),
+          inscrMunicipal: zod.string().nullish(),
           telefone: zod.string().nullish(),
+          logradouro: zod.string().nullish(),
+          numero: zod.string().nullish(),
+          complemento: zod.string().nullish(),
+          bairro: zod.string().nullish(),
+          cidade: zod.string().nullish(),
+          cep: zod.string().nullish(),
+          uf: zod
+            .string()
+            .max(getProducaoResponseItemsItemProducaoClienteUfMax)
+            .nullish(),
+          emailNfse: zod.string().nullish(),
+          nomeContato: zod.string().nullish(),
+          emailContato: zod.string().nullish(),
+          emailAprovaDemonstrativo: zod.string().nullish(),
+          emailInformaProdutoEmbalado: zod.string().nullish(),
+          tipoFaturamento: zod.enum(["N", "R"]).nullish(),
+          emiteBoleto: zod.boolean(),
+          exigeDemonstrativo: zod.boolean(),
+          pedidoCompra: zod.boolean(),
+          diretorioProducao: zod.string().nullish(),
+          diretorioDemonstrativo: zod.string().nullish(),
+          prazoPagamento: zod.number().nullish(),
+          tipoFechamento: zod
+            .enum([
+              "IMEDIATO",
+              "POR_VALOR",
+              "POR_VALOR_OU_PRAZO",
+              "POR_PRAZO",
+              "MENSAL_FIXO",
+            ])
+            .nullish(),
+          valorAlvo: zod.string().nullish(),
+          valorMinimo: zod.string().nullish(),
+          prazoMaximoDias: zod.number().nullish(),
+          diaFechamento: zod.string().nullish(),
+          fecharAoDisponibilizar: zod.boolean(),
           ativo: zod.boolean(),
           createdAt: zod.coerce.date(),
         }),
@@ -412,6 +727,8 @@ export const UpdateProducaoBody = zod.object({
     .optional(),
 });
 
+export const updateProducaoResponseClienteUfMax = 2;
+
 export const UpdateProducaoResponse = zod.object({
   id: zod.number(),
   clienteId: zod.number(),
@@ -430,9 +747,46 @@ export const UpdateProducaoResponse = zod.object({
   cliente: zod.object({
     id: zod.number(),
     nomeRazaoSocial: zod.string(),
+    nomeFantasia: zod.string().nullish(),
+    nomeInterno: zod.string().nullish(),
+    juridica: zod.boolean(),
     cnpjCpf: zod.string().nullish(),
-    email: zod.string().nullish(),
+    inscrEstadual: zod.string().nullish(),
+    inscrMunicipal: zod.string().nullish(),
     telefone: zod.string().nullish(),
+    logradouro: zod.string().nullish(),
+    numero: zod.string().nullish(),
+    complemento: zod.string().nullish(),
+    bairro: zod.string().nullish(),
+    cidade: zod.string().nullish(),
+    cep: zod.string().nullish(),
+    uf: zod.string().max(updateProducaoResponseClienteUfMax).nullish(),
+    emailNfse: zod.string().nullish(),
+    nomeContato: zod.string().nullish(),
+    emailContato: zod.string().nullish(),
+    emailAprovaDemonstrativo: zod.string().nullish(),
+    emailInformaProdutoEmbalado: zod.string().nullish(),
+    tipoFaturamento: zod.enum(["N", "R"]).nullish(),
+    emiteBoleto: zod.boolean(),
+    exigeDemonstrativo: zod.boolean(),
+    pedidoCompra: zod.boolean(),
+    diretorioProducao: zod.string().nullish(),
+    diretorioDemonstrativo: zod.string().nullish(),
+    prazoPagamento: zod.number().nullish(),
+    tipoFechamento: zod
+      .enum([
+        "IMEDIATO",
+        "POR_VALOR",
+        "POR_VALOR_OU_PRAZO",
+        "POR_PRAZO",
+        "MENSAL_FIXO",
+      ])
+      .nullish(),
+    valorAlvo: zod.string().nullish(),
+    valorMinimo: zod.string().nullish(),
+    prazoMaximoDias: zod.number().nullish(),
+    diaFechamento: zod.string().nullish(),
+    fecharAoDisponibilizar: zod.boolean(),
     ativo: zod.boolean(),
     createdAt: zod.coerce.date(),
   }),
@@ -446,6 +800,8 @@ export const UpdateProducaoResponse = zod.object({
 export const ConcluirProcessamentoParams = zod.object({
   id: zod.coerce.number(),
 });
+
+export const concluirProcessamentoResponseClienteUfMax = 2;
 
 export const ConcluirProcessamentoResponse = zod.object({
   id: zod.number(),
@@ -465,9 +821,46 @@ export const ConcluirProcessamentoResponse = zod.object({
   cliente: zod.object({
     id: zod.number(),
     nomeRazaoSocial: zod.string(),
+    nomeFantasia: zod.string().nullish(),
+    nomeInterno: zod.string().nullish(),
+    juridica: zod.boolean(),
     cnpjCpf: zod.string().nullish(),
-    email: zod.string().nullish(),
+    inscrEstadual: zod.string().nullish(),
+    inscrMunicipal: zod.string().nullish(),
     telefone: zod.string().nullish(),
+    logradouro: zod.string().nullish(),
+    numero: zod.string().nullish(),
+    complemento: zod.string().nullish(),
+    bairro: zod.string().nullish(),
+    cidade: zod.string().nullish(),
+    cep: zod.string().nullish(),
+    uf: zod.string().max(concluirProcessamentoResponseClienteUfMax).nullish(),
+    emailNfse: zod.string().nullish(),
+    nomeContato: zod.string().nullish(),
+    emailContato: zod.string().nullish(),
+    emailAprovaDemonstrativo: zod.string().nullish(),
+    emailInformaProdutoEmbalado: zod.string().nullish(),
+    tipoFaturamento: zod.enum(["N", "R"]).nullish(),
+    emiteBoleto: zod.boolean(),
+    exigeDemonstrativo: zod.boolean(),
+    pedidoCompra: zod.boolean(),
+    diretorioProducao: zod.string().nullish(),
+    diretorioDemonstrativo: zod.string().nullish(),
+    prazoPagamento: zod.number().nullish(),
+    tipoFechamento: zod
+      .enum([
+        "IMEDIATO",
+        "POR_VALOR",
+        "POR_VALOR_OU_PRAZO",
+        "POR_PRAZO",
+        "MENSAL_FIXO",
+      ])
+      .nullish(),
+    valorAlvo: zod.string().nullish(),
+    valorMinimo: zod.string().nullish(),
+    prazoMaximoDias: zod.number().nullish(),
+    diaFechamento: zod.string().nullish(),
+    fecharAoDisponibilizar: zod.boolean(),
     ativo: zod.boolean(),
     createdAt: zod.coerce.date(),
   }),
@@ -481,6 +874,8 @@ export const ConcluirProcessamentoResponse = zod.object({
 export const CancelarProducaoParams = zod.object({
   id: zod.coerce.number(),
 });
+
+export const cancelarProducaoResponseClienteUfMax = 2;
 
 export const CancelarProducaoResponse = zod.object({
   id: zod.number(),
@@ -500,9 +895,46 @@ export const CancelarProducaoResponse = zod.object({
   cliente: zod.object({
     id: zod.number(),
     nomeRazaoSocial: zod.string(),
+    nomeFantasia: zod.string().nullish(),
+    nomeInterno: zod.string().nullish(),
+    juridica: zod.boolean(),
     cnpjCpf: zod.string().nullish(),
-    email: zod.string().nullish(),
+    inscrEstadual: zod.string().nullish(),
+    inscrMunicipal: zod.string().nullish(),
     telefone: zod.string().nullish(),
+    logradouro: zod.string().nullish(),
+    numero: zod.string().nullish(),
+    complemento: zod.string().nullish(),
+    bairro: zod.string().nullish(),
+    cidade: zod.string().nullish(),
+    cep: zod.string().nullish(),
+    uf: zod.string().max(cancelarProducaoResponseClienteUfMax).nullish(),
+    emailNfse: zod.string().nullish(),
+    nomeContato: zod.string().nullish(),
+    emailContato: zod.string().nullish(),
+    emailAprovaDemonstrativo: zod.string().nullish(),
+    emailInformaProdutoEmbalado: zod.string().nullish(),
+    tipoFaturamento: zod.enum(["N", "R"]).nullish(),
+    emiteBoleto: zod.boolean(),
+    exigeDemonstrativo: zod.boolean(),
+    pedidoCompra: zod.boolean(),
+    diretorioProducao: zod.string().nullish(),
+    diretorioDemonstrativo: zod.string().nullish(),
+    prazoPagamento: zod.number().nullish(),
+    tipoFechamento: zod
+      .enum([
+        "IMEDIATO",
+        "POR_VALOR",
+        "POR_VALOR_OU_PRAZO",
+        "POR_PRAZO",
+        "MENSAL_FIXO",
+      ])
+      .nullish(),
+    valorAlvo: zod.string().nullish(),
+    valorMinimo: zod.string().nullish(),
+    prazoMaximoDias: zod.number().nullish(),
+    diaFechamento: zod.string().nullish(),
+    fecharAoDisponibilizar: zod.boolean(),
     ativo: zod.boolean(),
     createdAt: zod.coerce.date(),
   }),
@@ -516,6 +948,8 @@ export const CancelarProducaoResponse = zod.object({
 export const ListProducaoItemsParams = zod.object({
   id: zod.coerce.number(),
 });
+
+export const listProducaoItemsResponseProducaoClienteUfMax = 2;
 
 export const ListProducaoItemsResponseItem = zod.object({
   id: zod.number(),
@@ -556,9 +990,49 @@ export const ListProducaoItemsResponseItem = zod.object({
     cliente: zod.object({
       id: zod.number(),
       nomeRazaoSocial: zod.string(),
+      nomeFantasia: zod.string().nullish(),
+      nomeInterno: zod.string().nullish(),
+      juridica: zod.boolean(),
       cnpjCpf: zod.string().nullish(),
-      email: zod.string().nullish(),
+      inscrEstadual: zod.string().nullish(),
+      inscrMunicipal: zod.string().nullish(),
       telefone: zod.string().nullish(),
+      logradouro: zod.string().nullish(),
+      numero: zod.string().nullish(),
+      complemento: zod.string().nullish(),
+      bairro: zod.string().nullish(),
+      cidade: zod.string().nullish(),
+      cep: zod.string().nullish(),
+      uf: zod
+        .string()
+        .max(listProducaoItemsResponseProducaoClienteUfMax)
+        .nullish(),
+      emailNfse: zod.string().nullish(),
+      nomeContato: zod.string().nullish(),
+      emailContato: zod.string().nullish(),
+      emailAprovaDemonstrativo: zod.string().nullish(),
+      emailInformaProdutoEmbalado: zod.string().nullish(),
+      tipoFaturamento: zod.enum(["N", "R"]).nullish(),
+      emiteBoleto: zod.boolean(),
+      exigeDemonstrativo: zod.boolean(),
+      pedidoCompra: zod.boolean(),
+      diretorioProducao: zod.string().nullish(),
+      diretorioDemonstrativo: zod.string().nullish(),
+      prazoPagamento: zod.number().nullish(),
+      tipoFechamento: zod
+        .enum([
+          "IMEDIATO",
+          "POR_VALOR",
+          "POR_VALOR_OU_PRAZO",
+          "POR_PRAZO",
+          "MENSAL_FIXO",
+        ])
+        .nullish(),
+      valorAlvo: zod.string().nullish(),
+      valorMinimo: zod.string().nullish(),
+      prazoMaximoDias: zod.number().nullish(),
+      diaFechamento: zod.string().nullish(),
+      fecharAoDisponibilizar: zod.boolean(),
       ativo: zod.boolean(),
       createdAt: zod.coerce.date(),
     }),
@@ -597,6 +1071,8 @@ export const UpdateProducaoItemBody = zod.object({
   quantidade: zod.number().optional(),
   multiplicador: zod.number().optional(),
 });
+
+export const updateProducaoItemResponseProducaoClienteUfMax = 2;
 
 export const UpdateProducaoItemResponse = zod.object({
   id: zod.number(),
@@ -637,9 +1113,49 @@ export const UpdateProducaoItemResponse = zod.object({
     cliente: zod.object({
       id: zod.number(),
       nomeRazaoSocial: zod.string(),
+      nomeFantasia: zod.string().nullish(),
+      nomeInterno: zod.string().nullish(),
+      juridica: zod.boolean(),
       cnpjCpf: zod.string().nullish(),
-      email: zod.string().nullish(),
+      inscrEstadual: zod.string().nullish(),
+      inscrMunicipal: zod.string().nullish(),
       telefone: zod.string().nullish(),
+      logradouro: zod.string().nullish(),
+      numero: zod.string().nullish(),
+      complemento: zod.string().nullish(),
+      bairro: zod.string().nullish(),
+      cidade: zod.string().nullish(),
+      cep: zod.string().nullish(),
+      uf: zod
+        .string()
+        .max(updateProducaoItemResponseProducaoClienteUfMax)
+        .nullish(),
+      emailNfse: zod.string().nullish(),
+      nomeContato: zod.string().nullish(),
+      emailContato: zod.string().nullish(),
+      emailAprovaDemonstrativo: zod.string().nullish(),
+      emailInformaProdutoEmbalado: zod.string().nullish(),
+      tipoFaturamento: zod.enum(["N", "R"]).nullish(),
+      emiteBoleto: zod.boolean(),
+      exigeDemonstrativo: zod.boolean(),
+      pedidoCompra: zod.boolean(),
+      diretorioProducao: zod.string().nullish(),
+      diretorioDemonstrativo: zod.string().nullish(),
+      prazoPagamento: zod.number().nullish(),
+      tipoFechamento: zod
+        .enum([
+          "IMEDIATO",
+          "POR_VALOR",
+          "POR_VALOR_OU_PRAZO",
+          "POR_PRAZO",
+          "MENSAL_FIXO",
+        ])
+        .nullish(),
+      valorAlvo: zod.string().nullish(),
+      valorMinimo: zod.string().nullish(),
+      prazoMaximoDias: zod.number().nullish(),
+      diaFechamento: zod.string().nullish(),
+      fecharAoDisponibilizar: zod.boolean(),
       ativo: zod.boolean(),
       createdAt: zod.coerce.date(),
     }),
@@ -665,6 +1181,8 @@ export const DeleteProducaoItemResponse = zod.object({
 /**
  * @summary List items pending printing (produto.impresso=true, not yet printed, order is processada)
  */
+export const listImpressaoItemsResponseProducaoClienteUfMax = 2;
+
 export const ListImpressaoItemsResponseItem = zod.object({
   id: zod.number(),
   producaoId: zod.number(),
@@ -704,9 +1222,49 @@ export const ListImpressaoItemsResponseItem = zod.object({
     cliente: zod.object({
       id: zod.number(),
       nomeRazaoSocial: zod.string(),
+      nomeFantasia: zod.string().nullish(),
+      nomeInterno: zod.string().nullish(),
+      juridica: zod.boolean(),
       cnpjCpf: zod.string().nullish(),
-      email: zod.string().nullish(),
+      inscrEstadual: zod.string().nullish(),
+      inscrMunicipal: zod.string().nullish(),
       telefone: zod.string().nullish(),
+      logradouro: zod.string().nullish(),
+      numero: zod.string().nullish(),
+      complemento: zod.string().nullish(),
+      bairro: zod.string().nullish(),
+      cidade: zod.string().nullish(),
+      cep: zod.string().nullish(),
+      uf: zod
+        .string()
+        .max(listImpressaoItemsResponseProducaoClienteUfMax)
+        .nullish(),
+      emailNfse: zod.string().nullish(),
+      nomeContato: zod.string().nullish(),
+      emailContato: zod.string().nullish(),
+      emailAprovaDemonstrativo: zod.string().nullish(),
+      emailInformaProdutoEmbalado: zod.string().nullish(),
+      tipoFaturamento: zod.enum(["N", "R"]).nullish(),
+      emiteBoleto: zod.boolean(),
+      exigeDemonstrativo: zod.boolean(),
+      pedidoCompra: zod.boolean(),
+      diretorioProducao: zod.string().nullish(),
+      diretorioDemonstrativo: zod.string().nullish(),
+      prazoPagamento: zod.number().nullish(),
+      tipoFechamento: zod
+        .enum([
+          "IMEDIATO",
+          "POR_VALOR",
+          "POR_VALOR_OU_PRAZO",
+          "POR_PRAZO",
+          "MENSAL_FIXO",
+        ])
+        .nullish(),
+      valorAlvo: zod.string().nullish(),
+      valorMinimo: zod.string().nullish(),
+      prazoMaximoDias: zod.number().nullish(),
+      diaFechamento: zod.string().nullish(),
+      fecharAoDisponibilizar: zod.boolean(),
       ativo: zod.boolean(),
       createdAt: zod.coerce.date(),
     }),
@@ -734,6 +1292,8 @@ export const MarcarImpressoResponse = zod.object({
 /**
  * @summary List items pending enveloping
  */
+export const listEnvelopamentoItemsResponseProducaoClienteUfMax = 2;
+
 export const ListEnvelopamentoItemsResponseItem = zod.object({
   id: zod.number(),
   producaoId: zod.number(),
@@ -773,9 +1333,49 @@ export const ListEnvelopamentoItemsResponseItem = zod.object({
     cliente: zod.object({
       id: zod.number(),
       nomeRazaoSocial: zod.string(),
+      nomeFantasia: zod.string().nullish(),
+      nomeInterno: zod.string().nullish(),
+      juridica: zod.boolean(),
       cnpjCpf: zod.string().nullish(),
-      email: zod.string().nullish(),
+      inscrEstadual: zod.string().nullish(),
+      inscrMunicipal: zod.string().nullish(),
       telefone: zod.string().nullish(),
+      logradouro: zod.string().nullish(),
+      numero: zod.string().nullish(),
+      complemento: zod.string().nullish(),
+      bairro: zod.string().nullish(),
+      cidade: zod.string().nullish(),
+      cep: zod.string().nullish(),
+      uf: zod
+        .string()
+        .max(listEnvelopamentoItemsResponseProducaoClienteUfMax)
+        .nullish(),
+      emailNfse: zod.string().nullish(),
+      nomeContato: zod.string().nullish(),
+      emailContato: zod.string().nullish(),
+      emailAprovaDemonstrativo: zod.string().nullish(),
+      emailInformaProdutoEmbalado: zod.string().nullish(),
+      tipoFaturamento: zod.enum(["N", "R"]).nullish(),
+      emiteBoleto: zod.boolean(),
+      exigeDemonstrativo: zod.boolean(),
+      pedidoCompra: zod.boolean(),
+      diretorioProducao: zod.string().nullish(),
+      diretorioDemonstrativo: zod.string().nullish(),
+      prazoPagamento: zod.number().nullish(),
+      tipoFechamento: zod
+        .enum([
+          "IMEDIATO",
+          "POR_VALOR",
+          "POR_VALOR_OU_PRAZO",
+          "POR_PRAZO",
+          "MENSAL_FIXO",
+        ])
+        .nullish(),
+      valorAlvo: zod.string().nullish(),
+      valorMinimo: zod.string().nullish(),
+      prazoMaximoDias: zod.number().nullish(),
+      diaFechamento: zod.string().nullish(),
+      fecharAoDisponibilizar: zod.boolean(),
       ativo: zod.boolean(),
       createdAt: zod.coerce.date(),
     }),
@@ -803,6 +1403,8 @@ export const MarcarEnvelopadoResponse = zod.object({
 /**
  * @summary List items ready for packing
  */
+export const listEmbalagemItemsResponseProducaoClienteUfMax = 2;
+
 export const ListEmbalagemItemsResponseItem = zod.object({
   id: zod.number(),
   producaoId: zod.number(),
@@ -842,9 +1444,49 @@ export const ListEmbalagemItemsResponseItem = zod.object({
     cliente: zod.object({
       id: zod.number(),
       nomeRazaoSocial: zod.string(),
+      nomeFantasia: zod.string().nullish(),
+      nomeInterno: zod.string().nullish(),
+      juridica: zod.boolean(),
       cnpjCpf: zod.string().nullish(),
-      email: zod.string().nullish(),
+      inscrEstadual: zod.string().nullish(),
+      inscrMunicipal: zod.string().nullish(),
       telefone: zod.string().nullish(),
+      logradouro: zod.string().nullish(),
+      numero: zod.string().nullish(),
+      complemento: zod.string().nullish(),
+      bairro: zod.string().nullish(),
+      cidade: zod.string().nullish(),
+      cep: zod.string().nullish(),
+      uf: zod
+        .string()
+        .max(listEmbalagemItemsResponseProducaoClienteUfMax)
+        .nullish(),
+      emailNfse: zod.string().nullish(),
+      nomeContato: zod.string().nullish(),
+      emailContato: zod.string().nullish(),
+      emailAprovaDemonstrativo: zod.string().nullish(),
+      emailInformaProdutoEmbalado: zod.string().nullish(),
+      tipoFaturamento: zod.enum(["N", "R"]).nullish(),
+      emiteBoleto: zod.boolean(),
+      exigeDemonstrativo: zod.boolean(),
+      pedidoCompra: zod.boolean(),
+      diretorioProducao: zod.string().nullish(),
+      diretorioDemonstrativo: zod.string().nullish(),
+      prazoPagamento: zod.number().nullish(),
+      tipoFechamento: zod
+        .enum([
+          "IMEDIATO",
+          "POR_VALOR",
+          "POR_VALOR_OU_PRAZO",
+          "POR_PRAZO",
+          "MENSAL_FIXO",
+        ])
+        .nullish(),
+      valorAlvo: zod.string().nullish(),
+      valorMinimo: zod.string().nullish(),
+      prazoMaximoDias: zod.number().nullish(),
+      diaFechamento: zod.string().nullish(),
+      fecharAoDisponibilizar: zod.boolean(),
       ativo: zod.boolean(),
       createdAt: zod.coerce.date(),
     }),
@@ -872,6 +1514,10 @@ export const MarcarEmbaladoResponse = zod.object({
 /**
  * @summary List orders with status embalada (ready for pickup)
  */
+export const listRetiradaOrdensResponseClienteUfMax = 2;
+
+export const listRetiradaOrdensResponseItemsItemProducaoClienteUfMax = 2;
+
 export const ListRetiradaOrdensResponseItem = zod.object({
   id: zod.number(),
   clienteId: zod.number(),
@@ -890,9 +1536,46 @@ export const ListRetiradaOrdensResponseItem = zod.object({
   cliente: zod.object({
     id: zod.number(),
     nomeRazaoSocial: zod.string(),
+    nomeFantasia: zod.string().nullish(),
+    nomeInterno: zod.string().nullish(),
+    juridica: zod.boolean(),
     cnpjCpf: zod.string().nullish(),
-    email: zod.string().nullish(),
+    inscrEstadual: zod.string().nullish(),
+    inscrMunicipal: zod.string().nullish(),
     telefone: zod.string().nullish(),
+    logradouro: zod.string().nullish(),
+    numero: zod.string().nullish(),
+    complemento: zod.string().nullish(),
+    bairro: zod.string().nullish(),
+    cidade: zod.string().nullish(),
+    cep: zod.string().nullish(),
+    uf: zod.string().max(listRetiradaOrdensResponseClienteUfMax).nullish(),
+    emailNfse: zod.string().nullish(),
+    nomeContato: zod.string().nullish(),
+    emailContato: zod.string().nullish(),
+    emailAprovaDemonstrativo: zod.string().nullish(),
+    emailInformaProdutoEmbalado: zod.string().nullish(),
+    tipoFaturamento: zod.enum(["N", "R"]).nullish(),
+    emiteBoleto: zod.boolean(),
+    exigeDemonstrativo: zod.boolean(),
+    pedidoCompra: zod.boolean(),
+    diretorioProducao: zod.string().nullish(),
+    diretorioDemonstrativo: zod.string().nullish(),
+    prazoPagamento: zod.number().nullish(),
+    tipoFechamento: zod
+      .enum([
+        "IMEDIATO",
+        "POR_VALOR",
+        "POR_VALOR_OU_PRAZO",
+        "POR_PRAZO",
+        "MENSAL_FIXO",
+      ])
+      .nullish(),
+    valorAlvo: zod.string().nullish(),
+    valorMinimo: zod.string().nullish(),
+    prazoMaximoDias: zod.number().nullish(),
+    diaFechamento: zod.string().nullish(),
+    fecharAoDisponibilizar: zod.boolean(),
     ativo: zod.boolean(),
     createdAt: zod.coerce.date(),
   }),
@@ -936,9 +1619,49 @@ export const ListRetiradaOrdensResponseItem = zod.object({
         cliente: zod.object({
           id: zod.number(),
           nomeRazaoSocial: zod.string(),
+          nomeFantasia: zod.string().nullish(),
+          nomeInterno: zod.string().nullish(),
+          juridica: zod.boolean(),
           cnpjCpf: zod.string().nullish(),
-          email: zod.string().nullish(),
+          inscrEstadual: zod.string().nullish(),
+          inscrMunicipal: zod.string().nullish(),
           telefone: zod.string().nullish(),
+          logradouro: zod.string().nullish(),
+          numero: zod.string().nullish(),
+          complemento: zod.string().nullish(),
+          bairro: zod.string().nullish(),
+          cidade: zod.string().nullish(),
+          cep: zod.string().nullish(),
+          uf: zod
+            .string()
+            .max(listRetiradaOrdensResponseItemsItemProducaoClienteUfMax)
+            .nullish(),
+          emailNfse: zod.string().nullish(),
+          nomeContato: zod.string().nullish(),
+          emailContato: zod.string().nullish(),
+          emailAprovaDemonstrativo: zod.string().nullish(),
+          emailInformaProdutoEmbalado: zod.string().nullish(),
+          tipoFaturamento: zod.enum(["N", "R"]).nullish(),
+          emiteBoleto: zod.boolean(),
+          exigeDemonstrativo: zod.boolean(),
+          pedidoCompra: zod.boolean(),
+          diretorioProducao: zod.string().nullish(),
+          diretorioDemonstrativo: zod.string().nullish(),
+          prazoPagamento: zod.number().nullish(),
+          tipoFechamento: zod
+            .enum([
+              "IMEDIATO",
+              "POR_VALOR",
+              "POR_VALOR_OU_PRAZO",
+              "POR_PRAZO",
+              "MENSAL_FIXO",
+            ])
+            .nullish(),
+          valorAlvo: zod.string().nullish(),
+          valorMinimo: zod.string().nullish(),
+          prazoMaximoDias: zod.number().nullish(),
+          diaFechamento: zod.string().nullish(),
+          fecharAoDisponibilizar: zod.boolean(),
           ativo: zod.boolean(),
           createdAt: zod.coerce.date(),
         }),
@@ -975,6 +1698,8 @@ export const ListPrecosQueryParams = zod.object({
   produtoId: zod.coerce.number().optional(),
 });
 
+export const listPrecosResponseClienteUfMax = 2;
+
 export const ListPrecosResponseItem = zod.object({
   id: zod.number(),
   clienteId: zod.number(),
@@ -989,9 +1714,46 @@ export const ListPrecosResponseItem = zod.object({
     .object({
       id: zod.number(),
       nomeRazaoSocial: zod.string(),
+      nomeFantasia: zod.string().nullish(),
+      nomeInterno: zod.string().nullish(),
+      juridica: zod.boolean(),
       cnpjCpf: zod.string().nullish(),
-      email: zod.string().nullish(),
+      inscrEstadual: zod.string().nullish(),
+      inscrMunicipal: zod.string().nullish(),
       telefone: zod.string().nullish(),
+      logradouro: zod.string().nullish(),
+      numero: zod.string().nullish(),
+      complemento: zod.string().nullish(),
+      bairro: zod.string().nullish(),
+      cidade: zod.string().nullish(),
+      cep: zod.string().nullish(),
+      uf: zod.string().max(listPrecosResponseClienteUfMax).nullish(),
+      emailNfse: zod.string().nullish(),
+      nomeContato: zod.string().nullish(),
+      emailContato: zod.string().nullish(),
+      emailAprovaDemonstrativo: zod.string().nullish(),
+      emailInformaProdutoEmbalado: zod.string().nullish(),
+      tipoFaturamento: zod.enum(["N", "R"]).nullish(),
+      emiteBoleto: zod.boolean(),
+      exigeDemonstrativo: zod.boolean(),
+      pedidoCompra: zod.boolean(),
+      diretorioProducao: zod.string().nullish(),
+      diretorioDemonstrativo: zod.string().nullish(),
+      prazoPagamento: zod.number().nullish(),
+      tipoFechamento: zod
+        .enum([
+          "IMEDIATO",
+          "POR_VALOR",
+          "POR_VALOR_OU_PRAZO",
+          "POR_PRAZO",
+          "MENSAL_FIXO",
+        ])
+        .nullish(),
+      valorAlvo: zod.string().nullish(),
+      valorMinimo: zod.string().nullish(),
+      prazoMaximoDias: zod.number().nullish(),
+      diaFechamento: zod.string().nullish(),
+      fecharAoDisponibilizar: zod.boolean(),
       ativo: zod.boolean(),
       createdAt: zod.coerce.date(),
     })
@@ -1041,6 +1803,8 @@ export const UpdatePrecoBody = zod.object({
   ativo: zod.boolean().optional(),
 });
 
+export const updatePrecoResponseClienteUfMax = 2;
+
 export const UpdatePrecoResponse = zod.object({
   id: zod.number(),
   clienteId: zod.number(),
@@ -1055,9 +1819,46 @@ export const UpdatePrecoResponse = zod.object({
     .object({
       id: zod.number(),
       nomeRazaoSocial: zod.string(),
+      nomeFantasia: zod.string().nullish(),
+      nomeInterno: zod.string().nullish(),
+      juridica: zod.boolean(),
       cnpjCpf: zod.string().nullish(),
-      email: zod.string().nullish(),
+      inscrEstadual: zod.string().nullish(),
+      inscrMunicipal: zod.string().nullish(),
       telefone: zod.string().nullish(),
+      logradouro: zod.string().nullish(),
+      numero: zod.string().nullish(),
+      complemento: zod.string().nullish(),
+      bairro: zod.string().nullish(),
+      cidade: zod.string().nullish(),
+      cep: zod.string().nullish(),
+      uf: zod.string().max(updatePrecoResponseClienteUfMax).nullish(),
+      emailNfse: zod.string().nullish(),
+      nomeContato: zod.string().nullish(),
+      emailContato: zod.string().nullish(),
+      emailAprovaDemonstrativo: zod.string().nullish(),
+      emailInformaProdutoEmbalado: zod.string().nullish(),
+      tipoFaturamento: zod.enum(["N", "R"]).nullish(),
+      emiteBoleto: zod.boolean(),
+      exigeDemonstrativo: zod.boolean(),
+      pedidoCompra: zod.boolean(),
+      diretorioProducao: zod.string().nullish(),
+      diretorioDemonstrativo: zod.string().nullish(),
+      prazoPagamento: zod.number().nullish(),
+      tipoFechamento: zod
+        .enum([
+          "IMEDIATO",
+          "POR_VALOR",
+          "POR_VALOR_OU_PRAZO",
+          "POR_PRAZO",
+          "MENSAL_FIXO",
+        ])
+        .nullish(),
+      valorAlvo: zod.string().nullish(),
+      valorMinimo: zod.string().nullish(),
+      prazoMaximoDias: zod.number().nullish(),
+      diaFechamento: zod.string().nullish(),
+      fecharAoDisponibilizar: zod.boolean(),
       ativo: zod.boolean(),
       createdAt: zod.coerce.date(),
     })
@@ -1085,6 +1886,8 @@ export const GetPrecoVigenteQueryParams = zod.object({
   data: zod.date(),
 });
 
+export const getPrecoVigenteResponseClienteUfMax = 2;
+
 export const GetPrecoVigenteResponse = zod.object({
   id: zod.number(),
   clienteId: zod.number(),
@@ -1099,9 +1902,46 @@ export const GetPrecoVigenteResponse = zod.object({
     .object({
       id: zod.number(),
       nomeRazaoSocial: zod.string(),
+      nomeFantasia: zod.string().nullish(),
+      nomeInterno: zod.string().nullish(),
+      juridica: zod.boolean(),
       cnpjCpf: zod.string().nullish(),
-      email: zod.string().nullish(),
+      inscrEstadual: zod.string().nullish(),
+      inscrMunicipal: zod.string().nullish(),
       telefone: zod.string().nullish(),
+      logradouro: zod.string().nullish(),
+      numero: zod.string().nullish(),
+      complemento: zod.string().nullish(),
+      bairro: zod.string().nullish(),
+      cidade: zod.string().nullish(),
+      cep: zod.string().nullish(),
+      uf: zod.string().max(getPrecoVigenteResponseClienteUfMax).nullish(),
+      emailNfse: zod.string().nullish(),
+      nomeContato: zod.string().nullish(),
+      emailContato: zod.string().nullish(),
+      emailAprovaDemonstrativo: zod.string().nullish(),
+      emailInformaProdutoEmbalado: zod.string().nullish(),
+      tipoFaturamento: zod.enum(["N", "R"]).nullish(),
+      emiteBoleto: zod.boolean(),
+      exigeDemonstrativo: zod.boolean(),
+      pedidoCompra: zod.boolean(),
+      diretorioProducao: zod.string().nullish(),
+      diretorioDemonstrativo: zod.string().nullish(),
+      prazoPagamento: zod.number().nullish(),
+      tipoFechamento: zod
+        .enum([
+          "IMEDIATO",
+          "POR_VALOR",
+          "POR_VALOR_OU_PRAZO",
+          "POR_PRAZO",
+          "MENSAL_FIXO",
+        ])
+        .nullish(),
+      valorAlvo: zod.string().nullish(),
+      valorMinimo: zod.string().nullish(),
+      prazoMaximoDias: zod.number().nullish(),
+      diaFechamento: zod.string().nullish(),
+      fecharAoDisponibilizar: zod.boolean(),
       ativo: zod.boolean(),
       createdAt: zod.coerce.date(),
     })

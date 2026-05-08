@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { db, producaoTable, producaoItemsTable, produtosTable, clientesTable, logsTable } from "@workspace/db";
-import { eq, and, sql, inArray } from "drizzle-orm";
+import { eq, and, sql, inArray, asc } from "drizzle-orm";
 import { requireAuth, requireRole } from "../middlewares/auth";
 import {
   CreateProducaoBody,
@@ -121,12 +121,16 @@ router.get("/producao", requireAuth, async (req, res) => {
     }
   }
 
-  const results = await db
+  const whereClause = conditions.length > 0 ? (conditions.length === 1 ? conditions[0] : and(...conditions)) : undefined;
+  const baseQuery = db
     .select({ producao: producaoTable, cliente: clientesTable })
     .from(producaoTable)
     .innerJoin(clientesTable, eq(producaoTable.clienteId, clientesTable.id))
-    .where(conditions.length > 0 ? (conditions.length === 1 ? conditions[0] : and(...conditions)) : undefined)
-    .orderBy(sql`${producaoTable.createdAt} desc`);
+    .where(whereClause);
+
+  const results = filters?.status === "recebida"
+    ? await baseQuery.orderBy(asc(producaoTable.dataRecebimento), asc(producaoTable.horaRecebimento), asc(producaoTable.id))
+    : await baseQuery.orderBy(sql`${producaoTable.createdAt} desc`);
 
   res.json(results.map(({ producao, cliente }) => ({ ...producao, cliente })));
 });

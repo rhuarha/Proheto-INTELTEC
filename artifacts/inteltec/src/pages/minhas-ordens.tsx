@@ -1,6 +1,5 @@
 import { useListProducao } from "@workspace/api-client-react";
 import { useAuth } from "@/lib/auth";
-import { format } from "date-fns";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -14,6 +13,7 @@ import {
 import { StatusBadge } from "@/components/status-badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ClipboardList, Package } from "lucide-react";
+import { formatLocalDate } from "@/lib/date";
 
 export default function MinhasOrdensPage() {
   const { user } = useAuth();
@@ -68,7 +68,7 @@ export default function MinhasOrdensPage() {
                     <TableRow key={ordem.id}>
                       <TableCell className="font-medium">#{ordem.id}</TableCell>
                       <TableCell>
-                        {format(new Date(ordem.dataRecebimento), "dd/MM/yyyy")}
+                        {formatLocalDate(ordem.dataRecebimento)}
                       </TableCell>
                       <TableCell className="text-muted-foreground">
                         {(ordem as any).horaRecebimento || "—"}

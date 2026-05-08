@@ -1,0 +1,473 @@
+Você é um programador sênior fullstack. Atualize a aplicação web da INTELTEC já existente, mantendo backend em Node.js + Express, frontend em React e banco MySQL/MariaDB.
+
+Considere que o sistema já possui:
+- login
+- usuários por perfil
+- clientes
+- produtos
+- preá§os por cliente/produto
+- ordens de produção
+- itens de produção
+- fluxo: recebimento, processamento, impressão, envelopamento, embalagem e retirada
+
+Implemente as correá§áµes e upgrades abaixo.
+
+==================================================
+1. CORREá‡áƒO DE DATA NO RECEBIMENTO / PROCESSAMENTO
+==================================================
+
+Foi identificado um bug:
+- ao incluir uma ordem de produção com a data de hoje, na tela de processamento aparece a data de ontem;
+- ao incluir com a data de ontem, aparece anteontem.
+
+Corrigir o tratamento de datas para evitar deslocamento por timezone.
+
+Regras:
+- data_recebimento deve ser tratada como data local, sem conversão indevida para UTC.
+- hora_recebimento deve ser tratada como hora local.
+- ao salvar e ao exibir, a data deve permanecer exatamente igual á  data informada pelo usuário.
+- não deve ocorrer subtração automática de um dia.
+- revisar backend, frontend, ORM e serialização JSON para impedir conversão errada de datas.
+
+Sugestão técnica:
+- armazenar data_recebimento como DATE no MySQL/MariaDB.
+- armazenar hora_recebimento como TIME.
+- no frontend, exibir data_recebimento diretamente no formato DD/MM/YYYY ou YYYY-MM-DD sem usar conversão UTC.
+- evitar new Date(data_recebimento) para datas sem hora.
+- criar função utilitária para formatar datas puramente como string local.
+
+==================================================
+2. ORDENAá‡áƒO DA TELA DE PROCESSAMENTO
+==================================================
+
+Na tela de Processamento, a primeira linha deve mostrar a Ordem de Produção que chegou primeiro.
+
+Regra:
+- listar ordens com status "recebida"
+- ordenar por:
+  1. data_recebimento ascendente
+  2. hora_recebimento ascendente
+  3. id ascendente
+
+Ou seja:
+- pedidos mais antigos aparecem primeiro
+- em caso de mesma data, o horário mais antigo aparece primeiro
+- em caso de mesmo horário, usar o menor ID primeiro
+
+Aplicar essa ordenação no backend e garantir que a tela respeite essa ordem.
+
+==================================================
+3. REMOVER QUANTIDADE TOTAL DAS TELAS E DO MODAL
+==================================================
+
+Na tela de Processamento, no modal de inclusão de item, não é necessário calcular, mostrar ou armazenar a quantidade total resultante de:
+
+quantidade á— multiplicador
+
+Regras:
+- não calcular quantidade total no modal de processamento.
+- não mostrar quantidade total no modal de processamento.
+- não armazenar quantidade total em producao_item.
+- multiplicador deve permanecer armazenado normalmente.
+- quantidade deve permanecer armazenada normalmente.
+- a quantidade total só será usada futuramente na geração de demonstrativo e faturamento.
+
+Também remover qualquer exibição de quantidade total das telas:
+- Impressão
+- Envelopamento
+- Embalagem
+- Retirada
+
+Nessas telas, exibir apenas:
+- Ordem de Produção
+- Cliente
+- Produto
+- Quantidade
+- Multiplicador
+- Status da etapa correspondente
+
+==================================================
+4. CADASTRO DE PREá‡OS - TROCAR "BOBINA" POR "BRANCO"
+==================================================
+
+No cadastro de preá§os, onde estiver escrito "Bobina", trocar para "Branco".
+
+O campo usa_papel deve continuar usando enum:
+- B
+- I
+
+Mas a descrição visual deve ser:
+- B = Branco
+- I = Impresso próprio
+
+Não usar mais o termo "Bobina" na interface.
+
+Onde houver dropdown, radio button ou label:
+- trocar "Bobina" por "Branco".
+
+==================================================
+5. EXPANDIR TABELA clientes
+==================================================
+
+Alterar a tabela clientes para conter os campos abaixo.
+
+Manter os campos já existentes que forem compatá­veis, mas ajustar nomes e criar os novos campos necessários.
+
+Tabela clientes:
+
+- id
+- nome_razao_social
+- nome_fantasia
+- nome_interno
+- juridica boolean default true
+- cnpj_cpf
+- inscr_estadual
+- inscr_municipal
+- telefone
+- logradouro
+- numero
+- complemento
+- bairro
+- cidade
+- cep
+- uf
+- email_nfse
+- nome_contato
+- email_contato
+- tipo_faturamento enum('N', 'R')
+- emite_boleto boolean default true
+- exige_demonstrativo boolean default true
+- email_aprova_demonstrativo
+- email_informa_produto_embalado
+- pedido_compra boolean default false
+- diretorio_producao
+- diretorio_demonstrativo
+- prazo_pagamento integer
+- tipo_fechamento enum('IMEDIATO', 'POR_VALOR', 'POR_VALOR_OU_PRAZO', 'POR_PRAZO', 'MENSAL_FIXO')
+- valor_alvo decimal(10,2)
+- valor_minimo decimal(10,2)
+- prazo_maximo_dias integer
+- dia_fechamento varchar(50)
+- fechar_ao_disponibilizar boolean default false
+- ativo boolean default true
+- created_at
+- updated_at
+- deleted_at nullable
+
+==================================================
+6. SIGNIFICADO DOS CAMPOS DE clientes
+==================================================
+
+Usar as seguintes definiá§áµes no cadastro de clientes e, se possá­vel, como comentários no model/schema ou documentação interna:
+
+nome_interno:
+Nome pelo qual o cliente será reconhecido internamente no sistema.
+
+juridica:
+Define se o cliente é pessoa jurá­dica ou pessoa fá­sica.
+true = pessoa jurá­dica.
+false = pessoa fá­sica.
+
+cnpj_cpf:
+Se juridica = true, deve receber CNPJ.
+Se juridica = false, deve receber CPF.
+
+inscr_estadual:
+Inscrição estadual do cliente.
+
+inscr_municipal:
+Inscrição municipal do cliente.
+
+telefone:
+Telefone para contato.
+
+logradouro:
+Nome da rua.
+
+numero:
+Náºmero do imóvel. Deve aceitar também a string "S/N".
+
+complemento:
+Complemento do endereá§o. Campo opcional.
+
+bairro:
+Nome do bairro do cliente.
+
+cidade:
+Nome da cidade do cliente.
+
+cep:
+Código de endereá§amento postal.
+
+uf:
+Unidade federativa, com 2 caracteres. Exemplo: RS, SC, SP.
+
+email_nfse:
+E-mail para envio de NFSe.
+
+nome_contato:
+Nome da pessoa de contato.
+
+email_contato:
+E-mail da pessoa de contato.
+
+tipo_faturamento:
+N = Nota Fiscal / NFSe.
+R = Recibo.
+
+emite_boleto:
+Define se o cliente exige boleto para pagamento.
+
+exige_demonstrativo:
+Define se o cliente exige demonstrativo para faturamento.
+
+email_aprova_demonstrativo:
+E-mail usado para aprovação do demonstrativo.
+
+email_informa_produto_embalado:
+E-mail usado para informar que o produto está embalado e disponá­vel para retirada.
+
+pedido_compra:
+Define se é necessário pedido de compra emitido pelo cliente para emissão da NFSe.
+
+diretorio_producao:
+Diretório onde serão salvos os recebimentos de ordem de produção.
+
+diretorio_demonstrativo:
+Diretório onde serão salvos os demonstrativos.
+
+prazo_pagamento:
+Prazo para pagamento em dias.
+
+tipo_fechamento:
+Define o tipo de fechamento do cliente:
+- IMEDIATO
+- POR_VALOR
+- POR_VALOR_OU_PRAZO
+- POR_PRAZO
+- MENSAL_FIXO
+
+valor_alvo:
+Valor que, quando atingido, dispara gatilho futuro para emissão de demonstrativo.
+
+valor_minimo:
+Valor má­nimo para faturamento.
+
+prazo_maximo_dias:
+Prazo máximo em dias para acumular ordens de produção sem faturar.
+
+dia_fechamento:
+Dia ideal para fechamento.
+Exemplos:
+- primeiro dia áºtil do mês
+- dia 15
+- áºltimo dia áºtil do mês
+
+fechar_ao_disponibilizar:
+Define se o fechamento deve ocorrer tão logo o trabalho seja disponibilizado para retirada.
+
+==================================================
+7. VALIDAá‡á•ES NO CADASTRO DE CLIENTES
+==================================================
+
+Implementar validaá§áµes básicas:
+
+Campos obrigatórios:
+- nome_razao_social
+- nome_interno
+- juridica
+- cnpj_cpf
+- tipo_faturamento
+- emite_boleto
+- exige_demonstrativo
+- pedido_compra
+- tipo_fechamento
+- fechar_ao_disponibilizar
+- ativo
+
+Validaá§áµes:
+- uf deve ter no máximo 2 caracteres.
+- tipo_faturamento deve aceitar apenas 'N' ou 'R'.
+- tipo_fechamento deve aceitar apenas:
+  - IMEDIATO
+  - POR_VALOR
+  - POR_VALOR_OU_PRAZO
+  - POR_PRAZO
+  - MENSAL_FIXO
+- numero deve aceitar texto, inclusive "S/N".
+- valores monetários devem usar decimal(10,2).
+- booleanos devem ser exibidos no frontend como checkbox ou switch.
+
+Não implementar validação completa de CPF/CNPJ neste momento, apenas manter o campo.
+
+==================================================
+8. AJUSTAR TELA DE CADASTRO DE CLIENTES
+==================================================
+
+Atualizar tela de clientes para permitir criar, editar, listar e visualizar todos os campos novos.
+
+Organizar o formulário em blocos visuais:
+
+1. Identificação
+- nome_razao_social
+- nome_fantasia
+- nome_interno
+- juridica
+- cnpj_cpf
+- inscr_estadual
+- inscr_municipal
+
+2. Contato
+- telefone
+- nome_contato
+- email_contato
+- email_nfse
+- email_aprova_demonstrativo
+- email_informa_produto_embalado
+
+3. Endereá§o
+- logradouro
+- numero
+- complemento
+- bairro
+- cidade
+- cep
+- uf
+
+4. Faturamento
+- tipo_faturamento
+- emite_boleto
+- exige_demonstrativo
+- pedido_compra
+- prazo_pagamento
+- tipo_fechamento
+- valor_alvo
+- valor_minimo
+- prazo_maximo_dias
+- dia_fechamento
+- fechar_ao_disponibilizar
+
+5. Diretórios
+- diretorio_producao
+- diretorio_demonstrativo
+
+6. Status
+- ativo
+
+Na listagem de clientes, exibir pelo menos:
+- id
+- nome_interno
+- nome_razao_social
+- cnpj_cpf
+- cidade
+- uf
+- tipo_faturamento
+- ativo
+
+==================================================
+9. IMPACTO NAS TELAS DE PRODUá‡áƒO
+==================================================
+
+Sempre que o sistema precisar mostrar o nome do cliente nas telas de produção, preferir:
+
+1. nome_interno, se preenchido
+2. nome_fantasia, se preenchido
+3. nome_razao_social
+
+Aplicar isso nas telas:
+- Processamento
+- Impressão
+- Envelopamento
+- Embalagem
+- Retirada
+- Consulta do cliente
+
+==================================================
+10. MIGRATIONS E COMPATIBILIDADE
+==================================================
+
+Criar migrations para adicionar os novos campos sem destruir dados existentes.
+
+Se já existir tabela clientes com campos antigos:
+- preservar os dados
+- mapear campos equivalentes quando possá­vel
+- preencher defaults nos novos campos obrigatórios
+
+Garantir que a aplicação continue funcionando após migration.
+
+==================================================
+11. SEEDS
+==================================================
+
+Atualizar seeds de clientes para preencher os novos campos.
+
+Exemplo má­nimo para Cliente Teste 1:
+- nome_razao_social: MARCOPOLO S/A
+- nome_fantasia: MARCOPOLO
+- nome_interno: MARCOPOLO
+- juridica: true
+- cnpj_cpf: 88611835000803
+- cidade: Caxias do Sul
+- uf: RS
+- tipo_faturamento: N
+- emite_boleto: true
+- exige_demonstrativo: true
+- pedido_compra: true
+- tipo_fechamento: MENSAL_FIXO
+- prazo_pagamento: 30
+- fechar_ao_disponibilizar: false
+- ativo: true
+
+Exemplo má­nimo para Cliente Teste 2:
+- nome_razao_social: Prolar Imoveis Administracao e Corretagem Ltda
+- nome_fantasia: PROLAR
+- nome_interno: PROLAR
+- juridica: true
+- cnpj_cpf: 87506283000126
+- cidade: Caxias do Sul
+- uf: RS
+- tipo_faturamento: N
+- emite_boleto: true
+- exige_demonstrativo: true
+- pedido_compra: false
+- tipo_fechamento: MENSAL_FIXO
+- valor_alvo: 0.00
+- valor_minimo: 0.00
+- prazo_pagamento: 7
+- fechar_ao_disponibilizar: false
+- ativo: true
+
+==================================================
+12. QUALIDADE E TESTES MANUAIS
+==================================================
+
+Após implementar, validar manualmente:
+
+1. Criar ordem com data de hoje.
+   - Conferir se aparece com a mesma data no processamento.
+
+2. Criar ordem com data de ontem.
+   - Conferir se aparece com a mesma data no processamento.
+
+3. Criar duas ordens com datas diferentes.
+   - Conferir se a mais antiga aparece primeiro no processamento.
+
+4. Criar duas ordens na mesma data com horários diferentes.
+   - Conferir se a de horário mais antigo aparece primeiro.
+
+5. Criar item com quantidade 10 e multiplicador 2.
+   - Confirmar que não aparece quantidade total em nenhuma tela.
+
+6. Abrir cadastro de preá§os.
+   - Confirmar que aparece "Branco" e não "Bobina".
+
+7. Criar novo cliente preenchendo os campos obrigatórios.
+   - Confirmar que salva corretamente.
+
+8. Editar cliente existente.
+   - Confirmar que todos os novos campos podem ser atualizados.
+
+9. Verificar telas de produção.
+   - Confirmar que o cliente aparece preferencialmente pelo nome_interno.
+
+Priorize código limpo, compatá­vel com o projeto atual, sem quebrar funcionalidades já existentes.

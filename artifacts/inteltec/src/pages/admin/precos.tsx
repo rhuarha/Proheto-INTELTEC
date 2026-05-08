@@ -11,7 +11,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { format } from "date-fns";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -52,6 +51,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, DollarSign } from "lucide-react";
+import { formatLocalDate, nomeCliente } from "@/lib/date";
 
 const precoSchema = z.object({
   clienteId: z.coerce.number().min(1, "Selecione um cliente"),
@@ -62,6 +62,12 @@ const precoSchema = z.object({
 });
 
 type PrecoFormValues = z.infer<typeof precoSchema>;
+
+function usaPapelLabel(val: string | null | undefined): string {
+  if (val === "B") return "Branco";
+  if (val === "I") return "Impresso próprio";
+  return "Não";
+}
 
 export default function PrecosPage() {
   const { data: precos, isLoading } = useListPrecos({});
@@ -135,15 +141,15 @@ export default function PrecosPage() {
                 ) : (
                   precos?.map(p => (
                     <TableRow key={p.id}>
-                      <TableCell className="font-medium">{p.cliente?.nomeRazaoSocial}</TableCell>
+                      <TableCell className="font-medium">
+                        {nomeCliente(p.cliente as any)}
+                      </TableCell>
                       <TableCell>{p.produto?.descricao}</TableCell>
                       <TableCell className="text-right font-mono">
                         {Number(p.preco).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
                       </TableCell>
-                      <TableCell>{format(new Date(p.dataInicialValidade), "dd/MM/yyyy")}</TableCell>
-                      <TableCell>
-                        {p.usaPapel === "B" ? "Bobina" : p.usaPapel === "I" ? "Impresso" : "Não"}
-                      </TableCell>
+                      <TableCell>{formatLocalDate(p.dataInicialValidade)}</TableCell>
+                      <TableCell>{usaPapelLabel(p.usaPapel)}</TableCell>
                       <TableCell>
                         <Badge variant={p.ativo ? "default" : "secondary"}>
                           {p.ativo ? "Ativo" : "Inativo"}
@@ -166,7 +172,7 @@ function PrecoForm({
   produtos,
   onSuccess,
 }: {
-  clientes: { id: number; nomeRazaoSocial: string }[];
+  clientes: { id: number; nomeRazaoSocial: string; nomeInterno?: string | null; nomeFantasia?: string | null }[];
   produtos: { id: number; descricao: string }[];
   onSuccess: () => void;
 }) {
@@ -223,7 +229,7 @@ function PrecoForm({
                 <SelectContent>
                   {clientes.map(c => (
                     <SelectItem key={c.id} value={String(c.id)}>
-                      {c.nomeRazaoSocial}
+                      {nomeCliente(c)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -295,12 +301,12 @@ function PrecoForm({
               <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue />
+                    <SelectValue placeholder="Selecione..." />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="B">Bobina</SelectItem>
-                  <SelectItem value="I">Impresso</SelectItem>
+                  <SelectItem value="B">Branco</SelectItem>
+                  <SelectItem value="I">Impresso próprio</SelectItem>
                 </SelectContent>
               </Select>
               <FormDescription>Tipo de papel utilizado neste produto para este cliente.</FormDescription>

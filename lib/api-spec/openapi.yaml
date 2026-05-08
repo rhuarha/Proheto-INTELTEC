@@ -1009,15 +1009,100 @@ components:
           type: integer
         nomeRazaoSocial:
           type: string
+        nomeFantasia:
+          type: string
+          nullable: true
+        nomeInterno:
+          type: string
+          nullable: true
+        juridica:
+          type: boolean
         cnpjCpf:
           type: string
           nullable: true
-        email:
+        inscrEstadual:
+          type: string
+          nullable: true
+        inscrMunicipal:
           type: string
           nullable: true
         telefone:
           type: string
           nullable: true
+        logradouro:
+          type: string
+          nullable: true
+        numero:
+          type: string
+          nullable: true
+        complemento:
+          type: string
+          nullable: true
+        bairro:
+          type: string
+          nullable: true
+        cidade:
+          type: string
+          nullable: true
+        cep:
+          type: string
+          nullable: true
+        uf:
+          type: string
+          nullable: true
+          maxLength: 2
+        emailNfse:
+          type: string
+          nullable: true
+        nomeContato:
+          type: string
+          nullable: true
+        emailContato:
+          type: string
+          nullable: true
+        emailAprovaDemonstrativo:
+          type: string
+          nullable: true
+        emailInformaProdutoEmbalado:
+          type: string
+          nullable: true
+        tipoFaturamento:
+          type: string
+          enum: [N, R]
+          nullable: true
+        emiteBoleto:
+          type: boolean
+        exigeDemonstrativo:
+          type: boolean
+        pedidoCompra:
+          type: boolean
+        diretorioProducao:
+          type: string
+          nullable: true
+        diretorioDemonstrativo:
+          type: string
+          nullable: true
+        prazoPagamento:
+          type: integer
+          nullable: true
+        tipoFechamento:
+          type: string
+          enum: [IMEDIATO, POR_VALOR, POR_VALOR_OU_PRAZO, POR_PRAZO, MENSAL_FIXO]
+          nullable: true
+        valorAlvo:
+          type: string
+          nullable: true
+        valorMinimo:
+          type: string
+          nullable: true
+        prazoMaximoDias:
+          type: integer
+          nullable: true
+        diaFechamento:
+          type: string
+          nullable: true
+        fecharAoDisponibilizar:
+          type: boolean
         ativo:
           type: boolean
         createdAt:
@@ -1026,6 +1111,11 @@ components:
       required:
         - id
         - nomeRazaoSocial
+        - juridica
+        - emiteBoleto
+        - exigeDemonstrativo
+        - pedidoCompra
+        - fecharAoDisponibilizar
         - ativo
         - createdAt
 
@@ -1034,30 +1124,151 @@ components:
       properties:
         nomeRazaoSocial:
           type: string
+        nomeFantasia:
+          type: string
+        nomeInterno:
+          type: string
+        juridica:
+          type: boolean
         cnpjCpf:
           type: string
-        email:
+        inscrEstadual:
           type: string
-          format: email
+        inscrMunicipal:
+          type: string
         telefone:
           type: string
+        logradouro:
+          type: string
+        numero:
+          type: string
+        complemento:
+          type: string
+        bairro:
+          type: string
+        cidade:
+          type: string
+        cep:
+          type: string
+        uf:
+          type: string
+          maxLength: 2
+        emailNfse:
+          type: string
+        nomeContato:
+          type: string
+        emailContato:
+          type: string
+        emailAprovaDemonstrativo:
+          type: string
+        emailInformaProdutoEmbalado:
+          type: string
+        tipoFaturamento:
+          type: string
+          enum: [N, R]
+        emiteBoleto:
+          type: boolean
+        exigeDemonstrativo:
+          type: boolean
+        pedidoCompra:
+          type: boolean
+        diretorioProducao:
+          type: string
+        diretorioDemonstrativo:
+          type: string
+        prazoPagamento:
+          type: integer
+        tipoFechamento:
+          type: string
+          enum: [IMEDIATO, POR_VALOR, POR_VALOR_OU_PRAZO, POR_PRAZO, MENSAL_FIXO]
+        valorAlvo:
+          type: string
+        valorMinimo:
+          type: string
+        prazoMaximoDias:
+          type: integer
+        diaFechamento:
+          type: string
+        fecharAoDisponibilizar:
+          type: boolean
         ativo:
           type: boolean
       required:
         - nomeRazaoSocial
+        - juridica
 
     UpdateClienteBody:
       type: object
       properties:
         nomeRazaoSocial:
           type: string
+        nomeFantasia:
+          type: string
+        nomeInterno:
+          type: string
+        juridica:
+          type: boolean
         cnpjCpf:
           type: string
-        email:
+        inscrEstadual:
           type: string
-          format: email
+        inscrMunicipal:
+          type: string
         telefone:
           type: string
+        logradouro:
+          type: string
+        numero:
+          type: string
+        complemento:
+          type: string
+        bairro:
+          type: string
+        cidade:
+          type: string
+        cep:
+          type: string
+        uf:
+          type: string
+          maxLength: 2
+        emailNfse:
+          type: string
+        nomeContato:
+          type: string
+        emailContato:
+          type: string
+        emailAprovaDemonstrativo:
+          type: string
+        emailInformaProdutoEmbalado:
+          type: string
+        tipoFaturamento:
+          type: string
+          enum: [N, R]
+        emiteBoleto:
+          type: boolean
+        exigeDemonstrativo:
+          type: boolean
+        pedidoCompra:
+          type: boolean
+        diretorioProducao:
+          type: string
+        diretorioDemonstrativo:
+          type: string
+        prazoPagamento:
+          type: integer
+        tipoFechamento:
+          type: string
+          enum: [IMEDIATO, POR_VALOR, POR_VALOR_OU_PRAZO, POR_PRAZO, MENSAL_FIXO]
+        valorAlvo:
+          type: string
+        valorMinimo:
+          type: string
+        prazoMaximoDias:
+          type: integer
+        diaFechamento:
+          type: string
+        fecharAoDisponibilizar:
+          type: boolean
         ativo:
           type: boolean
 

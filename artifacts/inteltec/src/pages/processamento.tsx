@@ -19,7 +19,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { format } from "date-fns";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -63,6 +62,7 @@ import { StatusBadge } from "@/components/status-badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { ClipboardList, Plus, Trash2, CheckCircle2, AlertTriangle, DollarSign } from "lucide-react";
+import { formatLocalDate, nomeCliente } from "@/lib/date";
 
 export default function ProcessamentoPage() {
   const { data: ordens, isLoading } = useListProducao({ status: "recebida" });
@@ -110,9 +110,9 @@ export default function ProcessamentoPage() {
                   ordens?.map(ordem => (
                     <TableRow key={ordem.id}>
                       <TableCell className="font-medium">#{ordem.id}</TableCell>
-                      <TableCell>{ordem.cliente.nomeRazaoSocial}</TableCell>
+                      <TableCell>{nomeCliente(ordem.cliente as any)}</TableCell>
                       <TableCell>
-                        {format(new Date(ordem.dataRecebimento), "dd/MM/yyyy")}
+                        {formatLocalDate(ordem.dataRecebimento)}
                         {(ordem as any).horaRecebimento ? ` ${(ordem as any).horaRecebimento}` : ""}
                       </TableCell>
                       <TableCell>
@@ -208,7 +208,6 @@ function ProcessamentoDialog({
           form.reset({ quantidade: 1, multiplicador: 1 });
           queryClient.invalidateQueries({ queryKey: getListProducaoItemsQueryKey(producaoId) });
 
-          // Check if a valid price exists for this client+product combination
           try {
             const today = new Date().toISOString().split("T")[0];
             await getPrecoVigente({
@@ -286,7 +285,7 @@ function ProcessamentoDialog({
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Processamento de Ordem #{producaoId}</DialogTitle>
-          <DialogDescription>{producao?.cliente.nomeRazaoSocial}</DialogDescription>
+          <DialogDescription>{nomeCliente(producao?.cliente as any)}</DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-6 py-4">
@@ -341,8 +340,8 @@ function ProcessamentoDialog({
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="B">Bobina</SelectItem>
-                              <SelectItem value="I">Impresso</SelectItem>
+                              <SelectItem value="B">Branco</SelectItem>
+                              <SelectItem value="I">Impresso próprio</SelectItem>
                             </SelectContent>
                           </Select>
                           <FormMessage />
@@ -447,7 +446,6 @@ function ProcessamentoDialog({
                     <TableHead>Produto</TableHead>
                     <TableHead className="text-right">Qtd</TableHead>
                     <TableHead className="text-right">Mult.</TableHead>
-                    <TableHead className="text-right">Total</TableHead>
                     <TableHead></TableHead>
                   </TableRow>
                 </TableHeader>
@@ -458,9 +456,6 @@ function ProcessamentoDialog({
                       <TableCell>{item.produto.descricao}</TableCell>
                       <TableCell className="text-right">{item.quantidade}</TableCell>
                       <TableCell className="text-right">{item.multiplicador}x</TableCell>
-                      <TableCell className="text-right font-medium">
-                        {item.quantidade * item.multiplicador}
-                      </TableCell>
                       <TableCell className="text-right">
                         <Button
                           variant="ghost"

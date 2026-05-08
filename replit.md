@@ -53,13 +53,25 @@ Full-stack production control system for INTELTEC, built as a pnpm monorepo. The
 - `dashboard.ts` — Summary (ordensRetiradasHoje) and pending counts (retirada)
 
 ### Database Schema (lib/db/src/schema/)
-- `clientes.ts` — clientes table
+- `clientes.ts` — clientes table (expanded: ~30 fields including juridica, endereço, emails, faturamento, fechamento)
 - `users.ts` — users table (references clientes)
 - `produtos.ts` — produtos table (exigeProcessamento boolean)
 - `producao.ts` — producao table (horaRecebimento added, lowercase status enum)
 - `producaoItems.ts` — producao_item table (retirado field, multiplicador integer)
 - `clienteProdutoPreco.ts` — cliente_produto_preco table (new)
 - `logs.ts` — logs table
+
+### Clientes Table — Full Field Reference
+Identification: `nomeRazaoSocial`, `nomeFantasia`, `nomeInterno`, `juridica`, `cnpjCpf`, `inscrEstadual`, `inscrMunicipal`, `telefone`
+Address: `logradouro`, `numero`, `complemento`, `bairro`, `cidade`, `cep`, `uf`
+Emails: `emailNfse`, `nomeContato`, `emailContato`, `emailAprovaDemonstrativo`, `emailInformaProdutoEmbalado`
+Billing: `tipoFaturamento` (N/R), `emiteBoleto`, `exigeDemonstrativo`, `pedidoCompra`, `prazoPagamento`
+Closing: `tipoFechamento` (IMEDIATO/POR_VALOR/POR_VALOR_OU_PRAZO/POR_PRAZO/MENSAL_FIXO), `valorAlvo`, `valorMinimo`, `prazoMaximoDias`, `diaFechamento`, `fecharAoDisponibilizar`
+Misc: `diretorioProducao`, `diretorioDemonstrativo`, `ativo`, `deletedAt`
+
+### Shared Frontend Utilities (artifacts/inteltec/src/lib/date.ts)
+- `formatLocalDate(dateStr)` — timezone-safe date display (splits YYYY-MM-DD directly, no UTC conversion)
+- `nomeCliente(cliente)` — prefers `nomeInterno` → `nomeFantasia` → `nomeRazaoSocial`
 
 ## Production Order Status Flow
 
@@ -87,6 +99,10 @@ All status values are lowercase. Transitions are calculated by `recalcularStatus
 - Price validation: after adding an item in processamento, if no vigente price exists, a warning form appears inline
 - No physical deletion — soft delete pattern where applicable
 - All actions are logged to the `logs` table
-- `usaPapel` enum values are only "B" (Bobina) and "I" (Impresso) — no "N" in the generated type
+- `usaPapel` enum values are only "B" (Branco) and "I" (Impresso próprio) — no "N" in the generated type; UI displays "Branco" (not "Bobina")
+- Processamento ordering: when listing with `status=recebida`, orders sorted by `dataRecebimento ASC, horaRecebimento ASC, id ASC` (FIFO)
+- "Total" column removed from all production stage screens (impressao, envelopamento, embalagem, retirada, processamento)
+- All production screens display `nomeCliente()` helper (prefers nomeInterno over nomeFantasia over nomeRazaoSocial)
+- All date displays use `formatLocalDate()` to avoid UTC timezone shifting (common bug with Brazilian UTC-3)
 
 See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details.

@@ -5,7 +5,6 @@ import {
   getListRetiradaOrdensQueryKey,
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { format } from "date-fns";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,6 +21,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { PackageCheck, ChevronDown, ChevronRight } from "lucide-react";
+import { formatLocalDate, nomeCliente } from "@/lib/date";
 
 export default function RetiradaPage() {
   const { data: ordens, isLoading } = useListRetiradaOrdens();
@@ -119,10 +119,10 @@ export default function RetiradaPage() {
                         <ChevronRight className="h-4 w-4 text-muted-foreground" />
                       )}
                       <CardTitle className="text-base">
-                        Ordem #{ordem.id} — {ordem.cliente?.nomeRazaoSocial}
+                        Ordem #{ordem.id} — {nomeCliente(ordem.cliente as any)}
                       </CardTitle>
                       <Badge variant="outline" className="text-xs">
-                        {format(new Date(ordem.dataRecebimento), "dd/MM/yyyy")}
+                        {formatLocalDate(ordem.dataRecebimento)}
                         {ordem.horaRecebimento ? ` ${ordem.horaRecebimento}` : ""}
                       </Badge>
                     </div>
@@ -147,13 +147,12 @@ export default function RetiradaPage() {
                           <TableHead>Produto</TableHead>
                           <TableHead className="text-right">Qtd</TableHead>
                           <TableHead className="text-right">Mult.</TableHead>
-                          <TableHead className="text-right">Total</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {retiradaItems.length === 0 ? (
                           <TableRow>
-                            <TableCell colSpan={6} className="text-center py-6 text-muted-foreground">
+                            <TableCell colSpan={5} className="text-center py-6 text-muted-foreground">
                               Todos os itens já foram retirados.
                             </TableCell>
                           </TableRow>
@@ -175,9 +174,6 @@ export default function RetiradaPage() {
                               <TableCell>{item.produto?.descricao}</TableCell>
                               <TableCell className="text-right">{item.quantidade}</TableCell>
                               <TableCell className="text-right">{item.multiplicador}</TableCell>
-                              <TableCell className="text-right font-medium">
-                                {item.quantidade * item.multiplicador}
-                              </TableCell>
                             </TableRow>
                           ))
                         )}

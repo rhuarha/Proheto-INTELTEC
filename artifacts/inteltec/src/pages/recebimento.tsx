@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Package } from "lucide-react";
+import { nomeCliente } from "@/lib/date";
 
 const recebimentoSchema = z.object({
   clienteId: z.coerce.number().min(1, "Selecione um cliente"),
@@ -58,7 +59,7 @@ export default function RecebimentoPage() {
       {
         data: {
           ...values,
-          dataRecebimento: new Date(values.dataRecebimento).toISOString(),
+          dataRecebimento: values.dataRecebimento,
         },
       },
       {
@@ -116,7 +117,7 @@ export default function RecebimentoPage() {
                       <SelectContent>
                         {clientes?.map(c => (
                           <SelectItem key={c.id} value={c.id.toString()}>
-                            {c.nomeRazaoSocial}
+                            {nomeCliente(c as any)}
                           </SelectItem>
                         ))}
                       </SelectContent>
