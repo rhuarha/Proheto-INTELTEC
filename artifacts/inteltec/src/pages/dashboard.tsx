@@ -1,7 +1,7 @@
 import { useGetDashboardResumo, useGetDashboardPendentes } from "@workspace/api-client-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatusBadge } from "@/components/status-badge";
-import { Package, Printer, Archive, Box, Truck, ClipboardList } from "lucide-react";
+import { Package, Printer, Archive, Box, PackageCheck, ClipboardList } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Dashboard() {
@@ -44,14 +44,14 @@ export default function Dashboard() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Finalizadas Hoje</CardTitle>
-            <Box className="h-4 w-4 text-emerald-500" />
+            <CardTitle className="text-sm font-medium">Retiradas Hoje</CardTitle>
+            <PackageCheck className="h-4 w-4 text-emerald-500" />
           </CardHeader>
           <CardContent>
             {loadingResumo ? (
               <Skeleton className="h-8 w-16" />
             ) : (
-              <div className="text-3xl font-bold text-emerald-600">{resumo?.ordensFinalizadasHoje || 0}</div>
+              <div className="text-3xl font-bold text-emerald-600">{resumo?.ordensRetiradasHoje || 0}</div>
             )}
           </CardContent>
         </Card>
@@ -67,7 +67,7 @@ export default function Dashboard() {
               <StageStat icon={Printer} label="Impressão" value={pendentes?.impressao} loading={loadingPendentes} />
               <StageStat icon={Archive} label="Envelopamento" value={pendentes?.envelopamento} loading={loadingPendentes} />
               <StageStat icon={Box} label="Embalagem" value={pendentes?.embalagem} loading={loadingPendentes} />
-              <StageStat icon={Truck} label="Despacho" value={pendentes?.despacho} loading={loadingPendentes} />
+              <StageStat icon={PackageCheck} label="Retirada" value={(pendentes as any)?.retirada ?? (pendentes as any)?.despacho} loading={loadingPendentes} />
             </div>
           </CardContent>
         </Card>

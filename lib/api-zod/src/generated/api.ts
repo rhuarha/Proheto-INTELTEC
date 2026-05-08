@@ -3,7 +3,7 @@
  * Do not edit manually.
  * Api
  * INTELTEC Production Control API
- * OpenAPI spec version: 0.1.0
+ * OpenAPI spec version: 0.2.0
  */
 import * as zod from "zod";
 
@@ -100,11 +100,11 @@ export const UpdateUserParams = zod.object({
 
 export const UpdateUserBody = zod.object({
   name: zod.string().optional(),
-  email: zod.string().optional(),
+  email: zod.string().email().optional(),
+  password: zod.string().optional(),
   role: zod.enum(["admin", "apontador", "cliente"]).optional(),
   clienteId: zod.number().nullish(),
   ativo: zod.boolean().optional(),
-  password: zod.string().optional(),
 });
 
 export const UpdateUserResponse = zod.object({
@@ -123,10 +123,9 @@ export const UpdateUserResponse = zod.object({
 export const ListClientesResponseItem = zod.object({
   id: zod.number(),
   nomeRazaoSocial: zod.string(),
-  nomeFantasia: zod.string().nullish(),
-  nomeInterno: zod.string().nullish(),
-  emailContato: zod.string().nullish(),
-  emailProdutoFinalizado: zod.string().nullish(),
+  cnpjCpf: zod.string().nullish(),
+  email: zod.string().nullish(),
+  telefone: zod.string().nullish(),
   ativo: zod.boolean(),
   createdAt: zod.coerce.date(),
 });
@@ -137,10 +136,9 @@ export const ListClientesResponse = zod.array(ListClientesResponseItem);
  */
 export const CreateClienteBody = zod.object({
   nomeRazaoSocial: zod.string(),
-  nomeFantasia: zod.string().optional(),
-  nomeInterno: zod.string().optional(),
-  emailContato: zod.string().optional(),
-  emailProdutoFinalizado: zod.string().optional(),
+  cnpjCpf: zod.string().optional(),
+  email: zod.string().email().optional(),
+  telefone: zod.string().optional(),
   ativo: zod.boolean().optional(),
 });
 
@@ -154,10 +152,9 @@ export const GetClienteParams = zod.object({
 export const GetClienteResponse = zod.object({
   id: zod.number(),
   nomeRazaoSocial: zod.string(),
-  nomeFantasia: zod.string().nullish(),
-  nomeInterno: zod.string().nullish(),
-  emailContato: zod.string().nullish(),
-  emailProdutoFinalizado: zod.string().nullish(),
+  cnpjCpf: zod.string().nullish(),
+  email: zod.string().nullish(),
+  telefone: zod.string().nullish(),
   ativo: zod.boolean(),
   createdAt: zod.coerce.date(),
 });
@@ -171,20 +168,18 @@ export const UpdateClienteParams = zod.object({
 
 export const UpdateClienteBody = zod.object({
   nomeRazaoSocial: zod.string().optional(),
-  nomeFantasia: zod.string().optional(),
-  nomeInterno: zod.string().optional(),
-  emailContato: zod.string().optional(),
-  emailProdutoFinalizado: zod.string().optional(),
+  cnpjCpf: zod.string().optional(),
+  email: zod.string().email().optional(),
+  telefone: zod.string().optional(),
   ativo: zod.boolean().optional(),
 });
 
 export const UpdateClienteResponse = zod.object({
   id: zod.number(),
   nomeRazaoSocial: zod.string(),
-  nomeFantasia: zod.string().nullish(),
-  nomeInterno: zod.string().nullish(),
-  emailContato: zod.string().nullish(),
-  emailProdutoFinalizado: zod.string().nullish(),
+  cnpjCpf: zod.string().nullish(),
+  email: zod.string().nullish(),
+  telefone: zod.string().nullish(),
   ativo: zod.boolean(),
   createdAt: zod.coerce.date(),
 });
@@ -195,6 +190,7 @@ export const UpdateClienteResponse = zod.object({
 export const ListProdutosResponseItem = zod.object({
   id: zod.number(),
   descricao: zod.string(),
+  exigeProcessamento: zod.boolean(),
   impresso: zod.boolean(),
   envelopado: zod.boolean(),
   ativo: zod.boolean(),
@@ -207,6 +203,7 @@ export const ListProdutosResponse = zod.array(ListProdutosResponseItem);
  */
 export const CreateProdutoBody = zod.object({
   descricao: zod.string(),
+  exigeProcessamento: zod.boolean().optional(),
   impresso: zod.boolean().optional(),
   envelopado: zod.boolean().optional(),
   ativo: zod.boolean().optional(),
@@ -222,6 +219,7 @@ export const GetProdutoParams = zod.object({
 export const GetProdutoResponse = zod.object({
   id: zod.number(),
   descricao: zod.string(),
+  exigeProcessamento: zod.boolean(),
   impresso: zod.boolean(),
   envelopado: zod.boolean(),
   ativo: zod.boolean(),
@@ -237,6 +235,7 @@ export const UpdateProdutoParams = zod.object({
 
 export const UpdateProdutoBody = zod.object({
   descricao: zod.string().optional(),
+  exigeProcessamento: zod.boolean().optional(),
   impresso: zod.boolean().optional(),
   envelopado: zod.boolean().optional(),
   ativo: zod.boolean().optional(),
@@ -245,6 +244,7 @@ export const UpdateProdutoBody = zod.object({
 export const UpdateProdutoResponse = zod.object({
   id: zod.number(),
   descricao: zod.string(),
+  exigeProcessamento: zod.boolean(),
   impresso: zod.boolean(),
   envelopado: zod.boolean(),
   ativo: zod.boolean(),
@@ -265,23 +265,23 @@ export const ListProducaoResponseItem = zod.object({
   id: zod.number(),
   clienteId: zod.number(),
   dataRecebimento: zod.coerce.date(),
+  horaRecebimento: zod.string().nullish(),
   observacoes: zod.string().nullish(),
   status: zod.enum([
-    "RECEBIDA",
-    "EM_PROCESSAMENTO",
-    "PROCESSADA",
-    "EM_PRODUCAO",
-    "EMBALADA",
-    "FINALIZADA",
-    "CANCELADA",
+    "recebida",
+    "processada",
+    "impressa",
+    "envelopada",
+    "embalada",
+    "retirada",
+    "cancelada",
   ]),
   cliente: zod.object({
     id: zod.number(),
     nomeRazaoSocial: zod.string(),
-    nomeFantasia: zod.string().nullish(),
-    nomeInterno: zod.string().nullish(),
-    emailContato: zod.string().nullish(),
-    emailProdutoFinalizado: zod.string().nullish(),
+    cnpjCpf: zod.string().nullish(),
+    email: zod.string().nullish(),
+    telefone: zod.string().nullish(),
     ativo: zod.boolean(),
     createdAt: zod.coerce.date(),
   }),
@@ -296,6 +296,7 @@ export const ListProducaoResponse = zod.array(ListProducaoResponseItem);
 export const CreateProducaoBody = zod.object({
   clienteId: zod.number(),
   dataRecebimento: zod.coerce.date(),
+  horaRecebimento: zod.string().optional(),
   observacoes: zod.string().optional(),
 });
 
@@ -310,23 +311,23 @@ export const GetProducaoResponse = zod.object({
   id: zod.number(),
   clienteId: zod.number(),
   dataRecebimento: zod.coerce.date(),
+  horaRecebimento: zod.string().nullish(),
   observacoes: zod.string().nullish(),
   status: zod.enum([
-    "RECEBIDA",
-    "EM_PROCESSAMENTO",
-    "PROCESSADA",
-    "EM_PRODUCAO",
-    "EMBALADA",
-    "FINALIZADA",
-    "CANCELADA",
+    "recebida",
+    "processada",
+    "impressa",
+    "envelopada",
+    "embalada",
+    "retirada",
+    "cancelada",
   ]),
   cliente: zod.object({
     id: zod.number(),
     nomeRazaoSocial: zod.string(),
-    nomeFantasia: zod.string().nullish(),
-    nomeInterno: zod.string().nullish(),
-    emailContato: zod.string().nullish(),
-    emailProdutoFinalizado: zod.string().nullish(),
+    cnpjCpf: zod.string().nullish(),
+    email: zod.string().nullish(),
+    telefone: zod.string().nullish(),
     ativo: zod.boolean(),
     createdAt: zod.coerce.date(),
   }),
@@ -341,11 +342,12 @@ export const GetProducaoResponse = zod.object({
       impresso: zod.boolean(),
       envelopado: zod.boolean(),
       embalado: zod.boolean(),
-      despachado: zod.boolean(),
+      retirado: zod.boolean(),
       dataUltimoStatus: zod.coerce.date().nullish(),
       produto: zod.object({
         id: zod.number(),
         descricao: zod.string(),
+        exigeProcessamento: zod.boolean(),
         impresso: zod.boolean(),
         envelopado: zod.boolean(),
         ativo: zod.boolean(),
@@ -355,23 +357,23 @@ export const GetProducaoResponse = zod.object({
         id: zod.number(),
         clienteId: zod.number(),
         dataRecebimento: zod.coerce.date(),
+        horaRecebimento: zod.string().nullish(),
         observacoes: zod.string().nullish(),
         status: zod.enum([
-          "RECEBIDA",
-          "EM_PROCESSAMENTO",
-          "PROCESSADA",
-          "EM_PRODUCAO",
-          "EMBALADA",
-          "FINALIZADA",
-          "CANCELADA",
+          "recebida",
+          "processada",
+          "impressa",
+          "envelopada",
+          "embalada",
+          "retirada",
+          "cancelada",
         ]),
         cliente: zod.object({
           id: zod.number(),
           nomeRazaoSocial: zod.string(),
-          nomeFantasia: zod.string().nullish(),
-          nomeInterno: zod.string().nullish(),
-          emailContato: zod.string().nullish(),
-          emailProdutoFinalizado: zod.string().nullish(),
+          cnpjCpf: zod.string().nullish(),
+          email: zod.string().nullish(),
+          telefone: zod.string().nullish(),
           ativo: zod.boolean(),
           createdAt: zod.coerce.date(),
         }),
@@ -395,16 +397,17 @@ export const UpdateProducaoParams = zod.object({
 export const UpdateProducaoBody = zod.object({
   clienteId: zod.number().optional(),
   dataRecebimento: zod.coerce.date().optional(),
+  horaRecebimento: zod.string().optional(),
   observacoes: zod.string().optional(),
   status: zod
     .enum([
-      "RECEBIDA",
-      "EM_PROCESSAMENTO",
-      "PROCESSADA",
-      "EM_PRODUCAO",
-      "EMBALADA",
-      "FINALIZADA",
-      "CANCELADA",
+      "recebida",
+      "processada",
+      "impressa",
+      "envelopada",
+      "embalada",
+      "retirada",
+      "cancelada",
     ])
     .optional(),
 });
@@ -413,23 +416,23 @@ export const UpdateProducaoResponse = zod.object({
   id: zod.number(),
   clienteId: zod.number(),
   dataRecebimento: zod.coerce.date(),
+  horaRecebimento: zod.string().nullish(),
   observacoes: zod.string().nullish(),
   status: zod.enum([
-    "RECEBIDA",
-    "EM_PROCESSAMENTO",
-    "PROCESSADA",
-    "EM_PRODUCAO",
-    "EMBALADA",
-    "FINALIZADA",
-    "CANCELADA",
+    "recebida",
+    "processada",
+    "impressa",
+    "envelopada",
+    "embalada",
+    "retirada",
+    "cancelada",
   ]),
   cliente: zod.object({
     id: zod.number(),
     nomeRazaoSocial: zod.string(),
-    nomeFantasia: zod.string().nullish(),
-    nomeInterno: zod.string().nullish(),
-    emailContato: zod.string().nullish(),
-    emailProdutoFinalizado: zod.string().nullish(),
+    cnpjCpf: zod.string().nullish(),
+    email: zod.string().nullish(),
+    telefone: zod.string().nullish(),
     ativo: zod.boolean(),
     createdAt: zod.coerce.date(),
   }),
@@ -438,7 +441,7 @@ export const UpdateProducaoResponse = zod.object({
 });
 
 /**
- * @summary Conclude processing stage and advance order status
+ * @summary Conclude processing stage and advance order status to processada
  */
 export const ConcluirProcessamentoParams = zod.object({
   id: zod.coerce.number(),
@@ -448,23 +451,23 @@ export const ConcluirProcessamentoResponse = zod.object({
   id: zod.number(),
   clienteId: zod.number(),
   dataRecebimento: zod.coerce.date(),
+  horaRecebimento: zod.string().nullish(),
   observacoes: zod.string().nullish(),
   status: zod.enum([
-    "RECEBIDA",
-    "EM_PROCESSAMENTO",
-    "PROCESSADA",
-    "EM_PRODUCAO",
-    "EMBALADA",
-    "FINALIZADA",
-    "CANCELADA",
+    "recebida",
+    "processada",
+    "impressa",
+    "envelopada",
+    "embalada",
+    "retirada",
+    "cancelada",
   ]),
   cliente: zod.object({
     id: zod.number(),
     nomeRazaoSocial: zod.string(),
-    nomeFantasia: zod.string().nullish(),
-    nomeInterno: zod.string().nullish(),
-    emailContato: zod.string().nullish(),
-    emailProdutoFinalizado: zod.string().nullish(),
+    cnpjCpf: zod.string().nullish(),
+    email: zod.string().nullish(),
+    telefone: zod.string().nullish(),
     ativo: zod.boolean(),
     createdAt: zod.coerce.date(),
   }),
@@ -483,23 +486,23 @@ export const CancelarProducaoResponse = zod.object({
   id: zod.number(),
   clienteId: zod.number(),
   dataRecebimento: zod.coerce.date(),
+  horaRecebimento: zod.string().nullish(),
   observacoes: zod.string().nullish(),
   status: zod.enum([
-    "RECEBIDA",
-    "EM_PROCESSAMENTO",
-    "PROCESSADA",
-    "EM_PRODUCAO",
-    "EMBALADA",
-    "FINALIZADA",
-    "CANCELADA",
+    "recebida",
+    "processada",
+    "impressa",
+    "envelopada",
+    "embalada",
+    "retirada",
+    "cancelada",
   ]),
   cliente: zod.object({
     id: zod.number(),
     nomeRazaoSocial: zod.string(),
-    nomeFantasia: zod.string().nullish(),
-    nomeInterno: zod.string().nullish(),
-    emailContato: zod.string().nullish(),
-    emailProdutoFinalizado: zod.string().nullish(),
+    cnpjCpf: zod.string().nullish(),
+    email: zod.string().nullish(),
+    telefone: zod.string().nullish(),
     ativo: zod.boolean(),
     createdAt: zod.coerce.date(),
   }),
@@ -524,11 +527,12 @@ export const ListProducaoItemsResponseItem = zod.object({
   impresso: zod.boolean(),
   envelopado: zod.boolean(),
   embalado: zod.boolean(),
-  despachado: zod.boolean(),
+  retirado: zod.boolean(),
   dataUltimoStatus: zod.coerce.date().nullish(),
   produto: zod.object({
     id: zod.number(),
     descricao: zod.string(),
+    exigeProcessamento: zod.boolean(),
     impresso: zod.boolean(),
     envelopado: zod.boolean(),
     ativo: zod.boolean(),
@@ -538,23 +542,23 @@ export const ListProducaoItemsResponseItem = zod.object({
     id: zod.number(),
     clienteId: zod.number(),
     dataRecebimento: zod.coerce.date(),
+    horaRecebimento: zod.string().nullish(),
     observacoes: zod.string().nullish(),
     status: zod.enum([
-      "RECEBIDA",
-      "EM_PROCESSAMENTO",
-      "PROCESSADA",
-      "EM_PRODUCAO",
-      "EMBALADA",
-      "FINALIZADA",
-      "CANCELADA",
+      "recebida",
+      "processada",
+      "impressa",
+      "envelopada",
+      "embalada",
+      "retirada",
+      "cancelada",
     ]),
     cliente: zod.object({
       id: zod.number(),
       nomeRazaoSocial: zod.string(),
-      nomeFantasia: zod.string().nullish(),
-      nomeInterno: zod.string().nullish(),
-      emailContato: zod.string().nullish(),
-      emailProdutoFinalizado: zod.string().nullish(),
+      cnpjCpf: zod.string().nullish(),
+      email: zod.string().nullish(),
+      telefone: zod.string().nullish(),
       ativo: zod.boolean(),
       createdAt: zod.coerce.date(),
     }),
@@ -577,7 +581,7 @@ export const AddProducaoItemParams = zod.object({
 export const AddProducaoItemBody = zod.object({
   produtoId: zod.number(),
   quantidade: zod.number(),
-  multiplicador: zod.number().optional(),
+  multiplicador: zod.number(),
 });
 
 /**
@@ -604,11 +608,12 @@ export const UpdateProducaoItemResponse = zod.object({
   impresso: zod.boolean(),
   envelopado: zod.boolean(),
   embalado: zod.boolean(),
-  despachado: zod.boolean(),
+  retirado: zod.boolean(),
   dataUltimoStatus: zod.coerce.date().nullish(),
   produto: zod.object({
     id: zod.number(),
     descricao: zod.string(),
+    exigeProcessamento: zod.boolean(),
     impresso: zod.boolean(),
     envelopado: zod.boolean(),
     ativo: zod.boolean(),
@@ -618,23 +623,23 @@ export const UpdateProducaoItemResponse = zod.object({
     id: zod.number(),
     clienteId: zod.number(),
     dataRecebimento: zod.coerce.date(),
+    horaRecebimento: zod.string().nullish(),
     observacoes: zod.string().nullish(),
     status: zod.enum([
-      "RECEBIDA",
-      "EM_PROCESSAMENTO",
-      "PROCESSADA",
-      "EM_PRODUCAO",
-      "EMBALADA",
-      "FINALIZADA",
-      "CANCELADA",
+      "recebida",
+      "processada",
+      "impressa",
+      "envelopada",
+      "embalada",
+      "retirada",
+      "cancelada",
     ]),
     cliente: zod.object({
       id: zod.number(),
       nomeRazaoSocial: zod.string(),
-      nomeFantasia: zod.string().nullish(),
-      nomeInterno: zod.string().nullish(),
-      emailContato: zod.string().nullish(),
-      emailProdutoFinalizado: zod.string().nullish(),
+      cnpjCpf: zod.string().nullish(),
+      email: zod.string().nullish(),
+      telefone: zod.string().nullish(),
       ativo: zod.boolean(),
       createdAt: zod.coerce.date(),
     }),
@@ -658,7 +663,7 @@ export const DeleteProducaoItemResponse = zod.object({
 });
 
 /**
- * @summary List items pending printing (produto.impresso=true, not yet printed)
+ * @summary List items pending printing (produto.impresso=true, not yet printed, order is processada)
  */
 export const ListImpressaoItemsResponseItem = zod.object({
   id: zod.number(),
@@ -670,11 +675,12 @@ export const ListImpressaoItemsResponseItem = zod.object({
   impresso: zod.boolean(),
   envelopado: zod.boolean(),
   embalado: zod.boolean(),
-  despachado: zod.boolean(),
+  retirado: zod.boolean(),
   dataUltimoStatus: zod.coerce.date().nullish(),
   produto: zod.object({
     id: zod.number(),
     descricao: zod.string(),
+    exigeProcessamento: zod.boolean(),
     impresso: zod.boolean(),
     envelopado: zod.boolean(),
     ativo: zod.boolean(),
@@ -684,23 +690,23 @@ export const ListImpressaoItemsResponseItem = zod.object({
     id: zod.number(),
     clienteId: zod.number(),
     dataRecebimento: zod.coerce.date(),
+    horaRecebimento: zod.string().nullish(),
     observacoes: zod.string().nullish(),
     status: zod.enum([
-      "RECEBIDA",
-      "EM_PROCESSAMENTO",
-      "PROCESSADA",
-      "EM_PRODUCAO",
-      "EMBALADA",
-      "FINALIZADA",
-      "CANCELADA",
+      "recebida",
+      "processada",
+      "impressa",
+      "envelopada",
+      "embalada",
+      "retirada",
+      "cancelada",
     ]),
     cliente: zod.object({
       id: zod.number(),
       nomeRazaoSocial: zod.string(),
-      nomeFantasia: zod.string().nullish(),
-      nomeInterno: zod.string().nullish(),
-      emailContato: zod.string().nullish(),
-      emailProdutoFinalizado: zod.string().nullish(),
+      cnpjCpf: zod.string().nullish(),
+      email: zod.string().nullish(),
+      telefone: zod.string().nullish(),
       ativo: zod.boolean(),
       createdAt: zod.coerce.date(),
     }),
@@ -738,11 +744,12 @@ export const ListEnvelopamentoItemsResponseItem = zod.object({
   impresso: zod.boolean(),
   envelopado: zod.boolean(),
   embalado: zod.boolean(),
-  despachado: zod.boolean(),
+  retirado: zod.boolean(),
   dataUltimoStatus: zod.coerce.date().nullish(),
   produto: zod.object({
     id: zod.number(),
     descricao: zod.string(),
+    exigeProcessamento: zod.boolean(),
     impresso: zod.boolean(),
     envelopado: zod.boolean(),
     ativo: zod.boolean(),
@@ -752,23 +759,23 @@ export const ListEnvelopamentoItemsResponseItem = zod.object({
     id: zod.number(),
     clienteId: zod.number(),
     dataRecebimento: zod.coerce.date(),
+    horaRecebimento: zod.string().nullish(),
     observacoes: zod.string().nullish(),
     status: zod.enum([
-      "RECEBIDA",
-      "EM_PROCESSAMENTO",
-      "PROCESSADA",
-      "EM_PRODUCAO",
-      "EMBALADA",
-      "FINALIZADA",
-      "CANCELADA",
+      "recebida",
+      "processada",
+      "impressa",
+      "envelopada",
+      "embalada",
+      "retirada",
+      "cancelada",
     ]),
     cliente: zod.object({
       id: zod.number(),
       nomeRazaoSocial: zod.string(),
-      nomeFantasia: zod.string().nullish(),
-      nomeInterno: zod.string().nullish(),
-      emailContato: zod.string().nullish(),
-      emailProdutoFinalizado: zod.string().nullish(),
+      cnpjCpf: zod.string().nullish(),
+      email: zod.string().nullish(),
+      telefone: zod.string().nullish(),
       ativo: zod.boolean(),
       createdAt: zod.coerce.date(),
     }),
@@ -806,11 +813,12 @@ export const ListEmbalagemItemsResponseItem = zod.object({
   impresso: zod.boolean(),
   envelopado: zod.boolean(),
   embalado: zod.boolean(),
-  despachado: zod.boolean(),
+  retirado: zod.boolean(),
   dataUltimoStatus: zod.coerce.date().nullish(),
   produto: zod.object({
     id: zod.number(),
     descricao: zod.string(),
+    exigeProcessamento: zod.boolean(),
     impresso: zod.boolean(),
     envelopado: zod.boolean(),
     ativo: zod.boolean(),
@@ -820,23 +828,23 @@ export const ListEmbalagemItemsResponseItem = zod.object({
     id: zod.number(),
     clienteId: zod.number(),
     dataRecebimento: zod.coerce.date(),
+    horaRecebimento: zod.string().nullish(),
     observacoes: zod.string().nullish(),
     status: zod.enum([
-      "RECEBIDA",
-      "EM_PROCESSAMENTO",
-      "PROCESSADA",
-      "EM_PRODUCAO",
-      "EMBALADA",
-      "FINALIZADA",
-      "CANCELADA",
+      "recebida",
+      "processada",
+      "impressa",
+      "envelopada",
+      "embalada",
+      "retirada",
+      "cancelada",
     ]),
     cliente: zod.object({
       id: zod.number(),
       nomeRazaoSocial: zod.string(),
-      nomeFantasia: zod.string().nullish(),
-      nomeInterno: zod.string().nullish(),
-      emailContato: zod.string().nullish(),
-      emailProdutoFinalizado: zod.string().nullish(),
+      cnpjCpf: zod.string().nullish(),
+      email: zod.string().nullish(),
+      telefone: zod.string().nullish(),
       ativo: zod.boolean(),
       createdAt: zod.coerce.date(),
     }),
@@ -862,71 +870,254 @@ export const MarcarEmbaladoResponse = zod.object({
 });
 
 /**
- * @summary List items ready for dispatch (packed but not dispatched)
+ * @summary List orders with status embalada (ready for pickup)
  */
-export const ListDespachoItemsResponseItem = zod.object({
+export const ListRetiradaOrdensResponseItem = zod.object({
   id: zod.number(),
-  producaoId: zod.number(),
-  produtoId: zod.number(),
-  itemNumero: zod.number(),
-  quantidade: zod.number(),
-  multiplicador: zod.number(),
-  impresso: zod.boolean(),
-  envelopado: zod.boolean(),
-  embalado: zod.boolean(),
-  despachado: zod.boolean(),
-  dataUltimoStatus: zod.coerce.date().nullish(),
-  produto: zod.object({
+  clienteId: zod.number(),
+  dataRecebimento: zod.coerce.date(),
+  horaRecebimento: zod.string().nullish(),
+  observacoes: zod.string().nullish(),
+  status: zod.enum([
+    "recebida",
+    "processada",
+    "impressa",
+    "envelopada",
+    "embalada",
+    "retirada",
+    "cancelada",
+  ]),
+  cliente: zod.object({
     id: zod.number(),
-    descricao: zod.string(),
-    impresso: zod.boolean(),
-    envelopado: zod.boolean(),
+    nomeRazaoSocial: zod.string(),
+    cnpjCpf: zod.string().nullish(),
+    email: zod.string().nullish(),
+    telefone: zod.string().nullish(),
     ativo: zod.boolean(),
     createdAt: zod.coerce.date(),
   }),
-  producao: zod.object({
-    id: zod.number(),
-    clienteId: zod.number(),
-    dataRecebimento: zod.coerce.date(),
-    observacoes: zod.string().nullish(),
-    status: zod.enum([
-      "RECEBIDA",
-      "EM_PROCESSAMENTO",
-      "PROCESSADA",
-      "EM_PRODUCAO",
-      "EMBALADA",
-      "FINALIZADA",
-      "CANCELADA",
-    ]),
-    cliente: zod.object({
+  items: zod.array(
+    zod.object({
       id: zod.number(),
-      nomeRazaoSocial: zod.string(),
-      nomeFantasia: zod.string().nullish(),
-      nomeInterno: zod.string().nullish(),
-      emailContato: zod.string().nullish(),
-      emailProdutoFinalizado: zod.string().nullish(),
-      ativo: zod.boolean(),
+      producaoId: zod.number(),
+      produtoId: zod.number(),
+      itemNumero: zod.number(),
+      quantidade: zod.number(),
+      multiplicador: zod.number(),
+      impresso: zod.boolean(),
+      envelopado: zod.boolean(),
+      embalado: zod.boolean(),
+      retirado: zod.boolean(),
+      dataUltimoStatus: zod.coerce.date().nullish(),
+      produto: zod.object({
+        id: zod.number(),
+        descricao: zod.string(),
+        exigeProcessamento: zod.boolean(),
+        impresso: zod.boolean(),
+        envelopado: zod.boolean(),
+        ativo: zod.boolean(),
+        createdAt: zod.coerce.date(),
+      }),
+      producao: zod.object({
+        id: zod.number(),
+        clienteId: zod.number(),
+        dataRecebimento: zod.coerce.date(),
+        horaRecebimento: zod.string().nullish(),
+        observacoes: zod.string().nullish(),
+        status: zod.enum([
+          "recebida",
+          "processada",
+          "impressa",
+          "envelopada",
+          "embalada",
+          "retirada",
+          "cancelada",
+        ]),
+        cliente: zod.object({
+          id: zod.number(),
+          nomeRazaoSocial: zod.string(),
+          cnpjCpf: zod.string().nullish(),
+          email: zod.string().nullish(),
+          telefone: zod.string().nullish(),
+          ativo: zod.boolean(),
+          createdAt: zod.coerce.date(),
+        }),
+        createdAt: zod.coerce.date(),
+        updatedAt: zod.coerce.date(),
+      }),
       createdAt: zod.coerce.date(),
     }),
-    createdAt: zod.coerce.date(),
-    updatedAt: zod.coerce.date(),
-  }),
+  ),
   createdAt: zod.coerce.date(),
+  updatedAt: zod.coerce.date(),
 });
-export const ListDespachoItemsResponse = zod.array(
-  ListDespachoItemsResponseItem,
+export const ListRetiradaOrdensResponse = zod.array(
+  ListRetiradaOrdensResponseItem,
 );
 
 /**
- * @summary Mark items as dispatched
+ * @summary Mark items as picked up (retirado)
  */
-export const MarcarDespachadoBody = zod.object({
+export const MarcarRetiradoBody = zod.object({
   itemIds: zod.array(zod.number()),
 });
 
-export const MarcarDespachadoResponse = zod.object({
+export const MarcarRetiradoResponse = zod.object({
   success: zod.boolean(),
   message: zod.string().optional(),
+});
+
+/**
+ * @summary List client/product prices
+ */
+export const ListPrecosQueryParams = zod.object({
+  clienteId: zod.coerce.number().optional(),
+  produtoId: zod.coerce.number().optional(),
+});
+
+export const ListPrecosResponseItem = zod.object({
+  id: zod.number(),
+  clienteId: zod.number(),
+  produtoId: zod.number(),
+  descricao: zod.string().nullish(),
+  preco: zod.string(),
+  dataInicialValidade: zod.coerce.date(),
+  usaPapel: zod.enum(["B", "I"]),
+  observacoes: zod.string().nullish(),
+  ativo: zod.boolean(),
+  cliente: zod
+    .object({
+      id: zod.number(),
+      nomeRazaoSocial: zod.string(),
+      cnpjCpf: zod.string().nullish(),
+      email: zod.string().nullish(),
+      telefone: zod.string().nullish(),
+      ativo: zod.boolean(),
+      createdAt: zod.coerce.date(),
+    })
+    .optional(),
+  produto: zod
+    .object({
+      id: zod.number(),
+      descricao: zod.string(),
+      exigeProcessamento: zod.boolean(),
+      impresso: zod.boolean(),
+      envelopado: zod.boolean(),
+      ativo: zod.boolean(),
+      createdAt: zod.coerce.date(),
+    })
+    .optional(),
+  createdAt: zod.coerce.date(),
+});
+export const ListPrecosResponse = zod.array(ListPrecosResponseItem);
+
+/**
+ * @summary Create a new price entry
+ */
+export const CreatePrecoBody = zod.object({
+  clienteId: zod.number(),
+  produtoId: zod.number(),
+  descricao: zod.string().optional(),
+  preco: zod.string(),
+  dataInicialValidade: zod.coerce.date(),
+  usaPapel: zod.enum(["B", "I"]).optional(),
+  observacoes: zod.string().optional(),
+  ativo: zod.boolean().optional(),
+});
+
+/**
+ * @summary Update a price entry
+ */
+export const UpdatePrecoParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const UpdatePrecoBody = zod.object({
+  descricao: zod.string().optional(),
+  preco: zod.string().optional(),
+  dataInicialValidade: zod.coerce.date().optional(),
+  usaPapel: zod.enum(["B", "I"]).optional(),
+  observacoes: zod.string().optional(),
+  ativo: zod.boolean().optional(),
+});
+
+export const UpdatePrecoResponse = zod.object({
+  id: zod.number(),
+  clienteId: zod.number(),
+  produtoId: zod.number(),
+  descricao: zod.string().nullish(),
+  preco: zod.string(),
+  dataInicialValidade: zod.coerce.date(),
+  usaPapel: zod.enum(["B", "I"]),
+  observacoes: zod.string().nullish(),
+  ativo: zod.boolean(),
+  cliente: zod
+    .object({
+      id: zod.number(),
+      nomeRazaoSocial: zod.string(),
+      cnpjCpf: zod.string().nullish(),
+      email: zod.string().nullish(),
+      telefone: zod.string().nullish(),
+      ativo: zod.boolean(),
+      createdAt: zod.coerce.date(),
+    })
+    .optional(),
+  produto: zod
+    .object({
+      id: zod.number(),
+      descricao: zod.string(),
+      exigeProcessamento: zod.boolean(),
+      impresso: zod.boolean(),
+      envelopado: zod.boolean(),
+      ativo: zod.boolean(),
+      createdAt: zod.coerce.date(),
+    })
+    .optional(),
+  createdAt: zod.coerce.date(),
+});
+
+/**
+ * @summary Get the currently valid price for a client/product on a given date
+ */
+export const GetPrecoVigenteQueryParams = zod.object({
+  clienteId: zod.coerce.number(),
+  produtoId: zod.coerce.number(),
+  data: zod.date(),
+});
+
+export const GetPrecoVigenteResponse = zod.object({
+  id: zod.number(),
+  clienteId: zod.number(),
+  produtoId: zod.number(),
+  descricao: zod.string().nullish(),
+  preco: zod.string(),
+  dataInicialValidade: zod.coerce.date(),
+  usaPapel: zod.enum(["B", "I"]),
+  observacoes: zod.string().nullish(),
+  ativo: zod.boolean(),
+  cliente: zod
+    .object({
+      id: zod.number(),
+      nomeRazaoSocial: zod.string(),
+      cnpjCpf: zod.string().nullish(),
+      email: zod.string().nullish(),
+      telefone: zod.string().nullish(),
+      ativo: zod.boolean(),
+      createdAt: zod.coerce.date(),
+    })
+    .optional(),
+  produto: zod
+    .object({
+      id: zod.number(),
+      descricao: zod.string(),
+      exigeProcessamento: zod.boolean(),
+      impresso: zod.boolean(),
+      envelopado: zod.boolean(),
+      ativo: zod.boolean(),
+      createdAt: zod.coerce.date(),
+    })
+    .optional(),
+  createdAt: zod.coerce.date(),
 });
 
 /**
@@ -936,16 +1127,16 @@ export const GetDashboardResumoResponse = zod.object({
   totalOrdens: zod.number(),
   porStatus: zod.record(zod.string(), zod.number()),
   ordensHoje: zod.number(),
-  ordensFinalizadasHoje: zod.number(),
+  ordensRetiradasHoje: zod.number(),
 });
 
 /**
  * @summary Get count of pending items per production stage
  */
 export const GetDashboardPendentesResponse = zod.object({
+  processamento: zod.number(),
   impressao: zod.number(),
   envelopamento: zod.number(),
   embalagem: zod.number(),
-  despacho: zod.number(),
-  processamento: zod.number(),
+  retirada: zod.number(),
 });

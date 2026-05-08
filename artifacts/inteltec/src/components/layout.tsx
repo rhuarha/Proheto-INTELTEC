@@ -4,17 +4,17 @@ import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import {
   Package,
-  Truck,
+  PackageCheck,
   Printer,
   Archive,
-  Send,
   ClipboardList,
   Users,
   Settings,
   LogOut,
   Building2,
   Box,
-  LayoutDashboard
+  LayoutDashboard,
+  DollarSign,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -60,7 +60,12 @@ export function Layout({ children }: LayoutProps) {
     const active = location === path;
     const Icon = icon;
     return (
-      <Link href={path} className={`flex items-center gap-2 px-3 py-2 text-sm font-medium transition-colors ${active ? "text-primary border-b-2 border-primary" : "text-muted-foreground hover:text-foreground"}`}>
+      <Link
+        href={path}
+        className={`flex items-center gap-2 px-3 py-2 text-sm font-medium transition-colors ${
+          active ? "text-primary border-b-2 border-primary" : "text-muted-foreground hover:text-foreground"
+        }`}
+      >
         <Icon className="w-4 h-4" />
         {label}
       </Link>
@@ -77,7 +82,7 @@ export function Layout({ children }: LayoutProps) {
             </div>
             INTELTEC
           </div>
-          
+
           <nav className="hidden md:flex items-center gap-1 h-full pt-1">
             {isApontador && (
               <>
@@ -87,37 +92,53 @@ export function Layout({ children }: LayoutProps) {
                 {navLink("/impressao", "Impressão", Printer)}
                 {navLink("/envelopamento", "Envelopamento", Archive)}
                 {navLink("/embalagem", "Embalagem", Box)}
-                {navLink("/despacho", "Despacho", Truck)}
+                {navLink("/retirada", "Retirada", PackageCheck)}
               </>
             )}
-            
+
             {isCliente && navLink("/minhas-ordens", "Minhas Ordens", ClipboardList)}
 
-            {isAdmin && (
+            {isApontador && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-9 px-3 gap-2 text-muted-foreground hover:text-foreground">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-9 px-3 gap-2 text-muted-foreground hover:text-foreground"
+                  >
                     <Settings className="w-4 h-4" />
                     Cadastros
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-48">
-                  <Link href="/admin/usuarios">
+                <DropdownMenuContent align="start" className="w-52">
+                  {isAdmin && (
+                    <>
+                      <DropdownMenuLabel className="text-xs text-muted-foreground">Administração</DropdownMenuLabel>
+                      <Link href="/admin/usuarios">
+                        <DropdownMenuItem className="cursor-pointer gap-2">
+                          <Users className="w-4 h-4" />
+                          Usuários
+                        </DropdownMenuItem>
+                      </Link>
+                      <Link href="/admin/clientes">
+                        <DropdownMenuItem className="cursor-pointer gap-2">
+                          <Building2 className="w-4 h-4" />
+                          Clientes
+                        </DropdownMenuItem>
+                      </Link>
+                      <Link href="/admin/produtos">
+                        <DropdownMenuItem className="cursor-pointer gap-2">
+                          <Package className="w-4 h-4" />
+                          Produtos
+                        </DropdownMenuItem>
+                      </Link>
+                      <DropdownMenuSeparator />
+                    </>
+                  )}
+                  <Link href="/admin/precos">
                     <DropdownMenuItem className="cursor-pointer gap-2">
-                      <Users className="w-4 h-4" />
-                      Usuários
-                    </DropdownMenuItem>
-                  </Link>
-                  <Link href="/admin/clientes">
-                    <DropdownMenuItem className="cursor-pointer gap-2">
-                      <Building2 className="w-4 h-4" />
-                      Clientes
-                    </DropdownMenuItem>
-                  </Link>
-                  <Link href="/admin/produtos">
-                    <DropdownMenuItem className="cursor-pointer gap-2">
-                      <Package className="w-4 h-4" />
-                      Produtos
+                      <DollarSign className="w-4 h-4" />
+                      Preços por Cliente
                     </DropdownMenuItem>
                   </Link>
                 </DropdownMenuContent>
@@ -128,17 +149,22 @@ export function Layout({ children }: LayoutProps) {
 
         <div className="flex items-center gap-4">
           <div className="text-sm font-medium hidden sm:block">
-            {user.name} <span className="text-muted-foreground font-normal">({user.role})</span>
+            {user.name}{" "}
+            <span className="text-muted-foreground font-normal">({user.role})</span>
           </div>
-          <Button variant="ghost" size="icon" onClick={logout} title="Sair" data-testid="button-logout">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={logout}
+            title="Sair"
+            data-testid="button-logout"
+          >
             <LogOut className="w-5 h-5 text-muted-foreground" />
           </Button>
         </div>
       </header>
 
-      <main className="flex-1 p-6 max-w-7xl mx-auto w-full">
-        {children}
-      </main>
+      <main className="flex-1 p-6 max-w-7xl mx-auto w-full">{children}</main>
     </div>
   );
 }

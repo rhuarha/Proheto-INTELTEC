@@ -20,49 +20,49 @@ router.get("/dashboard/resumo", requireAuth, requireRole("admin", "apontador"), 
     .from(producaoTable)
     .where(sql`DATE(${producaoTable.createdAt}) = ${today}`);
 
-  const ordensFinalizadasHojeResult = await db
+  const ordensRetiradasHojeResult = await db
     .select({ count: sql<number>`count(*)` })
     .from(producaoTable)
     .where(and(
       sql`DATE(${producaoTable.updatedAt}) = ${today}`,
-      eq(producaoTable.status, "FINALIZADA"),
+      eq(producaoTable.status, "retirada"),
     ));
 
   res.json({
     totalOrdens,
     porStatus,
     ordensHoje: Number(ordensHojeResult[0]?.count ?? 0),
-    ordensFinalizadasHoje: Number(ordensFinalizadasHojeResult[0]?.count ?? 0),
+    ordensRetiradasHoje: Number(ordensRetiradasHojeResult[0]?.count ?? 0),
   });
 });
 
 router.get("/dashboard/pendentes", requireAuth, requireRole("admin", "apontador"), async (req, res) => {
   const allItems = await db
-    .select({ item: producaoItemsTable, produto: produtosTable })
+    .select({ item: producaoItemsTable, produto: produtosTable, producao: producaoTable })
     .from(producaoItemsTable)
-    .innerJoin(produtosTable, eq(producaoItemsTable.produtoId, produtosTable.id));
+    .innerJoin(produtosTable, eq(producaoItemsTable.produtoId, produtosTable.id))
+    .innerJoin(producaoTable, eq(producaoItemsTable.producaoId, producaoTable.id));
 
   let impressao = 0;
   let envelopamento = 0;
   let embalagem = 0;
-  let despacho = 0;
-  let processamento = 0;
+  let retirada = 0;
 
-  // Count orders in processamento status
   const processamentoResult = await db
     .select({ count: sql<number>`count(*)` })
     .from(producaoTable)
-    .where(sql`${producaoTable.status} IN ('RECEBIDA', 'EM_PROCESSAMENTO')`);
-  processamento = Number(processamentoResult[0]?.count ?? 0);
+    .where(eq(producaoTable.status, "recebida"));
+  const processamento = Number(processamentoResult[0]?.count ?? 0);
 
-  for (const { item, produto } of allItems) {
-    if (produto.impresso && !item.impresso) impressao++;
-    if (produto.envelopado && !item.envelopado && (!produto.impresso || item.impresso)) envelopamento++;
-    if (!item.embalado && (!produto.impresso || item.impresso) && (!produto.envelopado || item.envelopado)) embalagem++;
-    if (item.embalado && !item.despachado) despacho++;
+  for (const { item, produto, producao } of allItems) {
+    if (producao.status === "cancelada") continue;
+    if (produto.impresso && !item.impresso && producao.status === "processada") impressao++;
+    if (produto.envelopado && !item.envelopado && (!produto.impresso || item.impresso) && ["processada", "impressa"].includes(producao.status)) envelopamento++;
+    if (!item.embalado && (!produto.impresso || item.impresso) && (!produto.envelopado || item.envelopado) && ["processada", "impressa", "envelopada"].includes(producao.status)) embalagem++;
+    if (item.embalado && !item.retirado && producao.status === "embalada") retirada++;
   }
 
-  res.json({ impressao, envelopamento, embalagem, despacho, processamento });
+  res.json({ processamento, impressao, envelopamento, embalagem, retirada });
 });
 
 export default router;

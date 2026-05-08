@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
-  version: 0.1.0
+  version: 0.2.0
   description: INTELTEC Production Control API
 servers:
   - url: /api
@@ -22,6 +22,8 @@ tags:
     description: Production order management
   - name: producao-items
     description: Production item management
+  - name: precos
+    description: Client/product price management
   - name: dashboard
     description: Dashboard and summary endpoints
 
@@ -436,7 +438,7 @@ paths:
     post:
       operationId: concluirProcessamento
       tags: [producao]
-      summary: Conclude processing stage and advance order status
+      summary: Conclude processing stage and advance order status to processada
       security:
         - bearerAuth: []
       parameters:
@@ -447,7 +449,7 @@ paths:
             type: integer
       responses:
         "200":
-          description: Status updated
+          description: Status updated to processada
           content:
             application/json:
               schema:
@@ -582,7 +584,7 @@ paths:
     get:
       operationId: listImpressaoItems
       tags: [producao-items]
-      summary: List items pending printing (produto.impresso=true, not yet printed)
+      summary: List items pending printing (produto.impresso=true, not yet printed, order is processada)
       security:
         - bearerAuth: []
       responses:
@@ -692,28 +694,28 @@ paths:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
 
-  /despacho/items:
+  /retirada/ordens:
     get:
-      operationId: listDespachoItems
+      operationId: listRetiradaOrdens
       tags: [producao-items]
-      summary: List items ready for dispatch (packed but not dispatched)
+      summary: List orders with status embalada (ready for pickup)
       security:
         - bearerAuth: []
       responses:
         "200":
-          description: Items ready for dispatch
+          description: Orders ready for pickup
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/ProducaoItemWithProduto"
+                  $ref: "#/components/schemas/ProducaoDetail"
 
-  /despacho/marcar:
+  /retirada/marcar:
     post:
-      operationId: marcarDespachado
+      operationId: marcarRetirado
       tags: [producao-items]
-      summary: Mark items as dispatched
+      summary: Mark items as picked up (retirado)
       security:
         - bearerAuth: []
       requestBody:
@@ -724,11 +726,121 @@ paths:
               $ref: "#/components/schemas/MarcarItemsBody"
       responses:
         "200":
-          description: Items marked as dispatched
+          description: Items marked as retirado
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
+
+  /precos:
+    get:
+      operationId: listPrecos
+      tags: [precos]
+      summary: List client/product prices
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: clienteId
+          in: query
+          schema:
+            type: integer
+        - name: produtoId
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of prices
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ClienteProdutoPreco"
+    post:
+      operationId: createPreco
+      tags: [precos]
+      summary: Create a new price entry
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePrecoBody"
+      responses:
+        "201":
+          description: Price created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClienteProdutoPreco"
+
+  /precos/{id}:
+    put:
+      operationId: updatePreco
+      tags: [precos]
+      summary: Update a price entry
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdatePrecoBody"
+      responses:
+        "200":
+          description: Price updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClienteProdutoPreco"
+
+  /precos/vigente:
+    get:
+      operationId: getPrecoVigente
+      tags: [precos]
+      summary: Get the currently valid price for a client/product on a given date
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: clienteId
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: produtoId
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: data
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: Valid price found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClienteProdutoPreco"
+        "404":
+          description: No valid price found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /dashboard/resumo:
     get:
@@ -878,6 +990,9 @@ components:
           type: string
         email:
           type: string
+          format: email
+        password:
+          type: string
         role:
           type: string
           enum: [admin, apontador, cliente]
@@ -886,8 +1001,6 @@ components:
           nullable: true
         ativo:
           type: boolean
-        password:
-          type: string
 
     Cliente:
       type: object
@@ -896,16 +1009,13 @@ components:
           type: integer
         nomeRazaoSocial:
           type: string
-        nomeFantasia:
+        cnpjCpf:
           type: string
           nullable: true
-        nomeInterno:
+        email:
           type: string
           nullable: true
-        emailContato:
-          type: string
-          nullable: true
-        emailProdutoFinalizado:
+        telefone:
           type: string
           nullable: true
         ativo:
@@ -924,13 +1034,12 @@ components:
       properties:
         nomeRazaoSocial:
           type: string
-        nomeFantasia:
+        cnpjCpf:
           type: string
-        nomeInterno:
+        email:
           type: string
-        emailContato:
-          type: string
-        emailProdutoFinalizado:
+          format: email
+        telefone:
           type: string
         ativo:
           type: boolean
@@ -942,13 +1051,12 @@ components:
       properties:
         nomeRazaoSocial:
           type: string
-        nomeFantasia:
+        cnpjCpf:
           type: string
-        nomeInterno:
+        email:
           type: string
-        emailContato:
-          type: string
-        emailProdutoFinalizado:
+          format: email
+        telefone:
           type: string
         ativo:
           type: boolean
@@ -960,6 +1068,8 @@ components:
           type: integer
         descricao:
           type: string
+        exigeProcessamento:
+          type: boolean
         impresso:
           type: boolean
         envelopado:
@@ -972,6 +1082,7 @@ components:
       required:
         - id
         - descricao
+        - exigeProcessamento
         - impresso
         - envelopado
         - ativo
@@ -982,6 +1093,8 @@ components:
       properties:
         descricao:
           type: string
+        exigeProcessamento:
+          type: boolean
         impresso:
           type: boolean
         envelopado:
@@ -996,6 +1109,8 @@ components:
       properties:
         descricao:
           type: string
+        exigeProcessamento:
+          type: boolean
         impresso:
           type: boolean
         envelopado:
@@ -1006,13 +1121,13 @@ components:
     ProducaoStatus:
       type: string
       enum:
-        - RECEBIDA
-        - EM_PROCESSAMENTO
-        - PROCESSADA
-        - EM_PRODUCAO
-        - EMBALADA
-        - FINALIZADA
-        - CANCELADA
+        - recebida
+        - processada
+        - impressa
+        - envelopada
+        - embalada
+        - retirada
+        - cancelada
 
     ProducaoWithCliente:
       type: object
@@ -1024,6 +1139,9 @@ components:
         dataRecebimento:
           type: string
           format: date
+        horaRecebimento:
+          type: string
+          nullable: true
         observacoes:
           type: string
           nullable: true
@@ -1056,6 +1174,9 @@ components:
         dataRecebimento:
           type: string
           format: date
+        horaRecebimento:
+          type: string
+          nullable: true
         observacoes:
           type: string
           nullable: true
@@ -1091,6 +1212,8 @@ components:
         dataRecebimento:
           type: string
           format: date
+        horaRecebimento:
+          type: string
         observacoes:
           type: string
       required:
@@ -1105,6 +1228,8 @@ components:
         dataRecebimento:
           type: string
           format: date
+        horaRecebimento:
+          type: string
         observacoes:
           type: string
         status:
@@ -1124,14 +1249,14 @@ components:
         quantidade:
           type: integer
         multiplicador:
-          type: number
+          type: integer
         impresso:
           type: boolean
         envelopado:
           type: boolean
         embalado:
           type: boolean
-        despachado:
+        retirado:
           type: boolean
         dataUltimoStatus:
           type: string
@@ -1154,7 +1279,7 @@ components:
         - impresso
         - envelopado
         - embalado
-        - despachado
+        - retirado
         - produto
         - producao
         - createdAt
@@ -1167,10 +1292,11 @@ components:
         quantidade:
           type: integer
         multiplicador:
-          type: number
+          type: integer
       required:
         - produtoId
         - quantidade
+        - multiplicador
 
     UpdateProducaoItemBody:
       type: object
@@ -1180,7 +1306,7 @@ components:
         quantidade:
           type: integer
         multiplicador:
-          type: number
+          type: integer
 
     MarcarItemsBody:
       type: object
@@ -1191,6 +1317,93 @@ components:
             type: integer
       required:
         - itemIds
+
+    ClienteProdutoPreco:
+      type: object
+      properties:
+        id:
+          type: integer
+        clienteId:
+          type: integer
+        produtoId:
+          type: integer
+        descricao:
+          type: string
+          nullable: true
+        preco:
+          type: string
+        dataInicialValidade:
+          type: string
+          format: date
+        usaPapel:
+          type: string
+          enum: [B, I]
+        observacoes:
+          type: string
+          nullable: true
+        ativo:
+          type: boolean
+        cliente:
+          $ref: "#/components/schemas/Cliente"
+        produto:
+          $ref: "#/components/schemas/Produto"
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - clienteId
+        - produtoId
+        - preco
+        - dataInicialValidade
+        - usaPapel
+        - ativo
+        - createdAt
+
+    CreatePrecoBody:
+      type: object
+      properties:
+        clienteId:
+          type: integer
+        produtoId:
+          type: integer
+        descricao:
+          type: string
+        preco:
+          type: string
+        dataInicialValidade:
+          type: string
+          format: date
+        usaPapel:
+          type: string
+          enum: [B, I]
+        observacoes:
+          type: string
+        ativo:
+          type: boolean
+      required:
+        - clienteId
+        - produtoId
+        - preco
+        - dataInicialValidade
+
+    UpdatePrecoBody:
+      type: object
+      properties:
+        descricao:
+          type: string
+        preco:
+          type: string
+        dataInicialValidade:
+          type: string
+          format: date
+        usaPapel:
+          type: string
+          enum: [B, I]
+        observacoes:
+          type: string
+        ativo:
+          type: boolean
 
     DashboardResumo:
       type: object
@@ -1203,30 +1416,30 @@ components:
             type: integer
         ordensHoje:
           type: integer
-        ordensFinalizadasHoje:
+        ordensRetiradasHoje:
           type: integer
       required:
         - totalOrdens
         - porStatus
         - ordensHoje
-        - ordensFinalizadasHoje
+        - ordensRetiradasHoje
 
     PendentesPorEtapa:
       type: object
       properties:
+        processamento:
+          type: integer
         impressao:
           type: integer
         envelopamento:
           type: integer
         embalagem:
           type: integer
-        despacho:
-          type: integer
-        processamento:
+        retirada:
           type: integer
       required:
+        - processamento
         - impressao
         - envelopamento
         - embalagem
-        - despacho
-        - processamento
+        - retirada

@@ -1,0 +1,548 @@
+Você é um programador sênior fullstack. Atualize a aplicação web da INTELTEC, um sistema de controle de produção de documentos, com backend em Node.js + Express, frontend em React e banco MySQL/MariaDB.
+
+O sistema já possui um MVP com login, menu, clientes, produtos, ordens de produção e itens de produção. Agora implemente os upgrades descritos abaixo.
+
+==================================================
+1. CONCEITO PRINCIPAL DO FLUXO DE PRODUÇÃO
+==================================================
+
+Toda Ordem de Produção obrigatoriamente deve passar pela etapa de Processamento.
+
+A etapa de Processamento representa o momento em que o recebimento é processado no sistema CAPS e são informados:
+- Produto
+- Quantidade
+- Multiplicador
+
+Uma Ordem de Produção nasce no status "recebida", sem itens, e deve obrigatoriamente aparecer na tela de Processamento até que sejam incluídos um ou mais itens.
+
+Somente depois de ter pelo menos um item com produto, quantidade e multiplicador, a Ordem de Produção poderá passar para o status "processada".
+
+==================================================
+2. NOVOS STATUS DA ORDEM DE PRODUÇÃO
+==================================================
+
+Substituir os status atuais da tabela producao pelos seguintes:
+
+- recebida
+- processada
+- impressa
+- envelopada
+- embalada
+- retirada
+- cancelada
+
+Definição dos status:
+
+1. recebida
+São as ordens de produção incluídas no sistema e que ainda não têm item nem quantidade. Estão aguardando processamento.
+
+2. processada
+São as ordens de produção que já receberam seus itens, produtos, quantidades e multiplicadores. Estão aguardando a próxima fase, que pode ser impressão ou envelopamento, conforme configuração do produto.
+
+3. impressa
+São as ordens de produção cujos itens que exigem impressão já foram impressos. Estão aguardando envelopamento ou embalagem, conforme configuração do produto.
+
+4. envelopada
+São as ordens de produção cujo envelopamento foi terminado. Estão aguardando embalagem.
+
+5. embalada
+São as ordens de produção já embaladas e disponíveis para retirada pelo cliente.
+
+6. retirada
+São as ordens de produção já retiradas pelo cliente.
+
+7. cancelada
+Ordens canceladas manualmente.
+
+A atualização do status da Ordem de Produção deve ser feita automaticamente com base no status dos seus itens.
+
+==================================================
+3. ALTERAÇÕES NA TABELA produtos
+==================================================
+
+Adicionar no cadastro de produtos o campo:
+
+- exige_processamento boolean default true
+
+Regras:
+- Todo produto, por padrão, exige processamento.
+- Mesmo que futuramente algum produto não exija processamento, neste momento toda Ordem de Produção deve passar pela etapa de Processamento.
+- O campo deve existir no cadastro para uso futuro e para manter o setup completo do produto.
+
+A tabela produtos deve ficar, no mínimo, com estes campos:
+
+produtos:
+- id
+- descricao
+- exige_processamento boolean default true
+- impresso boolean default true
+- envelopado boolean default true
+- ativo boolean default true
+- created_at
+- updated_at
+
+==================================================
+4. ALTERAÇÕES NA TABELA producao
+==================================================
+
+Adicionar o campo hora_recebimento.
+
+A tabela producao deve ficar assim:
+
+producao:
+- id
+- cliente_id
+- data_recebimento
+- hora_recebimento
+- observacoes
+- status enum:
+  - recebida
+  - processada
+  - impressa
+  - envelopada
+  - embalada
+  - retirada
+  - cancelada
+- created_at
+- updated_at
+- deleted_at nullable
+
+Regras:
+- Ao incluir uma nova Ordem de Produção, sugerir data e hora atuais.
+- Permitir alteração manual da data e hora do recebimento.
+- Nova ordem sempre inicia com status "recebida".
+- Ordem recebida deve aparecer obrigatoriamente na tela de Processamento.
+
+==================================================
+5. ALTERAÇÕES NA TABELA producao_item
+==================================================
+
+Adicionar o campo multiplicador.
+
+A tabela producao_item deve ficar assim:
+
+producao_item:
+- id
+- producao_id
+- produto_id
+- item_numero
+- quantidade
+- multiplicador inteiro(3)
+- impresso boolean default false
+- envelopado boolean default false
+- embalado boolean default false
+- retirado boolean default false
+- data_ultimo_status
+- created_at
+- updated_at
+- deleted_at nullable
+
+Regras:
+- multiplicador é obrigatório na tela de Processamento.
+- multiplicador deve aceitar somente valores inteiros.
+- multiplicador será usado futuramente para cálculo de cobrança e controle de inventário.
+- Exemplo: atas podem ter multiplicador 2, 3 ou outro valor, conforme quantidade de folhas por documento.
+- O multiplicador deve ser informado manualmente no processamento.
+- A quantidade faturável futura poderá ser calculada como quantidade × multiplicador, mas não implementar faturamento neste momento.
+
+==================================================
+6. NOVA TABELA cliente_produto_preco
+==================================================
+
+Criar tabela para relacionar cliente, produto e preço.
+
+Nome sugerido:
+cliente_produto_preco
+
+Campos:
+
+- id
+- cliente_id
+- produto_id
+- descricao
+- preco decimal(10,2)
+- data_inicial_validade date
+- usa_papel enum('B', 'I')
+- observacoes
+- ativo boolean default true
+- created_at
+- updated_at
+- deleted_at nullable
+
+Significado do campo usa_papel:
+- B = usa papel branco da INTELTEC
+- I = usa impresso próprio do cliente
+
+Regras:
+- O mesmo produto pode ter preços diferentes para clientes diferentes.
+- O mesmo cliente e produto podem ter vários preços ao longo do tempo.
+- Deve ser permitido manter preços antigos e preços futuros.
+- O preço válido para uma Ordem de Produção será aquele cujo cliente_id e produto_id sejam iguais e cuja data_inicial_validade seja a maior data menor ou igual à data_recebimento da ordem.
+- Se houver preço futuro com data posterior à data_recebimento, ele não deve ser usado.
+- Não permitir dois preços ativos para o mesmo cliente, produto e mesma data_inicial_validade.
+- Ainda não implementar faturamento, mas a estrutura deve estar pronta para uso futuro.
+
+==================================================
+7. TELA DE RECEBIMENTO
+==================================================
+
+A tela de Recebimento deve permitir incluir uma nova Ordem de Produção.
+
+Campos:
+- Cliente: dropdown obrigatório
+- Data de recebimento: date, sugerir data atual
+- Hora de recebimento: time, sugerir hora atual
+- Observações: opcional
+
+Ao salvar:
+- criar registro em producao
+- status = recebida
+- não criar itens automaticamente
+- registrar log
+- a ordem deve passar a aparecer imediatamente na tela de Processamento
+
+==================================================
+8. TELA DE PROCESSAMENTO
+==================================================
+
+A tela de Processamento deve listar todas as Ordens de Produção com status "recebida".
+
+Cada linha deve mostrar:
+- Número da Ordem de Produção
+- Cliente
+- Data de recebimento
+- Hora de recebimento
+- Observações
+
+Ao selecionar uma Ordem de Produção, abrir tela ou modal para incluir itens.
+
+Campos do item:
+- Item número: gerado automaticamente, não editável
+- Produto: dropdown obrigatório
+- Quantidade: número obrigatório
+- Multiplicador: inteiro obrigatório default 1
+
+Regras:
+- Produto deve ser escolhido a partir do cadastro de produtos ativos para o cliente daquela ordem de produção.
+- Ao incluir o primeiro item, a ordem ainda pode permanecer na tela até o usuário clicar em "Concluir Processamento".
+- Permitir incluir múltiplos itens na mesma Ordem de Produção.
+- Permitir remover item antes de concluir processamento.
+- Ao clicar em "Concluir Processamento":
+  - validar que existe pelo menos um item
+  - validar que todos os itens têm produto, quantidade e multiplicador
+  - alterar status da ordem para "processada"
+  - registrar log
+  - remover a ordem da lista de processamento
+
+Validação de preço:
+- Ao selecionar produto e concluir item, verificar se existe preço válido na tabela cliente_produto_preco para aquele cliente, produto e data_recebimento.
+- Se não existir preço válido, exibir alerta claro:
+  "Não existe preço válido para este cliente/produto na data de recebimento da ordem."
+- Permitir ao usuário admin ou apontador cadastrar preço válido em modal.
+- O preço cadastrado deve respeitar:
+  - cliente_id da ordem
+  - produto_id selecionado
+  - data_inicial_validade menor ou igual à data_recebimento
+- Após cadastrar o preço, permitir continuar o processamento.
+
+==================================================
+9. TELA DE IMPRESSÃO
+==================================================
+
+A tela de Impressão deve listar itens de ordens com status "processada" cujo produto.impresso = true e impresso = false.
+
+Exibir:
+- Ordem de Produção
+- Cliente
+- Produto
+- Quantidade
+- Multiplicador
+- Data de recebimento
+- Hora de recebimento
+
+Permitir marcar um ou mais itens como impressos.
+
+Ao confirmar:
+- atualizar producao_item.impresso = true
+- atualizar data_ultimo_status
+- registrar log
+
+Após cada atualização, recalcular o status da Ordem de Produção.
+
+Regra para status "impressa":
+- Uma ordem passa para "impressa" quando todos os seus itens que exigem impressão estiverem impressos.
+- Se nenhum item da ordem exigir impressão, ela deve seguir diretamente para a etapa seguinte aplicável, sem ficar presa na impressão.
+
+==================================================
+10. TELA DE ENVELOPAMENTO
+==================================================
+
+A tela de Envelopamento deve listar itens que:
+- pertencem a ordens processadas ou impressas
+- produto.envelopado = true
+- envelopado = false
+- e, se produto.impresso = true, impresso deve estar true
+
+Exibir:
+- Ordem de Produção
+- Cliente
+- Produto
+- Quantidade
+- Multiplicador
+- Impresso
+- Envelopado
+
+Permitir marcar um ou mais itens como envelopados.
+
+Ao confirmar:
+- atualizar producao_item.envelopado = true
+- atualizar data_ultimo_status
+- registrar log
+
+Regra para status "envelopada":
+- Uma ordem passa para "envelopada" quando todos os seus itens que exigem envelopamento estiverem envelopados.
+- Se nenhum item exigir envelopamento, a ordem deve seguir para embalagem.
+
+==================================================
+11. TELA DE EMBALAGEM
+==================================================
+
+A tela de Embalagem deve listar itens prontos para embalagem.
+
+Um item está pronto para embalagem quando:
+- se produto.impresso = true, então producao_item.impresso = true
+- se produto.envelopado = true, então producao_item.envelopado = true
+
+Exibir:
+- Ordem de Produção
+- Cliente
+- Produto
+- Quantidade
+- Multiplicador
+- Impresso
+- Envelopado
+- Embalado
+
+Permitir marcar itens como embalados.
+
+Ao confirmar:
+- atualizar producao_item.embalado = true
+- atualizar data_ultimo_status
+- registrar log
+
+Regra para status "embalada":
+- Uma ordem passa para "embalada" quando todos os seus itens estiverem embalados.
+- Ordens embaladas ficam disponíveis para retirada pelo cliente.
+
+==================================================
+12. TELA DE RETIRADA
+==================================================
+
+Renomear ou ajustar a etapa final para Retirada.
+
+A tela de Retirada deve listar ordens com status "embalada".
+
+Ao abrir a ordem, exibir seus itens:
+- Produto
+- Quantidade
+- Multiplicador
+- Embalado
+- Retirado
+
+Permitir marcar itens como retirados.
+
+Ao confirmar:
+- atualizar producao_item.retirado = true
+- atualizar data_ultimo_status
+- registrar log
+
+Regra para status "retirada":
+- Uma ordem passa para "retirada" quando todos os seus itens estiverem retirados.
+
+==================================================
+13. REGRAS DE TRANSIÇÃO AUTOMÁTICA DE STATUS
+==================================================
+
+Criar uma função backend centralizada chamada recalcularStatusProducao(producao_id).
+
+Ela deve verificar os itens da ordem e atualizar o status da produção conforme regras:
+
+1. Se a ordem não tiver itens:
+   status = recebida
+
+2. Se tiver itens, mas ainda houver item incompleto:
+   status = recebida
+
+3. Se todos os itens estão cadastrados, mas não concluíram impressão/envelopamento/embalagem:
+   status = processada
+
+4. Se todos os itens que exigem impressão estão impressos:
+   status pode avançar para impressa, salvo se já cumprir próxima etapa
+
+5. Se todos os itens que exigem envelopamento estão envelopados:
+   status pode avançar para envelopada, salvo se já cumprir próxima etapa
+
+6. Se todos os itens estão embalados:
+   status = embalada
+
+7. Se todos os itens estão retirados:
+   status = retirada
+
+Importante:
+- O status deve refletir o estágio mais avançado concluído pela ordem como um todo.
+- Produtos que não exigem impressão ou envelopamento não devem bloquear avanço da ordem.
+- Embalagem sempre é obrigatória.
+- Retirada sempre é obrigatória para finalizar o fluxo.
+
+==================================================
+14. CONSULTA DO CLIENTE
+==================================================
+
+Usuário com role "cliente" deve visualizar apenas ordens vinculadas ao seu cliente_id.
+
+Exibir:
+- Número da Ordem de Produção
+- Data de recebimento
+- Hora de recebimento
+- Status
+- Produtos
+- Quantidades
+- Multiplicadores
+- Impresso
+- Envelopado
+- Embalado
+- Retirado
+
+Não permitir edição para usuário cliente.
+
+==================================================
+15. MENU SUPERIOR
+==================================================
+
+Para admin e apontador, exibir:
+- Recebimento
+- Processamento
+- Impressão
+- Envelopamento
+- Embalagem
+- Retirada
+- Cadastros
+- Sair
+
+Para cliente:
+- Minhas Ordens
+- Sair
+
+Em Cadastros, permitir ao admin e apontador acessar:
+- Clientes
+- Produtos
+- Preços por Cliente/Produto
+
+==================================================
+16. LOGS
+==================================================
+
+Registrar log para:
+- criação de ordem
+- conclusão de processamento
+- inclusão de item
+- edição de item
+- impressão
+- envelopamento
+- embalagem
+- retirada
+- cadastro ou alteração de preço
+
+Tabela logs:
+- id
+- user_id
+- acao
+- entidade
+- entidade_id
+- descricao
+- created_at
+
+==================================================
+17. NÃO IMPLEMENTAR NESTA FASE
+==================================================
+
+Não implementar ainda:
+- faturamento
+- demonstrativos
+- NFSe
+- boleto
+- XML
+- REM
+- envio real de e-mail
+- FTP real
+- controle completo de estoque
+- relatórios PDF
+
+Apenas deixar a estrutura preparada para futuras fases.
+
+==================================================
+18. DADOS INICIAIS DE TESTE
+==================================================
+
+Criar seeds com:
+
+Usuários:
+- admin@inteltec.com.br / senha: admin123 / role admin
+- apontador@inteltec.com.br / senha: apontador123 / role apontador
+- cliente@teste.com.br / senha: cliente123 / role cliente
+
+Clientes:
+- Cliente Teste 1
+- Cliente Teste 2
+
+Produtos:
+1. Ata
+   - exige_processamento = true
+   - impresso = true
+   - envelopado = true
+
+2. Etiqueta
+   - exige_processamento = true
+   - impresso = true
+   - envelopado = false
+
+3. Documento recebido pronto
+   - exige_processamento = true
+   - impresso = false
+   - envelopado = true
+
+Preços:
+- Cliente Teste 1 + Ata: R$ 2,50, validade inicial 2024-01-01, usa_papel = B
+- Cliente Teste 1 + Etiqueta: R$ 1,00, validade inicial 2024-01-01, usa_papel = B
+- Cliente Teste 2 + Ata: R$ 3,00, validade inicial 2024-01-01, usa_papel = I
+
+==================================================
+19. QUALIDADE DO CÓDIGO
+==================================================
+
+Organizar o projeto com:
+- backend separado do frontend
+- controllers
+- services
+- routes
+- middlewares
+- models
+- migrations
+- seeds
+- components React
+- pages React
+- services de API no frontend
+
+Usar validações no backend e frontend.
+
+Usar nomes claros e consistentes.
+
+Criar README explicando:
+- como configurar .env
+- como instalar dependências
+- como rodar migrations
+- como rodar seeds
+- como iniciar backend
+- como iniciar frontend
+
+Priorize código funcional, simples, seguro e fácil de evoluir.

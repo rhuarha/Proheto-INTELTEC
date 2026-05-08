@@ -113,8 +113,8 @@ export default function ClientesPage() {
                   clientes?.map((cliente) => (
                     <TableRow key={cliente.id} data-testid={`row-cliente-${cliente.id}`}>
                       <TableCell className="font-medium">{cliente.nomeRazaoSocial}</TableCell>
-                      <TableCell>{cliente.nomeFantasia || "-"}</TableCell>
-                      <TableCell>{cliente.emailContato || "-"}</TableCell>
+                      <TableCell>{(cliente as any).nomeFantasia || "-"}</TableCell>
+                      <TableCell>{(cliente as any).emailContato || "-"}</TableCell>
                       <TableCell>
                         <Badge variant={cliente.ativo ? "default" : "destructive"}>
                           {cliente.ativo ? "Ativo" : "Inativo"}

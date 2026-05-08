@@ -7,9 +7,16 @@ import { CreateProdutoBody, UpdateProdutoBody } from "@workspace/api-zod";
 const router = Router();
 
 router.get("/produtos", requireAuth, async (req, res) => {
-  const produtos = await db.select().from(produtosTable)
-    .where(eq(produtosTable.ativo, true))
-    .orderBy(produtosTable.descricao);
+  const all = req.query.all === "true";
+  const query = db.select().from(produtosTable);
+  if (!all) {
+    const produtos = await db.select().from(produtosTable)
+      .where(eq(produtosTable.ativo, true))
+      .orderBy(produtosTable.descricao);
+    res.json(produtos);
+    return;
+  }
+  const produtos = await query.orderBy(produtosTable.descricao);
   res.json(produtos);
 });
 
@@ -20,9 +27,10 @@ router.post("/produtos", requireAuth, requireRole("admin"), async (req, res) => 
     return;
   }
   const inserted = await db.insert(produtosTable).values({
-    ...parsed.data,
-    impresso: parsed.data.impresso ?? false,
-    envelopado: parsed.data.envelopado ?? false,
+    descricao: parsed.data.descricao,
+    exigeProcessamento: parsed.data.exigeProcessamento ?? true,
+    impresso: parsed.data.impresso ?? true,
+    envelopado: parsed.data.envelopado ?? true,
     ativo: parsed.data.ativo ?? true,
   }).returning();
 

@@ -3,7 +3,7 @@
  * Do not edit manually.
  * Api
  * INTELTEC Production Control API
- * OpenAPI spec version: 0.1.0
+ * OpenAPI spec version: 0.2.0
  */
 export interface HealthStatus {
   status: string;
@@ -77,44 +77,42 @@ export const UpdateUserBodyRole = {
 export interface UpdateUserBody {
   name?: string;
   email?: string;
+  password?: string;
   role?: UpdateUserBodyRole;
   clienteId?: number | null;
   ativo?: boolean;
-  password?: string;
 }
 
 export interface Cliente {
   id: number;
   nomeRazaoSocial: string;
-  nomeFantasia?: string | null;
-  nomeInterno?: string | null;
-  emailContato?: string | null;
-  emailProdutoFinalizado?: string | null;
+  cnpjCpf?: string | null;
+  email?: string | null;
+  telefone?: string | null;
   ativo: boolean;
   createdAt: string;
 }
 
 export interface CreateClienteBody {
   nomeRazaoSocial: string;
-  nomeFantasia?: string;
-  nomeInterno?: string;
-  emailContato?: string;
-  emailProdutoFinalizado?: string;
+  cnpjCpf?: string;
+  email?: string;
+  telefone?: string;
   ativo?: boolean;
 }
 
 export interface UpdateClienteBody {
   nomeRazaoSocial?: string;
-  nomeFantasia?: string;
-  nomeInterno?: string;
-  emailContato?: string;
-  emailProdutoFinalizado?: string;
+  cnpjCpf?: string;
+  email?: string;
+  telefone?: string;
   ativo?: boolean;
 }
 
 export interface Produto {
   id: number;
   descricao: string;
+  exigeProcessamento: boolean;
   impresso: boolean;
   envelopado: boolean;
   ativo: boolean;
@@ -123,6 +121,7 @@ export interface Produto {
 
 export interface CreateProdutoBody {
   descricao: string;
+  exigeProcessamento?: boolean;
   impresso?: boolean;
   envelopado?: boolean;
   ativo?: boolean;
@@ -130,6 +129,7 @@ export interface CreateProdutoBody {
 
 export interface UpdateProdutoBody {
   descricao?: string;
+  exigeProcessamento?: boolean;
   impresso?: boolean;
   envelopado?: boolean;
   ativo?: boolean;
@@ -139,19 +139,20 @@ export type ProducaoStatus =
   (typeof ProducaoStatus)[keyof typeof ProducaoStatus];
 
 export const ProducaoStatus = {
-  RECEBIDA: "RECEBIDA",
-  EM_PROCESSAMENTO: "EM_PROCESSAMENTO",
-  PROCESSADA: "PROCESSADA",
-  EM_PRODUCAO: "EM_PRODUCAO",
-  EMBALADA: "EMBALADA",
-  FINALIZADA: "FINALIZADA",
-  CANCELADA: "CANCELADA",
+  recebida: "recebida",
+  processada: "processada",
+  impressa: "impressa",
+  envelopada: "envelopada",
+  embalada: "embalada",
+  retirada: "retirada",
+  cancelada: "cancelada",
 } as const;
 
 export interface ProducaoWithCliente {
   id: number;
   clienteId: number;
   dataRecebimento: string;
+  horaRecebimento?: string | null;
   observacoes?: string | null;
   status: ProducaoStatus;
   cliente: Cliente;
@@ -169,7 +170,7 @@ export interface ProducaoItemWithProduto {
   impresso: boolean;
   envelopado: boolean;
   embalado: boolean;
-  despachado: boolean;
+  retirado: boolean;
   dataUltimoStatus?: string | null;
   produto: Produto;
   producao: ProducaoWithCliente;
@@ -180,6 +181,7 @@ export interface ProducaoDetail {
   id: number;
   clienteId: number;
   dataRecebimento: string;
+  horaRecebimento?: string | null;
   observacoes?: string | null;
   status: ProducaoStatus;
   cliente: Cliente;
@@ -191,12 +193,14 @@ export interface ProducaoDetail {
 export interface CreateProducaoBody {
   clienteId: number;
   dataRecebimento: string;
+  horaRecebimento?: string;
   observacoes?: string;
 }
 
 export interface UpdateProducaoBody {
   clienteId?: number;
   dataRecebimento?: string;
+  horaRecebimento?: string;
   observacoes?: string;
   status?: ProducaoStatus;
 }
@@ -204,7 +208,7 @@ export interface UpdateProducaoBody {
 export interface CreateProducaoItemBody {
   produtoId: number;
   quantidade: number;
-  multiplicador?: number;
+  multiplicador: number;
 }
 
 export interface UpdateProducaoItemBody {
@@ -217,21 +221,80 @@ export interface MarcarItemsBody {
   itemIds: number[];
 }
 
+export type ClienteProdutoPrecoUsaPapel =
+  (typeof ClienteProdutoPrecoUsaPapel)[keyof typeof ClienteProdutoPrecoUsaPapel];
+
+export const ClienteProdutoPrecoUsaPapel = {
+  B: "B",
+  I: "I",
+} as const;
+
+export interface ClienteProdutoPreco {
+  id: number;
+  clienteId: number;
+  produtoId: number;
+  descricao?: string | null;
+  preco: string;
+  dataInicialValidade: string;
+  usaPapel: ClienteProdutoPrecoUsaPapel;
+  observacoes?: string | null;
+  ativo: boolean;
+  cliente?: Cliente;
+  produto?: Produto;
+  createdAt: string;
+}
+
+export type CreatePrecoBodyUsaPapel =
+  (typeof CreatePrecoBodyUsaPapel)[keyof typeof CreatePrecoBodyUsaPapel];
+
+export const CreatePrecoBodyUsaPapel = {
+  B: "B",
+  I: "I",
+} as const;
+
+export interface CreatePrecoBody {
+  clienteId: number;
+  produtoId: number;
+  descricao?: string;
+  preco: string;
+  dataInicialValidade: string;
+  usaPapel?: CreatePrecoBodyUsaPapel;
+  observacoes?: string;
+  ativo?: boolean;
+}
+
+export type UpdatePrecoBodyUsaPapel =
+  (typeof UpdatePrecoBodyUsaPapel)[keyof typeof UpdatePrecoBodyUsaPapel];
+
+export const UpdatePrecoBodyUsaPapel = {
+  B: "B",
+  I: "I",
+} as const;
+
+export interface UpdatePrecoBody {
+  descricao?: string;
+  preco?: string;
+  dataInicialValidade?: string;
+  usaPapel?: UpdatePrecoBodyUsaPapel;
+  observacoes?: string;
+  ativo?: boolean;
+}
+
 export type DashboardResumoPorStatus = { [key: string]: number };
 
 export interface DashboardResumo {
   totalOrdens: number;
   porStatus: DashboardResumoPorStatus;
   ordensHoje: number;
-  ordensFinalizadasHoje: number;
+  ordensRetiradasHoje: number;
 }
 
 export interface PendentesPorEtapa {
+  processamento: number;
   impressao: number;
   envelopamento: number;
   embalagem: number;
-  despacho: number;
-  processamento: number;
+  retirada: number;
 }
 
 export type ListProducaoParams = {
@@ -239,4 +302,15 @@ export type ListProducaoParams = {
   clienteId?: number;
   dataInicio?: string;
   dataFim?: string;
+};
+
+export type ListPrecosParams = {
+  clienteId?: number;
+  produtoId?: number;
+};
+
+export type GetPrecoVigenteParams = {
+  clienteId: number;
+  produtoId: number;
+  data: string;
 };

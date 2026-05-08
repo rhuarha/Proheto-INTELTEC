@@ -14,30 +14,24 @@ import Processamento from "@/pages/processamento";
 import Impressao from "@/pages/impressao";
 import Envelopamento from "@/pages/envelopamento";
 import Embalagem from "@/pages/embalagem";
-import Despacho from "@/pages/despacho";
+import Retirada from "@/pages/retirada";
 import MinhasOrdens from "@/pages/minhas-ordens";
 
 // Admin Pages
 import Usuarios from "@/pages/admin/usuarios";
 import Clientes from "@/pages/admin/clientes";
 import Produtos from "@/pages/admin/produtos";
+import Precos from "@/pages/admin/precos";
 
 const queryClient = new QueryClient();
 
-// Protected Route Wrapper
 function ProtectedRoute({ component: Component, allowedRoles }: { component: any, allowedRoles?: string[] }) {
   const { user, isLoading } = useAuth();
-
-  if (isLoading) return null; // Let Layout handle loading state
-  
-  if (!user) {
-    return <Redirect to="/login" />;
-  }
-
+  if (isLoading) return null;
+  if (!user) return <Redirect to="/login" />;
   if (allowedRoles && !allowedRoles.includes(user.role)) {
     return <Redirect to={user.role === 'cliente' ? '/minhas-ordens' : '/dashboard'} />;
   }
-
   return <Component />;
 }
 
@@ -54,13 +48,11 @@ function Router() {
         <Route path="/login">
           {user ? <Redirect to={user.role === 'cliente' ? '/minhas-ordens' : '/dashboard'} /> : <Login />}
         </Route>
-        
-        {/* Redirect root based on role */}
+
         <Route path="/">
           {user ? <Redirect to={user.role === 'cliente' ? '/minhas-ordens' : '/dashboard'} /> : <Redirect to="/login" />}
         </Route>
 
-        {/* Admin / Apontador routes */}
         <Route path="/dashboard">
           <ProtectedRoute component={Dashboard} allowedRoles={['admin', 'apontador']} />
         </Route>
@@ -79,11 +71,10 @@ function Router() {
         <Route path="/embalagem">
           <ProtectedRoute component={Embalagem} allowedRoles={['admin', 'apontador']} />
         </Route>
-        <Route path="/despacho">
-          <ProtectedRoute component={Despacho} allowedRoles={['admin', 'apontador']} />
+        <Route path="/retirada">
+          <ProtectedRoute component={Retirada} allowedRoles={['admin', 'apontador']} />
         </Route>
 
-        {/* Admin only routes */}
         <Route path="/admin/usuarios">
           <ProtectedRoute component={Usuarios} allowedRoles={['admin']} />
         </Route>
@@ -93,12 +84,14 @@ function Router() {
         <Route path="/admin/produtos">
           <ProtectedRoute component={Produtos} allowedRoles={['admin']} />
         </Route>
+        <Route path="/admin/precos">
+          <ProtectedRoute component={Precos} allowedRoles={['admin', 'apontador']} />
+        </Route>
 
-        {/* Cliente specific routes */}
         <Route path="/minhas-ordens">
           <ProtectedRoute component={MinhasOrdens} />
         </Route>
-        
+
         <Route component={NotFound} />
       </Switch>
     </Layout>

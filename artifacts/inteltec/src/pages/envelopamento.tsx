@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { 
-  useListEnvelopamentoItems, 
+import {
+  useListEnvelopamentoItems,
   useMarcarEnvelopado,
-  getListEnvelopamentoItemsQueryKey
+  getListEnvelopamentoItemsQueryKey,
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
+import { format } from "date-fns";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -37,26 +38,26 @@ export default function EnvelopamentoPage() {
   };
 
   const toggleSelect = (id: number) => {
-    if (selectedIds.includes(id)) {
-      setSelectedIds(selectedIds.filter(i => i !== id));
-    } else {
-      setSelectedIds([...selectedIds, id]);
-    }
+    setSelectedIds(prev =>
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
   };
 
   const handleMarcar = () => {
     if (selectedIds.length === 0) return;
-    
-    marcarMutation.mutate({ data: { itemIds: selectedIds } }, {
-      onSuccess: () => {
-        toast({ title: `${selectedIds.length} itens marcados como envelopados` });
-        setSelectedIds([]);
-        queryClient.invalidateQueries({ queryKey: getListEnvelopamentoItemsQueryKey() });
-      },
-      onError: () => {
-        toast({ title: "Erro ao atualizar", variant: "destructive" });
+    marcarMutation.mutate(
+      { data: { itemIds: selectedIds } },
+      {
+        onSuccess: () => {
+          toast({ title: `${selectedIds.length} item(ns) marcado(s) como envelopado(s)` });
+          setSelectedIds([]);
+          queryClient.invalidateQueries({ queryKey: getListEnvelopamentoItemsQueryKey() });
+        },
+        onError: () => {
+          toast({ title: "Erro ao atualizar", variant: "destructive" });
+        },
       }
-    });
+    );
   };
 
   return (
@@ -66,8 +67,8 @@ export default function EnvelopamentoPage() {
           <h1 className="text-3xl font-bold tracking-tight">Envelopamento</h1>
           <p className="text-muted-foreground">Itens prontos para envelopamento.</p>
         </div>
-        <Button 
-          onClick={handleMarcar} 
+        <Button
+          onClick={handleMarcar}
           disabled={selectedIds.length === 0 || marcarMutation.isPending}
           className="gap-2 bg-indigo-600 hover:bg-indigo-700"
         >
@@ -94,29 +95,35 @@ export default function EnvelopamentoPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-12 text-center">
-                    <Checkbox 
-                      checked={items?.length > 0 && selectedIds.length === items.length}
+                    <Checkbox
+                      checked={!!(items && items.length > 0 && selectedIds.length === items.length)}
                       onCheckedChange={toggleSelectAll}
                     />
                   </TableHead>
                   <TableHead>Ordem</TableHead>
                   <TableHead>Cliente</TableHead>
                   <TableHead>Produto</TableHead>
-                  <TableHead className="text-right">Quantidade</TableHead>
+                  <TableHead>Data/Hora</TableHead>
+                  <TableHead className="text-right">Qtd</TableHead>
+                  <TableHead className="text-right">Mult.</TableHead>
+                  <TableHead className="text-right">Total</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {items?.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                    <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                       Nenhum item na fila de envelopamento.
                     </TableCell>
                   </TableRow>
                 ) : (
-                  items?.map((item) => (
-                    <TableRow key={item.id} className={selectedIds.includes(item.id) ? "bg-muted/50" : ""}>
+                  items?.map(item => (
+                    <TableRow
+                      key={item.id}
+                      className={selectedIds.includes(item.id) ? "bg-muted/50" : ""}
+                    >
                       <TableCell className="text-center">
-                        <Checkbox 
+                        <Checkbox
                           checked={selectedIds.includes(item.id)}
                           onCheckedChange={() => toggleSelect(item.id)}
                         />
@@ -126,6 +133,14 @@ export default function EnvelopamentoPage() {
                       </TableCell>
                       <TableCell>{item.producao.cliente.nomeRazaoSocial}</TableCell>
                       <TableCell>{item.produto.descricao}</TableCell>
+                      <TableCell className="text-muted-foreground text-sm">
+                        {format(new Date(item.producao.dataRecebimento), "dd/MM/yyyy")}
+                        {(item.producao as any).horaRecebimento
+                          ? ` ${(item.producao as any).horaRecebimento}`
+                          : ""}
+                      </TableCell>
+                      <TableCell className="text-right">{item.quantidade}</TableCell>
+                      <TableCell className="text-right">{item.multiplicador}</TableCell>
                       <TableCell className="text-right font-medium">
                         {item.quantidade * item.multiplicador}
                       </TableCell>

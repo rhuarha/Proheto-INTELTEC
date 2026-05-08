@@ -27,11 +27,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Package, CalendarIcon } from "lucide-react";
+import { Package } from "lucide-react";
 
 const recebimentoSchema = z.object({
   clienteId: z.coerce.number().min(1, "Selecione um cliente"),
   dataRecebimento: z.string().min(1, "Data é obrigatória"),
+  horaRecebimento: z.string().optional(),
   observacoes: z.string().optional(),
 });
 
@@ -42,38 +43,39 @@ export default function RecebimentoPage() {
   const { toast } = useToast();
   const [, setLocation] = useLocation();
 
+  const now = new Date();
   const form = useForm<z.infer<typeof recebimentoSchema>>({
     resolver: zodResolver(recebimentoSchema),
     defaultValues: {
-      dataRecebimento: format(new Date(), "yyyy-MM-dd"),
+      dataRecebimento: format(now, "yyyy-MM-dd"),
+      horaRecebimento: format(now, "HH:mm"),
       observacoes: "",
     },
   });
 
   function onSubmit(values: z.infer<typeof recebimentoSchema>) {
-    // Add time part to ISO string for backend
-    const formattedData = new Date(values.dataRecebimento).toISOString();
-
-    createProducao.mutate({
-      data: {
-        ...values,
-        dataRecebimento: formattedData
-      }
-    }, {
-      onSuccess: (data) => {
-        toast({ title: "Ordem de Produção criada!" });
-        queryClient.invalidateQueries({ queryKey: getListProducaoQueryKey() });
-        // Redirect to processamento page to add items
-        setLocation(`/processamento`);
+    createProducao.mutate(
+      {
+        data: {
+          ...values,
+          dataRecebimento: new Date(values.dataRecebimento).toISOString(),
+        },
       },
-      onError: (error: any) => {
-        toast({
-          title: "Erro ao criar",
-          description: error?.data?.message || "Ocorreu um erro.",
-          variant: "destructive",
-        });
+      {
+        onSuccess: () => {
+          toast({ title: "Ordem de Produção criada!" });
+          queryClient.invalidateQueries({ queryKey: getListProducaoQueryKey() });
+          setLocation("/processamento");
+        },
+        onError: (error: any) => {
+          toast({
+            title: "Erro ao criar",
+            description: error?.data?.message || "Ocorreu um erro.",
+            variant: "destructive",
+          });
+        },
       }
-    });
+    );
   }
 
   return (
@@ -89,24 +91,26 @@ export default function RecebimentoPage() {
             <Package className="h-5 w-5" />
             Nova Ordem de Produção
           </CardTitle>
-          <CardDescription>
-            Preencha os dados básicos para iniciar o controle.
-          </CardDescription>
+          <CardDescription>Preencha os dados básicos para iniciar o controle.</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              
               <FormField
                 control={form.control}
                 name="clienteId"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Cliente</FormLabel>
-                    <Select onValueChange={(val) => field.onChange(parseInt(val))} value={field.value?.toString() || ""}>
+                    <Select
+                      onValueChange={val => field.onChange(parseInt(val))}
+                      value={field.value?.toString() || ""}
+                    >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder={loadingClientes ? "Carregando..." : "Selecione o cliente"} />
+                          <SelectValue
+                            placeholder={loadingClientes ? "Carregando..." : "Selecione o cliente"}
+                          />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -122,19 +126,34 @@ export default function RecebimentoPage() {
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="dataRecebimento"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Data de Recebimento</FormLabel>
-                    <FormControl>
-                      <Input type="date" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="dataRecebimento"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Data de Recebimento</FormLabel>
+                      <FormControl>
+                        <Input type="date" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="horaRecebimento"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Hora de Recebimento</FormLabel>
+                      <FormControl>
+                        <Input type="time" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
               <FormField
                 control={form.control}
@@ -143,7 +162,7 @@ export default function RecebimentoPage() {
                   <FormItem>
                     <FormLabel>Observações (Opcional)</FormLabel>
                     <FormControl>
-                      <Textarea 
+                      <Textarea
                         placeholder="Detalhes adicionais sobre o material recebido..."
                         className="resize-none"
                         {...field}

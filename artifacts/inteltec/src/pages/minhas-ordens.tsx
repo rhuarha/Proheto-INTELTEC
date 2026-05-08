@@ -2,7 +2,7 @@ import { useListProducao } from "@workspace/api-client-react";
 import { useAuth } from "@/lib/auth";
 import { format } from "date-fns";
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -17,10 +17,7 @@ import { ClipboardList, Package } from "lucide-react";
 
 export default function MinhasOrdensPage() {
   const { user } = useAuth();
-  
-  // Se o usuário for cliente e tiver clienteId, filtramos as ordens dele.
-  // Se for admin/apontador, o hook buscaria tudo (mas essa rota é focada no cliente, 
-  // embora admin possa acessá-la também).
+
   const { data: ordens, isLoading } = useListProducao(
     user?.clienteId ? { clienteId: user.clienteId } : undefined
   );
@@ -51,8 +48,8 @@ export default function MinhasOrdensPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Ordem #</TableHead>
-                  <TableHead>Data</TableHead>
-                  <TableHead>Itens</TableHead>
+                  <TableHead>Data Recebimento</TableHead>
+                  <TableHead>Hora</TableHead>
                   <TableHead>Status</TableHead>
                 </TableRow>
               </TableHeader>
@@ -67,14 +64,14 @@ export default function MinhasOrdensPage() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  ordens?.map((ordem) => (
+                  ordens?.map(ordem => (
                     <TableRow key={ordem.id}>
                       <TableCell className="font-medium">#{ordem.id}</TableCell>
-                      <TableCell>{format(new Date(ordem.dataRecebimento), "dd/MM/yyyy")}</TableCell>
+                      <TableCell>
+                        {format(new Date(ordem.dataRecebimento), "dd/MM/yyyy")}
+                      </TableCell>
                       <TableCell className="text-muted-foreground">
-                        {/* We don't have items array directly in the list endpoint unless expanded,
-                            but we display simple status for now */}
-                        Ver detalhes (em breve)
+                        {(ordem as any).horaRecebimento || "—"}
                       </TableCell>
                       <TableCell>
                         <StatusBadge status={ordem.status} />

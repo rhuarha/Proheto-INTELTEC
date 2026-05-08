@@ -43,6 +43,7 @@ const produtoSchema = z.object({
   descricao: z.string().min(2, "Descrição é obrigatória"),
   impresso: z.boolean().default(false),
   envelopado: z.boolean().default(false),
+  exigeProcessamento: z.boolean().default(true),
 });
 
 export default function ProdutosPage() {
@@ -66,9 +67,7 @@ export default function ProdutosPage() {
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Criar Novo Produto</DialogTitle>
-              <DialogDescription>
-                Adicione um novo produto ao catálogo.
-              </DialogDescription>
+              <DialogDescription>Adicione um novo produto ao catálogo.</DialogDescription>
             </DialogHeader>
             <ProdutoForm onSuccess={() => setIsOpen(false)} />
           </DialogContent>
@@ -94,8 +93,9 @@ export default function ProdutosPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Descrição</TableHead>
-                  <TableHead className="text-center">Requer Impressão?</TableHead>
-                  <TableHead className="text-center">Requer Envelopamento?</TableHead>
+                  <TableHead className="text-center">Processamento?</TableHead>
+                  <TableHead className="text-center">Impressão?</TableHead>
+                  <TableHead className="text-center">Envelopamento?</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead className="text-right">Ações</TableHead>
                 </TableRow>
@@ -103,14 +103,21 @@ export default function ProdutosPage() {
               <TableBody>
                 {produtos?.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                    <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                       Nenhum produto encontrado.
                     </TableCell>
                   </TableRow>
                 ) : (
-                  produtos?.map((produto) => (
+                  produtos?.map(produto => (
                     <TableRow key={produto.id} data-testid={`row-produto-${produto.id}`}>
                       <TableCell className="font-medium">{produto.descricao}</TableCell>
+                      <TableCell className="text-center">
+                        {(produto as any).exigeProcessamento !== false ? (
+                          <Check className="h-4 w-4 text-emerald-500 mx-auto" />
+                        ) : (
+                          <X className="h-4 w-4 text-muted-foreground mx-auto" />
+                        )}
+                      </TableCell>
                       <TableCell className="text-center">
                         {produto.impresso ? (
                           <Check className="h-4 w-4 text-emerald-500 mx-auto" />
@@ -158,24 +165,28 @@ function ProdutoForm({ onSuccess }: { onSuccess: () => void }) {
       descricao: "",
       impresso: false,
       envelopado: false,
+      exigeProcessamento: true,
     },
   });
 
   function onSubmit(values: z.infer<typeof produtoSchema>) {
-    createProduto.mutate({ data: values }, {
-      onSuccess: () => {
-        toast({ title: "Produto criado com sucesso!" });
-        queryClient.invalidateQueries({ queryKey: getListProdutosQueryKey() });
-        onSuccess();
-      },
-      onError: (error: any) => {
-        toast({
-          title: "Erro ao criar produto",
-          description: error?.data?.message || "Verifique os dados e tente novamente.",
-          variant: "destructive",
-        });
+    createProduto.mutate(
+      { data: values },
+      {
+        onSuccess: () => {
+          toast({ title: "Produto criado com sucesso!" });
+          queryClient.invalidateQueries({ queryKey: getListProdutosQueryKey() });
+          onSuccess();
+        },
+        onError: (error: any) => {
+          toast({
+            title: "Erro ao criar produto",
+            description: error?.data?.message || "Verifique os dados e tente novamente.",
+            variant: "destructive",
+          });
+        },
       }
-    });
+    );
   }
 
   return (
@@ -194,24 +205,35 @@ function ProdutoForm({ onSuccess }: { onSuccess: () => void }) {
             </FormItem>
           )}
         />
-        
-        <div className="space-y-4 pt-2">
+
+        <div className="space-y-3 pt-2">
+          <FormField
+            control={form.control}
+            name="exigeProcessamento"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                <FormControl>
+                  <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel>Requer Processamento</FormLabel>
+                  <FormDescription>Marque se este produto passa pela etapa de processamento</FormDescription>
+                </div>
+              </FormItem>
+            )}
+          />
+
           <FormField
             control={form.control}
             name="impresso"
             render={({ field }) => (
               <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
                 <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
+                  <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                 </FormControl>
                 <div className="space-y-1 leading-none">
                   <FormLabel>Requer Impressão</FormLabel>
-                  <FormDescription>
-                    Marque se este produto passa pela etapa de impressão
-                  </FormDescription>
+                  <FormDescription>Marque se este produto passa pela etapa de impressão</FormDescription>
                 </div>
               </FormItem>
             )}
@@ -223,16 +245,11 @@ function ProdutoForm({ onSuccess }: { onSuccess: () => void }) {
             render={({ field }) => (
               <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
                 <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
+                  <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                 </FormControl>
                 <div className="space-y-1 leading-none">
                   <FormLabel>Requer Envelopamento</FormLabel>
-                  <FormDescription>
-                    Marque se este produto passa pela etapa de envelopamento
-                  </FormDescription>
+                  <FormDescription>Marque se este produto passa pela etapa de envelopamento</FormDescription>
                 </div>
               </FormItem>
             )}

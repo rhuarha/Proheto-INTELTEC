@@ -5,8 +5,9 @@ import { z } from "zod/v4";
 export const produtosTable = pgTable("produtos", {
   id: serial("id").primaryKey(),
   descricao: text("descricao").notNull(),
-  impresso: boolean("impresso").notNull().default(false),
-  envelopado: boolean("envelopado").notNull().default(false),
+  exigeProcessamento: boolean("exige_processamento").notNull().default(true),
+  impresso: boolean("impresso").notNull().default(true),
+  envelopado: boolean("envelopado").notNull().default(true),
   ativo: boolean("ativo").notNull().default(true),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),

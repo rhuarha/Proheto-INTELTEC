@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { db, producaoTable, producaoItemsTable, produtosTable, clientesTable, logsTable } from "@workspace/db";
-import { eq, and, sql } from "drizzle-orm";
+import { eq, and, sql, inArray } from "drizzle-orm";
 import { requireAuth, requireRole } from "../middlewares/auth";
 import {
   CreateProducaoBody,
@@ -10,19 +10,16 @@ import {
   MarcarImpressoBody,
   MarcarEnvelopadoBody,
   MarcarEmbaladoBody,
-  MarcarDespachadoBody,
+  MarcarRetiradoBody,
   ListProducaoQueryParams,
 } from "@workspace/api-zod";
 
 const router = Router();
 
+// ============ HELPERS ============
+
 async function getClienteById(id: number) {
   const results = await db.select().from(clientesTable).where(eq(clientesTable.id, id)).limit(1);
-  return results[0] ?? null;
-}
-
-async function getProdutoById(id: number) {
-  const results = await db.select().from(produtosTable).where(eq(produtosTable.id, id)).limit(1);
   return results[0] ?? null;
 }
 
@@ -43,11 +40,61 @@ async function getItemWithProdutoAndProducao(itemId: number) {
 
   if (!items[0]) return null;
   const { item, produto, producao, cliente } = items[0];
-  return {
-    ...item,
-    produto,
-    producao: { ...producao, cliente },
-  };
+  return { ...item, produto, producao: { ...producao, cliente } };
+}
+
+// Centralized function to recalculate and update the status of a production order
+async function recalcularStatusProducao(producaoId: number): Promise<void> {
+  const orderResult = await db
+    .select({ status: producaoTable.status })
+    .from(producaoTable)
+    .where(eq(producaoTable.id, producaoId))
+    .limit(1);
+
+  if (!orderResult[0] || orderResult[0].status === "cancelada") return;
+
+  const items = await db
+    .select({ item: producaoItemsTable, produto: produtosTable })
+    .from(producaoItemsTable)
+    .innerJoin(produtosTable, eq(producaoItemsTable.produtoId, produtosTable.id))
+    .where(eq(producaoItemsTable.producaoId, producaoId));
+
+  if (items.length === 0) return;
+
+  let newStatus: string;
+
+  // 7. All items retirado
+  if (items.every(({ item }) => item.retirado)) {
+    newStatus = "retirada";
+  }
+  // 6. All items embalado
+  else if (items.every(({ item }) => item.embalado)) {
+    newStatus = "embalada";
+  }
+  else {
+    const needEnvelop = items.filter(({ produto }) => produto.envelopado);
+    const needPrint = items.filter(({ produto }) => produto.impresso);
+
+    const allEnveloped = needEnvelop.length === 0 || needEnvelop.every(({ item }) => item.envelopado);
+    const allPrinted = needPrint.length === 0 || needPrint.every(({ item }) => item.impresso);
+
+    // 5. All that need envelopamento are envelopado (and at least one needs it)
+    if (allEnveloped && needEnvelop.length > 0) {
+      newStatus = "envelopada";
+    }
+    // 4. All that need impressao are impresso (and at least one needs it)
+    else if (allPrinted && needPrint.length > 0) {
+      newStatus = "impressa";
+    }
+    // 3. Order has items but stages not finished - stay processada
+    else {
+      return;
+    }
+  }
+
+  await db.update(producaoTable)
+    .set({ status: newStatus as typeof producaoTable.$inferSelect.status })
+    .where(eq(producaoTable.id, producaoId));
 }
 
 // ============ PRODUCAO CRUD ============
@@ -56,17 +103,8 @@ router.get("/producao", requireAuth, async (req, res) => {
   const parsed = ListProducaoQueryParams.safeParse(req.query);
   const filters = parsed.data;
 
-  let query = db
-    .select({
-      producao: producaoTable,
-      cliente: clientesTable,
-    })
-    .from(producaoTable)
-    .innerJoin(clientesTable, eq(producaoTable.clienteId, clientesTable.id));
-
   const conditions = [];
 
-  // Clientes só veem suas próprias ordens
   if (req.user!.role === "cliente" && req.user!.clienteId) {
     conditions.push(eq(producaoTable.clienteId, req.user!.clienteId));
   } else if (filters?.clienteId) {
@@ -74,21 +112,21 @@ router.get("/producao", requireAuth, async (req, res) => {
   }
 
   if (filters?.status) {
-    conditions.push(eq(producaoTable.status, filters.status));
+    // Support comma-separated status filter
+    const statuses = filters.status.split(",").map((s: string) => s.trim());
+    if (statuses.length === 1) {
+      conditions.push(eq(producaoTable.status, statuses[0] as typeof producaoTable.$inferSelect.status));
+    } else if (statuses.length > 1) {
+      conditions.push(inArray(producaoTable.status, statuses as Array<typeof producaoTable.$inferSelect.status>));
+    }
   }
 
-  const results = conditions.length > 0
-    ? await db
-        .select({ producao: producaoTable, cliente: clientesTable })
-        .from(producaoTable)
-        .innerJoin(clientesTable, eq(producaoTable.clienteId, clientesTable.id))
-        .where(conditions.length === 1 ? conditions[0] : and(...conditions))
-        .orderBy(sql`${producaoTable.createdAt} desc`)
-    : await db
-        .select({ producao: producaoTable, cliente: clientesTable })
-        .from(producaoTable)
-        .innerJoin(clientesTable, eq(producaoTable.clienteId, clientesTable.id))
-        .orderBy(sql`${producaoTable.createdAt} desc`);
+  const results = await db
+    .select({ producao: producaoTable, cliente: clientesTable })
+    .from(producaoTable)
+    .innerJoin(clientesTable, eq(producaoTable.clienteId, clientesTable.id))
+    .where(conditions.length > 0 ? (conditions.length === 1 ? conditions[0] : and(...conditions)) : undefined)
+    .orderBy(sql`${producaoTable.createdAt} desc`);
 
   res.json(results.map(({ producao, cliente }) => ({ ...producao, cliente })));
 });
@@ -109,8 +147,9 @@ router.post("/producao", requireAuth, requireRole("admin", "apontador"), async (
   const inserted = await db.insert(producaoTable).values({
     clienteId: parsed.data.clienteId,
     dataRecebimento: parsed.data.dataRecebimento,
+    horaRecebimento: parsed.data.horaRecebimento ?? null,
     observacoes: parsed.data.observacoes ?? null,
-    status: "RECEBIDA",
+    status: "recebida",
   }).returning();
 
   await db.insert(logsTable).values({
@@ -137,7 +176,6 @@ router.get("/producao/:id", requireAuth, async (req, res) => {
 
   if (!results[0]) { res.status(404).json({ error: "Not Found" }); return; }
 
-  // Check client access
   if (req.user!.role === "cliente" && results[0].producao.clienteId !== req.user!.clienteId) {
     res.status(403).json({ error: "Forbidden" }); return;
   }
@@ -171,8 +209,9 @@ router.put("/producao/:id", requireAuth, requireRole("admin", "apontador"), asyn
   const updates: Partial<typeof producaoTable.$inferInsert> = {};
   if (parsed.data.clienteId !== undefined) updates.clienteId = parsed.data.clienteId;
   if (parsed.data.dataRecebimento !== undefined) updates.dataRecebimento = parsed.data.dataRecebimento;
+  if (parsed.data.horaRecebimento !== undefined) updates.horaRecebimento = parsed.data.horaRecebimento;
   if (parsed.data.observacoes !== undefined) updates.observacoes = parsed.data.observacoes;
-  if (parsed.data.status !== undefined) updates.status = parsed.data.status;
+  if (parsed.data.status !== undefined) updates.status = parsed.data.status as typeof producaoTable.$inferSelect.status;
 
   const updated = await db.update(producaoTable).set(updates).where(eq(producaoTable.id, id)).returning();
   if (!updated[0]) { res.status(404).json({ error: "Not Found" }); return; }
@@ -194,7 +233,6 @@ router.post("/producao/:id/concluir-processamento", requireAuth, requireRole("ad
   const id = parseInt(req.params.id);
   if (isNaN(id)) { res.status(400).json({ error: "Bad Request" }); return; }
 
-  // Check has at least one item
   const itemCount = await db.select({ count: sql<number>`count(*)` })
     .from(producaoItemsTable)
     .where(eq(producaoItemsTable.producaoId, id));
@@ -205,22 +243,13 @@ router.post("/producao/:id/concluir-processamento", requireAuth, requireRole("ad
   }
 
   const updated = await db.update(producaoTable)
-    .set({ status: "PROCESSADA" })
-    .where(and(eq(producaoTable.id, id), eq(producaoTable.status, "EM_PROCESSAMENTO")))
+    .set({ status: "processada" })
+    .where(and(eq(producaoTable.id, id), eq(producaoTable.status, "recebida")))
     .returning();
 
-  // Also handle RECEBIDA -> PROCESSADA
-  const updated2 = updated.length === 0
-    ? await db.update(producaoTable)
-        .set({ status: "PROCESSADA" })
-        .where(and(eq(producaoTable.id, id), eq(producaoTable.status, "RECEBIDA")))
-        .returning()
-    : updated;
+  if (!updated[0]) { res.status(400).json({ error: "Bad Request", message: "Ordem não encontrada ou já processada" }); return; }
 
-  const final = updated2.length > 0 ? updated2 : updated;
-  if (!final[0]) { res.status(404).json({ error: "Not Found or invalid status" }); return; }
-
-  const cliente = await getClienteById(final[0].clienteId);
+  const cliente = await getClienteById(updated[0].clienteId);
 
   await db.insert(logsTable).values({
     userId: req.user!.userId,
@@ -230,7 +259,7 @@ router.post("/producao/:id/concluir-processamento", requireAuth, requireRole("ad
     descricao: `Processamento da ordem #${id} concluído`,
   });
 
-  res.json({ ...final[0], cliente });
+  res.json({ ...updated[0], cliente });
 });
 
 router.post("/producao/:id/cancelar", requireAuth, requireRole("admin"), async (req, res) => {
@@ -238,7 +267,7 @@ router.post("/producao/:id/cancelar", requireAuth, requireRole("admin"), async (
   if (isNaN(id)) { res.status(400).json({ error: "Bad Request" }); return; }
 
   const updated = await db.update(producaoTable)
-    .set({ status: "CANCELADA" })
+    .set({ status: "cancelada" })
     .where(eq(producaoTable.id, id))
     .returning();
 
@@ -289,7 +318,13 @@ router.post("/producao/:id/items", requireAuth, requireRole("admin", "apontador"
     return;
   }
 
-  // Get next item number
+  // Only allow adding items to recebida orders
+  const ordem = await db.select({ status: producaoTable.status }).from(producaoTable).where(eq(producaoTable.id, producaoId)).limit(1);
+  if (!ordem[0] || ordem[0].status !== "recebida") {
+    res.status(400).json({ error: "Bad Request", message: "Itens só podem ser adicionados a ordens com status 'recebida'" });
+    return;
+  }
+
   const countResult = await db.select({ count: sql<number>`count(*)` })
     .from(producaoItemsTable)
     .where(eq(producaoItemsTable.producaoId, producaoId));
@@ -303,11 +338,6 @@ router.post("/producao/:id/items", requireAuth, requireRole("admin", "apontador"
     itemNumero: nextItemNum,
   }).returning();
 
-  // Set order to EM_PROCESSAMENTO if RECEBIDA
-  await db.update(producaoTable)
-    .set({ status: "EM_PROCESSAMENTO" })
-    .where(and(eq(producaoTable.id, producaoId), eq(producaoTable.status, "RECEBIDA")));
-
   const result = await getItemWithProdutoAndProducao(inserted[0].id);
 
   await db.insert(logsTable).values({
@@ -315,7 +345,7 @@ router.post("/producao/:id/items", requireAuth, requireRole("admin", "apontador"
     acao: "ADD_ITEM",
     entidade: "producao_item",
     entidadeId: inserted[0].id,
-    descricao: `Item adicionado à ordem #${producaoId}`,
+    descricao: `Item ${nextItemNum} adicionado à ordem #${producaoId}`,
   });
 
   res.status(201).json(result);
@@ -340,6 +370,14 @@ router.put("/producao/:id/items/:itemId", requireAuth, requireRole("admin", "apo
   const result = await getItemWithProdutoAndProducao(itemId);
   if (!result) { res.status(404).json({ error: "Not Found" }); return; }
 
+  await db.insert(logsTable).values({
+    userId: req.user!.userId,
+    acao: "UPDATE_ITEM",
+    entidade: "producao_item",
+    entidadeId: itemId,
+    descricao: `Item #${itemId} da ordem #${producaoId} atualizado`,
+  });
+
   res.json(result);
 });
 
@@ -354,7 +392,7 @@ router.delete("/producao/:id/items/:itemId", requireAuth, requireRole("admin", "
   res.json({ success: true, message: "Item removido com sucesso" });
 });
 
-// ============ ETAPAS (Impressão, Envelopamento, Embalagem, Despacho) ============
+// ============ ETAPAS ============
 
 router.get("/impressao/items", requireAuth, requireRole("admin", "apontador"), async (req, res) => {
   const items = await db
@@ -366,6 +404,7 @@ router.get("/impressao/items", requireAuth, requireRole("admin", "apontador"), a
     .where(and(
       eq(produtosTable.impresso, true),
       eq(producaoItemsTable.impresso, false),
+      eq(producaoTable.status, "processada"),
     ));
 
   res.json(items.map(({ item, produto, producao, cliente }) => ({
@@ -377,10 +416,20 @@ router.post("/impressao/marcar", requireAuth, requireRole("admin", "apontador"),
   const parsed = MarcarImpressoBody.safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: "Bad Request" }); return; }
 
+  const affectedProducaoIds = new Set<number>();
+
   for (const itemId of parsed.data.itemIds) {
     await db.update(producaoItemsTable)
       .set({ impresso: true, dataUltimoStatus: new Date() })
       .where(eq(producaoItemsTable.id, itemId));
+
+    const item = await db.select({ producaoId: producaoItemsTable.producaoId })
+      .from(producaoItemsTable).where(eq(producaoItemsTable.id, itemId)).limit(1);
+    if (item[0]) affectedProducaoIds.add(item[0].producaoId);
+  }
+
+  for (const producaoId of affectedProducaoIds) {
+    await recalcularStatusProducao(producaoId);
   }
 
   await db.insert(logsTable).values({
@@ -403,9 +452,10 @@ router.get("/envelopamento/items", requireAuth, requireRole("admin", "apontador"
     .where(and(
       eq(produtosTable.envelopado, true),
       eq(producaoItemsTable.envelopado, false),
+      inArray(producaoTable.status, ["processada", "impressa"]),
     ));
 
-  // Filter: if product requires printing, item must be printed first
+  // If product requires printing, it must be printed first
   const filtered = items.filter(({ item, produto }) => {
     if (produto.impresso && !item.impresso) return false;
     return true;
@@ -420,10 +470,20 @@ router.post("/envelopamento/marcar", requireAuth, requireRole("admin", "apontado
   const parsed = MarcarEnvelopadoBody.safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: "Bad Request" }); return; }
 
+  const affectedProducaoIds = new Set<number>();
+
   for (const itemId of parsed.data.itemIds) {
     await db.update(producaoItemsTable)
       .set({ envelopado: true, dataUltimoStatus: new Date() })
       .where(eq(producaoItemsTable.id, itemId));
+
+    const item = await db.select({ producaoId: producaoItemsTable.producaoId })
+      .from(producaoItemsTable).where(eq(producaoItemsTable.id, itemId)).limit(1);
+    if (item[0]) affectedProducaoIds.add(item[0].producaoId);
+  }
+
+  for (const producaoId of affectedProducaoIds) {
+    await recalcularStatusProducao(producaoId);
   }
 
   await db.insert(logsTable).values({
@@ -443,9 +503,12 @@ router.get("/embalagem/items", requireAuth, requireRole("admin", "apontador"), a
     .innerJoin(produtosTable, eq(producaoItemsTable.produtoId, produtosTable.id))
     .innerJoin(producaoTable, eq(producaoItemsTable.producaoId, producaoTable.id))
     .innerJoin(clientesTable, eq(producaoTable.clienteId, clientesTable.id))
-    .where(eq(producaoItemsTable.embalado, false));
+    .where(and(
+      eq(producaoItemsTable.embalado, false),
+      inArray(producaoTable.status, ["processada", "impressa", "envelopada"]),
+    ));
 
-  // Filter: item is ready for packing only if all required prior steps are done
+  // Item is ready for packing only if all required prior steps are done
   const filtered = items.filter(({ item, produto }) => {
     if (produto.impresso && !item.impresso) return false;
     if (produto.envelopado && !item.envelopado) return false;
@@ -461,10 +524,20 @@ router.post("/embalagem/marcar", requireAuth, requireRole("admin", "apontador"),
   const parsed = MarcarEmbaladoBody.safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: "Bad Request" }); return; }
 
+  const affectedProducaoIds = new Set<number>();
+
   for (const itemId of parsed.data.itemIds) {
     await db.update(producaoItemsTable)
       .set({ embalado: true, dataUltimoStatus: new Date() })
       .where(eq(producaoItemsTable.id, itemId));
+
+    const item = await db.select({ producaoId: producaoItemsTable.producaoId })
+      .from(producaoItemsTable).where(eq(producaoItemsTable.id, itemId)).limit(1);
+    if (item[0]) affectedProducaoIds.add(item[0].producaoId);
+  }
+
+  for (const producaoId of affectedProducaoIds) {
+    await recalcularStatusProducao(producaoId);
   }
 
   await db.insert(logsTable).values({
@@ -477,64 +550,66 @@ router.post("/embalagem/marcar", requireAuth, requireRole("admin", "apontador"),
   res.json({ success: true, message: `${parsed.data.itemIds.length} item(s) marcado(s) como embalado` });
 });
 
-router.get("/despacho/items", requireAuth, requireRole("admin", "apontador"), async (req, res) => {
-  const items = await db
-    .select({ item: producaoItemsTable, produto: produtosTable, producao: producaoTable, cliente: clientesTable })
-    .from(producaoItemsTable)
-    .innerJoin(produtosTable, eq(producaoItemsTable.produtoId, produtosTable.id))
-    .innerJoin(producaoTable, eq(producaoItemsTable.producaoId, producaoTable.id))
+// Retirada - list orders ready for pickup (embalada)
+router.get("/retirada/ordens", requireAuth, requireRole("admin", "apontador"), async (req, res) => {
+  const ordens = await db
+    .select({ producao: producaoTable, cliente: clientesTable })
+    .from(producaoTable)
     .innerJoin(clientesTable, eq(producaoTable.clienteId, clientesTable.id))
-    .where(and(
-      eq(producaoItemsTable.embalado, true),
-      eq(producaoItemsTable.despachado, false),
-    ));
+    .where(eq(producaoTable.status, "embalada"))
+    .orderBy(sql`${producaoTable.updatedAt} desc`);
 
-  res.json(items.map(({ item, produto, producao, cliente }) => ({
-    ...item, produto, producao: { ...producao, cliente },
-  })));
+  const result = [];
+  for (const { producao, cliente } of ordens) {
+    const items = await db
+      .select({ item: producaoItemsTable, produto: produtosTable })
+      .from(producaoItemsTable)
+      .innerJoin(produtosTable, eq(producaoItemsTable.produtoId, produtosTable.id))
+      .where(eq(producaoItemsTable.producaoId, producao.id))
+      .orderBy(producaoItemsTable.itemNumero);
+
+    result.push({
+      ...producao,
+      cliente,
+      items: items.map(({ item, produto }) => ({
+        ...item,
+        produto,
+        producao: { ...producao, cliente },
+      })),
+    });
+  }
+
+  res.json(result);
 });
 
-router.post("/despacho/marcar", requireAuth, requireRole("admin", "apontador"), async (req, res) => {
-  const parsed = MarcarDespachadoBody.safeParse(req.body);
+router.post("/retirada/marcar", requireAuth, requireRole("admin", "apontador"), async (req, res) => {
+  const parsed = MarcarRetiradoBody.safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: "Bad Request" }); return; }
+
+  const affectedProducaoIds = new Set<number>();
 
   for (const itemId of parsed.data.itemIds) {
     await db.update(producaoItemsTable)
-      .set({ despachado: true, dataUltimoStatus: new Date() })
+      .set({ retirado: true, dataUltimoStatus: new Date() })
       .where(eq(producaoItemsTable.id, itemId));
+
+    const item = await db.select({ producaoId: producaoItemsTable.producaoId })
+      .from(producaoItemsTable).where(eq(producaoItemsTable.id, itemId)).limit(1);
+    if (item[0]) affectedProducaoIds.add(item[0].producaoId);
   }
 
-  // Check if each affected order is now fully dispatched
-  const affectedItems = await db.select()
-    .from(producaoItemsTable)
-    .where(
-      // Check for items in affected orders
-      sql`${producaoItemsTable.id} = ANY(${parsed.data.itemIds})`
-    );
-
-  const producaoIds = [...new Set(affectedItems.map(i => i.producaoId))];
-  for (const producaoId of producaoIds) {
-    const remaining = await db.select({ count: sql<number>`count(*)` })
-      .from(producaoItemsTable)
-      .where(and(
-        eq(producaoItemsTable.producaoId, producaoId),
-        eq(producaoItemsTable.despachado, false),
-      ));
-    if (Number(remaining[0].count) === 0) {
-      await db.update(producaoTable)
-        .set({ status: "FINALIZADA" })
-        .where(eq(producaoTable.id, producaoId));
-    }
+  for (const producaoId of affectedProducaoIds) {
+    await recalcularStatusProducao(producaoId);
   }
 
   await db.insert(logsTable).values({
     userId: req.user!.userId,
-    acao: "MARCAR_DESPACHADO",
+    acao: "MARCAR_RETIRADO",
     entidade: "producao_item",
-    descricao: `${parsed.data.itemIds.length} item(s) marcado(s) como despachado`,
+    descricao: `${parsed.data.itemIds.length} item(s) marcado(s) como retirado`,
   });
 
-  res.json({ success: true, message: `${parsed.data.itemIds.length} item(s) marcado(s) como despachado` });
+  res.json({ success: true, message: `${parsed.data.itemIds.length} item(s) marcado(s) como retirado` });
 });
 
 export default router;

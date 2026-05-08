@@ -6,6 +6,7 @@ import clientesRouter from "./clientes";
 import produtosRouter from "./produtos";
 import producaoRouter from "./producao";
 import dashboardRouter from "./dashboard";
+import precosRouter from "./precos";
 
 const router: IRouter = Router();
 
@@ -16,5 +17,6 @@ router.use(clientesRouter);
 router.use(produtosRouter);
 router.use(producaoRouter);
 router.use(dashboardRouter);
+router.use(precosRouter);
 
 export default router;

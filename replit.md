@@ -2,7 +2,7 @@
 
 ## Overview
 
-Full-stack production control system for INTELTEC, built as a pnpm monorepo. The system manages production orders through 6 stages: Recebimento, Processamento, Impressão, Envelopamento, Embalagem, Despacho.
+Full-stack production control system for INTELTEC, built as a pnpm monorepo. The system manages production orders through 6 stages: Recebimento, Processamento, Impressão, Envelopamento, Embalagem, Retirada.
 
 ## Stack
 
@@ -24,47 +24,52 @@ Full-stack production control system for INTELTEC, built as a pnpm monorepo. The
 |------|-------|----------|
 | admin | admin@inteltec.com.br | admin123 |
 | apontador | apontador@inteltec.com.br | apontador123 |
-| cliente | cliente@graficasp.com.br | cliente123 |
+| cliente | cliente@teste.com.br | cliente123 |
 
 ## Module Structure
 
 ### Frontend Pages (artifacts/inteltec/src/pages/)
 - `/login` — Login page (JWT auth)
-- `/dashboard` — Production overview with stats
-- `/recebimento` — Register new production orders
-- `/processamento` — Manage orders and add items
+- `/dashboard` — Production overview with stats (ordensRetiradasHoje)
+- `/recebimento` — Register new production orders (with hora)
+- `/processamento` — Manage orders, add items, price validation warning
 - `/impressao` — Mark items as printed
 - `/envelopamento` — Mark items as enveloped
 - `/embalagem` — Mark items as packed
-- `/despacho` — Mark items as dispatched
+- `/retirada` — Confirm client pickup by order (replaces Despacho)
 - `/minhas-ordens` — Client view (own orders only)
 - `/admin/usuarios` — User management (admin)
 - `/admin/clientes` — Client management (admin)
-- `/admin/produtos` — Product management (admin)
+- `/admin/produtos` — Product management (admin, includes exigeProcessamento)
+- `/admin/precos` — Price management per client/product (admin + apontador)
 
 ### API Routes (artifacts/api-server/src/routes/)
 - `auth.ts` — POST /auth/login, GET /auth/me
 - `users.ts` — CRUD users
 - `clientes.ts` — CRUD clients
-- `produtos.ts` — CRUD products
-- `producao.ts` — Production orders + items + stage endpoints
-- `dashboard.ts` — Summary and pending counts
+- `produtos.ts` — CRUD products (exigeProcessamento field)
+- `producao.ts` — Production orders + items + stage endpoints (recalcularStatusProducao)
+- `precos.ts` — CRUD prices per client+product, GET /precos/vigente
+- `dashboard.ts` — Summary (ordensRetiradasHoje) and pending counts (retirada)
 
 ### Database Schema (lib/db/src/schema/)
 - `clientes.ts` — clientes table
 - `users.ts` — users table (references clientes)
-- `produtos.ts` — produtos table
-- `producao.ts` — producao table (references clientes)
-- `producaoItems.ts` — producao_item table
+- `produtos.ts` — produtos table (exigeProcessamento boolean)
+- `producao.ts` — producao table (horaRecebimento added, lowercase status enum)
+- `producaoItems.ts` — producao_item table (retirado field, multiplicador integer)
+- `clienteProdutoPreco.ts` — cliente_produto_preco table (new)
 - `logs.ts` — logs table
 
 ## Production Order Status Flow
 
 ```
-RECEBIDA → EM_PROCESSAMENTO → PROCESSADA → EM_PRODUCAO → EMBALADA → FINALIZADA
-                                                                 ↓
-                                                           CANCELADA
+recebida → processada → impressa → envelopada → embalada → retirada
+                                                               ↓
+                                                          cancelada
 ```
+
+All status values are lowercase. Transitions are calculated by `recalcularStatusProducao()` in `producao.ts` based on item flags.
 
 ## Key Commands
 
@@ -78,7 +83,10 @@ RECEBIDA → EM_PROCESSAMENTO → PROCESSADA → EM_PRODUCAO → EMBALADA → FI
 - JWT tokens stored in localStorage as `inteltec_token`
 - `setAuthTokenGetter` is called at app startup to inject auth headers automatically
 - Role-based route protection: admin/apontador see production stages, cliente sees only their orders
+- Cadastros dropdown in nav is now visible to both admin and apontador; Preços accessible to both
+- Price validation: after adding an item in processamento, if no vigente price exists, a warning form appears inline
 - No physical deletion — soft delete pattern where applicable
 - All actions are logged to the `logs` table
+- `usaPapel` enum values are only "B" (Bobina) and "I" (Impresso) — no "N" in the generated type
 
 See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details.

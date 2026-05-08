@@ -3,7 +3,7 @@
  * Do not edit manually.
  * Api
  * INTELTEC Production Control API
- * OpenAPI spec version: 0.1.0
+ * OpenAPI spec version: 0.2.0
  */
 import { useMutation, useQuery } from "@tanstack/react-query";
 import type {
@@ -18,14 +18,18 @@ import type {
 
 import type {
   Cliente,
+  ClienteProdutoPreco,
   CreateClienteBody,
+  CreatePrecoBody,
   CreateProducaoBody,
   CreateProducaoItemBody,
   CreateProdutoBody,
   CreateUserBody,
   DashboardResumo,
   ErrorResponse,
+  GetPrecoVigenteParams,
   HealthStatus,
+  ListPrecosParams,
   ListProducaoParams,
   LoginBody,
   LoginResponse,
@@ -37,6 +41,7 @@ import type {
   Produto,
   SuccessResponse,
   UpdateClienteBody,
+  UpdatePrecoBody,
   UpdateProducaoBody,
   UpdateProducaoItemBody,
   UpdateProdutoBody,
@@ -1617,7 +1622,7 @@ export const useUpdateProducao = <
 };
 
 /**
- * @summary Conclude processing stage and advance order status
+ * @summary Conclude processing stage and advance order status to processada
  */
 export const getConcluirProcessamentoUrl = (id: number) => {
   return `/api/producao/${id}/concluir-processamento`;
@@ -1678,7 +1683,7 @@ export type ConcluirProcessamentoMutationResult = NonNullable<
 export type ConcluirProcessamentoMutationError = ErrorType<unknown>;
 
 /**
- * @summary Conclude processing stage and advance order status
+ * @summary Conclude processing stage and advance order status to processada
  */
 export const useConcluirProcessamento = <
   TError = ErrorType<unknown>,
@@ -2135,7 +2140,7 @@ export const useDeleteProducaoItem = <
 };
 
 /**
- * @summary List items pending printing (produto.impresso=true, not yet printed)
+ * @summary List items pending printing (produto.impresso=true, not yet printed, order is processada)
  */
 export const getListImpressaoItemsUrl = () => {
   return `/api/impressao/items`;
@@ -2186,7 +2191,7 @@ export type ListImpressaoItemsQueryResult = NonNullable<
 export type ListImpressaoItemsQueryError = ErrorType<unknown>;
 
 /**
- * @summary List items pending printing (produto.impresso=true, not yet printed)
+ * @summary List items pending printing (produto.impresso=true, not yet printed, order is processada)
  */
 
 export function useListImpressaoItems<
@@ -2622,31 +2627,31 @@ export const useMarcarEmbalado = <
 };
 
 /**
- * @summary List items ready for dispatch (packed but not dispatched)
+ * @summary List orders with status embalada (ready for pickup)
  */
-export const getListDespachoItemsUrl = () => {
-  return `/api/despacho/items`;
+export const getListRetiradaOrdensUrl = () => {
+  return `/api/retirada/ordens`;
 };
 
-export const listDespachoItems = async (
+export const listRetiradaOrdens = async (
   options?: RequestInit,
-): Promise<ProducaoItemWithProduto[]> => {
-  return customFetch<ProducaoItemWithProduto[]>(getListDespachoItemsUrl(), {
+): Promise<ProducaoDetail[]> => {
+  return customFetch<ProducaoDetail[]>(getListRetiradaOrdensUrl(), {
     ...options,
     method: "GET",
   });
 };
 
-export const getListDespachoItemsQueryKey = () => {
-  return [`/api/despacho/items`] as const;
+export const getListRetiradaOrdensQueryKey = () => {
+  return [`/api/retirada/ordens`] as const;
 };
 
-export const getListDespachoItemsQueryOptions = <
-  TData = Awaited<ReturnType<typeof listDespachoItems>>,
+export const getListRetiradaOrdensQueryOptions = <
+  TData = Awaited<ReturnType<typeof listRetiradaOrdens>>,
   TError = ErrorType<unknown>,
 >(options?: {
   query?: UseQueryOptions<
-    Awaited<ReturnType<typeof listDespachoItems>>,
+    Awaited<ReturnType<typeof listRetiradaOrdens>>,
     TError,
     TData
   >;
@@ -2654,40 +2659,40 @@ export const getListDespachoItemsQueryOptions = <
 }) => {
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getListDespachoItemsQueryKey();
+  const queryKey = queryOptions?.queryKey ?? getListRetiradaOrdensQueryKey();
 
   const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof listDespachoItems>>
-  > = ({ signal }) => listDespachoItems({ signal, ...requestOptions });
+    Awaited<ReturnType<typeof listRetiradaOrdens>>
+  > = ({ signal }) => listRetiradaOrdens({ signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof listDespachoItems>>,
+    Awaited<ReturnType<typeof listRetiradaOrdens>>,
     TError,
     TData
   > & { queryKey: QueryKey };
 };
 
-export type ListDespachoItemsQueryResult = NonNullable<
-  Awaited<ReturnType<typeof listDespachoItems>>
+export type ListRetiradaOrdensQueryResult = NonNullable<
+  Awaited<ReturnType<typeof listRetiradaOrdens>>
 >;
-export type ListDespachoItemsQueryError = ErrorType<unknown>;
+export type ListRetiradaOrdensQueryError = ErrorType<unknown>;
 
 /**
- * @summary List items ready for dispatch (packed but not dispatched)
+ * @summary List orders with status embalada (ready for pickup)
  */
 
-export function useListDespachoItems<
-  TData = Awaited<ReturnType<typeof listDespachoItems>>,
+export function useListRetiradaOrdens<
+  TData = Awaited<ReturnType<typeof listRetiradaOrdens>>,
   TError = ErrorType<unknown>,
 >(options?: {
   query?: UseQueryOptions<
-    Awaited<ReturnType<typeof listDespachoItems>>,
+    Awaited<ReturnType<typeof listRetiradaOrdens>>,
     TError,
     TData
   >;
   request?: SecondParameter<typeof customFetch>;
 }): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-  const queryOptions = getListDespachoItemsQueryOptions(options);
+  const queryOptions = getListRetiradaOrdensQueryOptions(options);
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
     queryKey: QueryKey;
@@ -2697,17 +2702,17 @@ export function useListDespachoItems<
 }
 
 /**
- * @summary Mark items as dispatched
+ * @summary Mark items as picked up (retirado)
  */
-export const getMarcarDespachadoUrl = () => {
-  return `/api/despacho/marcar`;
+export const getMarcarRetiradoUrl = () => {
+  return `/api/retirada/marcar`;
 };
 
-export const marcarDespachado = async (
+export const marcarRetirado = async (
   marcarItemsBody: MarcarItemsBody,
   options?: RequestInit,
 ): Promise<SuccessResponse> => {
-  return customFetch<SuccessResponse>(getMarcarDespachadoUrl(), {
+  return customFetch<SuccessResponse>(getMarcarRetiradoUrl(), {
     ...options,
     method: "POST",
     headers: { "Content-Type": "application/json", ...options?.headers },
@@ -2715,24 +2720,24 @@ export const marcarDespachado = async (
   });
 };
 
-export const getMarcarDespachadoMutationOptions = <
+export const getMarcarRetiradoMutationOptions = <
   TError = ErrorType<unknown>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof marcarDespachado>>,
+    Awaited<ReturnType<typeof marcarRetirado>>,
     TError,
     { data: BodyType<MarcarItemsBody> },
     TContext
   >;
   request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof marcarDespachado>>,
+  Awaited<ReturnType<typeof marcarRetirado>>,
   TError,
   { data: BodyType<MarcarItemsBody> },
   TContext
 > => {
-  const mutationKey = ["marcarDespachado"];
+  const mutationKey = ["marcarRetirado"];
   const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
@@ -2742,45 +2747,406 @@ export const getMarcarDespachadoMutationOptions = <
     : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof marcarDespachado>>,
+    Awaited<ReturnType<typeof marcarRetirado>>,
     { data: BodyType<MarcarItemsBody> }
   > = (props) => {
     const { data } = props ?? {};
 
-    return marcarDespachado(data, requestOptions);
+    return marcarRetirado(data, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type MarcarDespachadoMutationResult = NonNullable<
-  Awaited<ReturnType<typeof marcarDespachado>>
+export type MarcarRetiradoMutationResult = NonNullable<
+  Awaited<ReturnType<typeof marcarRetirado>>
 >;
-export type MarcarDespachadoMutationBody = BodyType<MarcarItemsBody>;
-export type MarcarDespachadoMutationError = ErrorType<unknown>;
+export type MarcarRetiradoMutationBody = BodyType<MarcarItemsBody>;
+export type MarcarRetiradoMutationError = ErrorType<unknown>;
 
 /**
- * @summary Mark items as dispatched
+ * @summary Mark items as picked up (retirado)
  */
-export const useMarcarDespachado = <
+export const useMarcarRetirado = <
   TError = ErrorType<unknown>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof marcarDespachado>>,
+    Awaited<ReturnType<typeof marcarRetirado>>,
     TError,
     { data: BodyType<MarcarItemsBody> },
     TContext
   >;
   request?: SecondParameter<typeof customFetch>;
 }): UseMutationResult<
-  Awaited<ReturnType<typeof marcarDespachado>>,
+  Awaited<ReturnType<typeof marcarRetirado>>,
   TError,
   { data: BodyType<MarcarItemsBody> },
   TContext
 > => {
-  return useMutation(getMarcarDespachadoMutationOptions(options));
+  return useMutation(getMarcarRetiradoMutationOptions(options));
 };
+
+/**
+ * @summary List client/product prices
+ */
+export const getListPrecosUrl = (params?: ListPrecosParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/precos?${stringifiedParams}`
+    : `/api/precos`;
+};
+
+export const listPrecos = async (
+  params?: ListPrecosParams,
+  options?: RequestInit,
+): Promise<ClienteProdutoPreco[]> => {
+  return customFetch<ClienteProdutoPreco[]>(getListPrecosUrl(params), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getListPrecosQueryKey = (params?: ListPrecosParams) => {
+  return [`/api/precos`, ...(params ? [params] : [])] as const;
+};
+
+export const getListPrecosQueryOptions = <
+  TData = Awaited<ReturnType<typeof listPrecos>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: ListPrecosParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof listPrecos>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getListPrecosQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof listPrecos>>> = ({
+    signal,
+  }) => listPrecos(params, { signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof listPrecos>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type ListPrecosQueryResult = NonNullable<
+  Awaited<ReturnType<typeof listPrecos>>
+>;
+export type ListPrecosQueryError = ErrorType<unknown>;
+
+/**
+ * @summary List client/product prices
+ */
+
+export function useListPrecos<
+  TData = Awaited<ReturnType<typeof listPrecos>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: ListPrecosParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof listPrecos>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getListPrecosQueryOptions(params, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Create a new price entry
+ */
+export const getCreatePrecoUrl = () => {
+  return `/api/precos`;
+};
+
+export const createPreco = async (
+  createPrecoBody: CreatePrecoBody,
+  options?: RequestInit,
+): Promise<ClienteProdutoPreco> => {
+  return customFetch<ClienteProdutoPreco>(getCreatePrecoUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(createPrecoBody),
+  });
+};
+
+export const getCreatePrecoMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createPreco>>,
+    TError,
+    { data: BodyType<CreatePrecoBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof createPreco>>,
+  TError,
+  { data: BodyType<CreatePrecoBody> },
+  TContext
+> => {
+  const mutationKey = ["createPreco"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof createPreco>>,
+    { data: BodyType<CreatePrecoBody> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return createPreco(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type CreatePrecoMutationResult = NonNullable<
+  Awaited<ReturnType<typeof createPreco>>
+>;
+export type CreatePrecoMutationBody = BodyType<CreatePrecoBody>;
+export type CreatePrecoMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Create a new price entry
+ */
+export const useCreatePreco = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createPreco>>,
+    TError,
+    { data: BodyType<CreatePrecoBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof createPreco>>,
+  TError,
+  { data: BodyType<CreatePrecoBody> },
+  TContext
+> => {
+  return useMutation(getCreatePrecoMutationOptions(options));
+};
+
+/**
+ * @summary Update a price entry
+ */
+export const getUpdatePrecoUrl = (id: number) => {
+  return `/api/precos/${id}`;
+};
+
+export const updatePreco = async (
+  id: number,
+  updatePrecoBody: UpdatePrecoBody,
+  options?: RequestInit,
+): Promise<ClienteProdutoPreco> => {
+  return customFetch<ClienteProdutoPreco>(getUpdatePrecoUrl(id), {
+    ...options,
+    method: "PUT",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(updatePrecoBody),
+  });
+};
+
+export const getUpdatePrecoMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updatePreco>>,
+    TError,
+    { id: number; data: BodyType<UpdatePrecoBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof updatePreco>>,
+  TError,
+  { id: number; data: BodyType<UpdatePrecoBody> },
+  TContext
+> => {
+  const mutationKey = ["updatePreco"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof updatePreco>>,
+    { id: number; data: BodyType<UpdatePrecoBody> }
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return updatePreco(id, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type UpdatePrecoMutationResult = NonNullable<
+  Awaited<ReturnType<typeof updatePreco>>
+>;
+export type UpdatePrecoMutationBody = BodyType<UpdatePrecoBody>;
+export type UpdatePrecoMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Update a price entry
+ */
+export const useUpdatePreco = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updatePreco>>,
+    TError,
+    { id: number; data: BodyType<UpdatePrecoBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof updatePreco>>,
+  TError,
+  { id: number; data: BodyType<UpdatePrecoBody> },
+  TContext
+> => {
+  return useMutation(getUpdatePrecoMutationOptions(options));
+};
+
+/**
+ * @summary Get the currently valid price for a client/product on a given date
+ */
+export const getGetPrecoVigenteUrl = (params: GetPrecoVigenteParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/precos/vigente?${stringifiedParams}`
+    : `/api/precos/vigente`;
+};
+
+export const getPrecoVigente = async (
+  params: GetPrecoVigenteParams,
+  options?: RequestInit,
+): Promise<ClienteProdutoPreco> => {
+  return customFetch<ClienteProdutoPreco>(getGetPrecoVigenteUrl(params), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetPrecoVigenteQueryKey = (params?: GetPrecoVigenteParams) => {
+  return [`/api/precos/vigente`, ...(params ? [params] : [])] as const;
+};
+
+export const getGetPrecoVigenteQueryOptions = <
+  TData = Awaited<ReturnType<typeof getPrecoVigente>>,
+  TError = ErrorType<ErrorResponse>,
+>(
+  params: GetPrecoVigenteParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getPrecoVigente>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetPrecoVigenteQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getPrecoVigente>>> = ({
+    signal,
+  }) => getPrecoVigente(params, { signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getPrecoVigente>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetPrecoVigenteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getPrecoVigente>>
+>;
+export type GetPrecoVigenteQueryError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Get the currently valid price for a client/product on a given date
+ */
+
+export function useGetPrecoVigente<
+  TData = Awaited<ReturnType<typeof getPrecoVigente>>,
+  TError = ErrorType<ErrorResponse>,
+>(
+  params: GetPrecoVigenteParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getPrecoVigente>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetPrecoVigenteQueryOptions(params, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
 
 /**
  * @summary Get dashboard summary with order counts by status
