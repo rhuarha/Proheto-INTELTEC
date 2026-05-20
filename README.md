@@ -90,6 +90,18 @@ All status values are lowercase. Transitions are calculated by `recalcularStatus
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from OpenAPI spec
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
 
+## Seeds / Carga Inicial de Dados
+
+### Seed de Clientes
+
+Insere ou atualiza registros de clientes. Usa upsert baseado em `cnpj_cpf` (preferencial) ou `nome_interno`.
+
+```bash
+pnpm --filter @workspace/db run seed:clientes
+```
+
+O script está em `lib/db/src/seeds/seed-clientes.ts`. Para adicionar novos clientes, edite o array `clientes` no arquivo e execute o comando acima. Registros já existentes são atualizados; novos são inseridos.
+
 ## Important Notes
 
 - JWT tokens stored in localStorage as `inteltec_token`

@@ -64,6 +64,7 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
+              <StageStat icon={ClipboardList} label="Pendente de Processamento" value={pendentes?.processamento} loading={loadingPendentes} />
               <StageStat icon={Printer} label="Impressão" value={pendentes?.impressao} loading={loadingPendentes} />
               <StageStat icon={Archive} label="Envelopamento" value={pendentes?.envelopamento} loading={loadingPendentes} />
               <StageStat icon={Box} label="Embalagem" value={pendentes?.embalagem} loading={loadingPendentes} />

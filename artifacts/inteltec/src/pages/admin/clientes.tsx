@@ -518,6 +518,17 @@ function ClienteForm({
               </FormItem>
             )}
           />
+        </div>
+        <SwitchField
+          control={form.control}
+          name="ativo"
+          label="Cliente Ativo"
+          description="Clientes inativos não aparecem nas listagens de produção."
+        />
+
+        {/* 2. Contato */}
+        <SectionHeader title="Contato" />
+        <div className="grid grid-cols-2 gap-4">
           <FormField
             control={form.control}
             name="telefone"
@@ -529,9 +540,71 @@ function ClienteForm({
               </FormItem>
             )}
           />
+          <FormField
+            control={form.control}
+            name="nomeContato"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Nome do Contato</FormLabel>
+                <FormControl><Input {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="emailContato"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>E-mail de Contato</FormLabel>
+                <FormControl><Input type="email" {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="emailNfse"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>E-mail para NFS-e</FormLabel>
+                <FormControl><Input type="email" {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="emailAprovaDemonstrativo"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>E-mail Aprovação Demonstrativo</FormLabel>
+                <FormControl><Input type="email" {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="emailInformaProdutoEmbalado"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>E-mail Produto Embalado</FormLabel>
+                <FormDescription className="text-xs">
+                  Notificado quando o produto estiver embalado e pronto para retirada.
+                </FormDescription>
+                <FormControl><Input type="email" {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
 
-        {/* 2. Endereço */}
+        {/* 3. Endereço */}
         <SectionHeader title="Endereço" />
         <div className="grid grid-cols-4 gap-4">
           <div className="col-span-3">
@@ -621,72 +694,7 @@ function ClienteForm({
           />
         </div>
 
-        {/* 3. Contato e E-mails */}
-        <SectionHeader title="Contato e E-mails" />
-        <div className="grid grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="nomeContato"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Nome do Contato</FormLabel>
-                <FormControl><Input {...field} /></FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="emailContato"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>E-mail de Contato</FormLabel>
-                <FormControl><Input type="email" {...field} /></FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="emailNfse"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>E-mail para NFS-e</FormLabel>
-                <FormControl><Input type="email" {...field} /></FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="emailAprovaDemonstrativo"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>E-mail Aprovação Demonstrativo</FormLabel>
-                <FormControl><Input type="email" {...field} /></FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-        <FormField
-          control={form.control}
-          name="emailInformaProdutoEmbalado"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>E-mail Produto Embalado</FormLabel>
-              <FormDescription className="text-xs">
-                Notificado quando o produto estiver embalado e pronto para retirada.
-              </FormDescription>
-              <FormControl><Input type="email" {...field} /></FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* 4. Faturamento */}
+        {/* 4. Faturamento e Fechamento */}
         <SectionHeader title="Faturamento" />
         <div className="grid grid-cols-2 gap-4">
           <FormField
@@ -700,8 +708,8 @@ function ClienteForm({
                     <SelectTrigger><SelectValue placeholder="Selecione..." /></SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="N">Normal</SelectItem>
-                    <SelectItem value="R">Resumido</SelectItem>
+                    <SelectItem value="N">Nota Fiscal / NFSe</SelectItem>
+                    <SelectItem value="R">Recibo</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -733,8 +741,7 @@ function ClienteForm({
           <SwitchField control={form.control} name="pedidoCompra" label="Exige Pedido de Compra" />
         </div>
 
-        {/* 5. Fechamento */}
-        <SectionHeader title="Fechamento" />
+        {/* Fechamento — dentro de Faturamento */}
         <div className="grid grid-cols-2 gap-4">
           <FormField
             control={form.control}
@@ -819,8 +826,8 @@ function ClienteForm({
           description="Fecha automaticamente ao disponibilizar os itens."
         />
 
-        {/* 6. Diretórios e Status */}
-        <SectionHeader title="Diretórios e Status" />
+        {/* 5. Diretórios */}
+        <SectionHeader title="Diretórios" />
         <div className="grid grid-cols-2 gap-4">
           <FormField
             control={form.control}
@@ -845,12 +852,6 @@ function ClienteForm({
             )}
           />
         </div>
-        <SwitchField
-          control={form.control}
-          name="ativo"
-          label="Cliente Ativo"
-          description="Clientes inativos não aparecem nas listagens de produção."
-        />
 
         <div className="flex justify-end gap-3 pt-4 border-t">
           <Button type="submit" disabled={isPending}>
