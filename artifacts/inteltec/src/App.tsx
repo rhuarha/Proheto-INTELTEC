@@ -22,6 +22,7 @@ import Usuarios from "@/pages/admin/usuarios";
 import Clientes from "@/pages/admin/clientes";
 import Produtos from "@/pages/admin/produtos";
 import Precos from "@/pages/admin/precos";
+import Municipios from "@/pages/admin/municipios";
 
 const queryClient = new QueryClient();
 
@@ -86,6 +87,9 @@ function Router() {
         </Route>
         <Route path="/admin/precos">
           <ProtectedRoute component={Precos} allowedRoles={['admin', 'apontador']} />
+        </Route>
+        <Route path="/admin/municipios">
+          <ProtectedRoute component={Municipios} allowedRoles={['admin']} />
         </Route>
 
         <Route path="/minhas-ordens">

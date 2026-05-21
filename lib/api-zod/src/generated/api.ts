@@ -120,8 +120,6 @@ export const UpdateUserResponse = zod.object({
 /**
  * @summary List all clients
  */
-export const listClientesResponseUfMax = 2;
-
 export const ListClientesResponseItem = zod.object({
   id: zod.number(),
   nomeRazaoSocial: zod.string(),
@@ -136,9 +134,11 @@ export const ListClientesResponseItem = zod.object({
   numero: zod.string().nullish(),
   complemento: zod.string().nullish(),
   bairro: zod.string().nullish(),
-  cidade: zod.string().nullish(),
   cep: zod.string().nullish(),
-  uf: zod.string().max(listClientesResponseUfMax).nullish(),
+  municipioId: zod.number().nullish(),
+  municipioNome: zod.string().nullish(),
+  municipioUf: zod.string().nullish(),
+  municipioCodigoIbge: zod.string().nullish(),
   emailNfse: zod.string().nullish(),
   nomeContato: zod.string().nullish(),
   emailContato: zod.string().nullish(),
@@ -173,8 +173,6 @@ export const ListClientesResponse = zod.array(ListClientesResponseItem);
 /**
  * @summary Create a new client (admin only)
  */
-export const createClienteBodyUfMax = 2;
-
 export const CreateClienteBody = zod.object({
   nomeRazaoSocial: zod.string(),
   nomeFantasia: zod.string().optional(),
@@ -188,9 +186,8 @@ export const CreateClienteBody = zod.object({
   numero: zod.string().optional(),
   complemento: zod.string().optional(),
   bairro: zod.string().optional(),
-  cidade: zod.string().optional(),
   cep: zod.string().optional(),
-  uf: zod.string().max(createClienteBodyUfMax).optional(),
+  municipioId: zod.number().nullish(),
   emailNfse: zod.string().optional(),
   nomeContato: zod.string().optional(),
   emailContato: zod.string().optional(),
@@ -227,8 +224,6 @@ export const GetClienteParams = zod.object({
   id: zod.coerce.number(),
 });
 
-export const getClienteResponseUfMax = 2;
-
 export const GetClienteResponse = zod.object({
   id: zod.number(),
   nomeRazaoSocial: zod.string(),
@@ -243,9 +238,11 @@ export const GetClienteResponse = zod.object({
   numero: zod.string().nullish(),
   complemento: zod.string().nullish(),
   bairro: zod.string().nullish(),
-  cidade: zod.string().nullish(),
   cep: zod.string().nullish(),
-  uf: zod.string().max(getClienteResponseUfMax).nullish(),
+  municipioId: zod.number().nullish(),
+  municipioNome: zod.string().nullish(),
+  municipioUf: zod.string().nullish(),
+  municipioCodigoIbge: zod.string().nullish(),
   emailNfse: zod.string().nullish(),
   nomeContato: zod.string().nullish(),
   emailContato: zod.string().nullish(),
@@ -283,8 +280,6 @@ export const UpdateClienteParams = zod.object({
   id: zod.coerce.number(),
 });
 
-export const updateClienteBodyUfMax = 2;
-
 export const UpdateClienteBody = zod.object({
   nomeRazaoSocial: zod.string().optional(),
   nomeFantasia: zod.string().optional(),
@@ -298,9 +293,8 @@ export const UpdateClienteBody = zod.object({
   numero: zod.string().optional(),
   complemento: zod.string().optional(),
   bairro: zod.string().optional(),
-  cidade: zod.string().optional(),
   cep: zod.string().optional(),
-  uf: zod.string().max(updateClienteBodyUfMax).optional(),
+  municipioId: zod.number().nullish(),
   emailNfse: zod.string().optional(),
   nomeContato: zod.string().optional(),
   emailContato: zod.string().optional(),
@@ -330,8 +324,6 @@ export const UpdateClienteBody = zod.object({
   ativo: zod.boolean().optional(),
 });
 
-export const updateClienteResponseUfMax = 2;
-
 export const UpdateClienteResponse = zod.object({
   id: zod.number(),
   nomeRazaoSocial: zod.string(),
@@ -346,9 +338,11 @@ export const UpdateClienteResponse = zod.object({
   numero: zod.string().nullish(),
   complemento: zod.string().nullish(),
   bairro: zod.string().nullish(),
-  cidade: zod.string().nullish(),
   cep: zod.string().nullish(),
-  uf: zod.string().max(updateClienteResponseUfMax).nullish(),
+  municipioId: zod.number().nullish(),
+  municipioNome: zod.string().nullish(),
+  municipioUf: zod.string().nullish(),
+  municipioCodigoIbge: zod.string().nullish(),
   emailNfse: zod.string().nullish(),
   nomeContato: zod.string().nullish(),
   emailContato: zod.string().nullish(),

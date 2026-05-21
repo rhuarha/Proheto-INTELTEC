@@ -10,7 +10,10 @@
   "scripts": {
     "push": "drizzle-kit push --config ./drizzle.config.ts",
     "push-force": "drizzle-kit push --force --config ./drizzle.config.ts",
-    "seed:clientes": "tsx --env-file=../../.env ./src/seeds/seed-clientes.ts"
+    "seed:clientes": "tsx --env-file=../../.env ./src/seeds/seed-clientes.ts",
+    "seed:municipios": "tsx --env-file=../../.env ./src/seeds/seed-municipios.ts",
+    "migrate:clientes-municipio": "tsx --env-file=../../.env ./src/seeds/migrate-clientes-municipio.ts",
+    "cleanup:clientes-teste": "tsx --env-file=../../.env ./src/seeds/cleanup-clientes-teste.ts"
   },
   "dependencies": {
     "drizzle-orm": "catalog:",

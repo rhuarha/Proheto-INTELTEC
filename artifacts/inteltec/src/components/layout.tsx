@@ -15,6 +15,7 @@ import {
   Box,
   LayoutDashboard,
   DollarSign,
+  MapPin,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -130,6 +131,12 @@ export function Layout({ children }: LayoutProps) {
                         <DropdownMenuItem className="cursor-pointer gap-2">
                           <Package className="w-4 h-4" />
                           Produtos
+                        </DropdownMenuItem>
+                      </Link>
+                      <Link href="/admin/municipios">
+                        <DropdownMenuItem className="cursor-pointer gap-2">
+                          <MapPin className="w-4 h-4" />
+                          Municípios
                         </DropdownMenuItem>
                       </Link>
                       <DropdownMenuSeparator />

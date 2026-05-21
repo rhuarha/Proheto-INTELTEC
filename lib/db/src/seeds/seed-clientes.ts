@@ -1,5 +1,14 @@
-import { db, clientesTable } from "../index.js";
-import { eq } from "drizzle-orm";
+import { db, clientesTable, municipiosTable } from "../index.js";
+import { eq, and } from "drizzle-orm";
+
+async function getMunicipioId(nome: string, uf: string): Promise<number | null> {
+  const result = await db
+    .select({ id: municipiosTable.id })
+    .from(municipiosTable)
+    .where(and(eq(municipiosTable.nome, nome), eq(municipiosTable.uf, uf)))
+    .limit(1);
+  return result[0]?.id ?? null;
+}
 
 const clientes = [
   {
@@ -10,14 +19,12 @@ const clientes = [
     cnpjCpf: "12.345.678/0001-90",
     inscrEstadual: "123.456.789.012",
     inscrMunicipal: "1234567",
-    telefone: "(11) 3456-7890",
+    telefone: "(54) 3456-7890",
     logradouro: "Rua das Flores",
     numero: "123",
     complemento: "Sala 4",
     bairro: "Centro",
-    cidade: "São Paulo",
-    cep: "01310-100",
-    uf: "SP",
+    cep: "95020-360",
     emailNfse: "fiscal@alfa.com.br",
     nomeContato: "João Silva",
     emailContato: "joao@alfa.com.br",
@@ -37,6 +44,8 @@ const clientes = [
     diaFechamento: "30",
     fecharAoDisponibilizar: false,
     ativo: true,
+    municipioNome: "Caxias do Sul",
+    municipioUf: "RS",
   },
   {
     nomeRazaoSocial: "Beta Comércio e Distribuição S.A.",
@@ -46,14 +55,12 @@ const clientes = [
     cnpjCpf: "98.765.432/0001-10",
     inscrEstadual: "987.654.321.098",
     inscrMunicipal: "9876543",
-    telefone: "(21) 4567-8901",
-    logradouro: "Avenida Brasil",
+    telefone: "(54) 4567-8901",
+    logradouro: "Rua Ernesto Alves",
     numero: "500",
     complemento: "Andar 10",
-    bairro: "Copacabana",
-    cidade: "Rio de Janeiro",
-    cep: "22020-000",
-    uf: "RJ",
+    bairro: "Centro",
+    cep: "95700-000",
     emailNfse: "nfse@beta.com.br",
     nomeContato: "Maria Oliveira",
     emailContato: "maria@beta.com.br",
@@ -73,6 +80,8 @@ const clientes = [
     diaFechamento: "15",
     fecharAoDisponibilizar: true,
     ativo: true,
+    municipioNome: "Bento Gonçalves",
+    municipioUf: "RS",
   },
   {
     nomeRazaoSocial: "Carlos Eduardo Mendes",
@@ -82,14 +91,12 @@ const clientes = [
     cnpjCpf: "123.456.789-00",
     inscrEstadual: null,
     inscrMunicipal: null,
-    telefone: "(31) 98765-4321",
-    logradouro: "Rua Minas Gerais",
+    telefone: "(54) 98765-4321",
+    logradouro: "Rua Garibaldi",
     numero: "77",
     complemento: null,
-    bairro: "Savassi",
-    cidade: "Belo Horizonte",
-    cep: "30130-110",
-    uf: "MG",
+    bairro: "Centro",
+    cep: "95180-000",
     emailNfse: "carlos@email.com.br",
     nomeContato: "Carlos Mendes",
     emailContato: "carlos@email.com.br",
@@ -109,6 +116,8 @@ const clientes = [
     diaFechamento: null,
     fecharAoDisponibilizar: false,
     ativo: true,
+    municipioNome: "Garibaldi",
+    municipioUf: "RS",
   },
   {
     nomeRazaoSocial: "Gama Tecnologia Ltda",
@@ -123,9 +132,7 @@ const clientes = [
     numero: "S/N",
     complemento: "Bloco B",
     bairro: "Centro Histórico",
-    cidade: "Porto Alegre",
     cep: "90020-000",
-    uf: "RS",
     emailNfse: "fiscal@gamatech.com.br",
     nomeContato: "Ana Souza",
     emailContato: "ana@gamatech.com.br",
@@ -145,38 +152,54 @@ const clientes = [
     diaFechamento: "Último",
     fecharAoDisponibilizar: false,
     ativo: true,
+    municipioNome: "Porto Alegre",
+    municipioUf: "RS",
   },
 ];
 
-for (const cliente of clientes) {
-  const keyClause = cliente.cnpjCpf
-    ? eq(clientesTable.cnpjCpf, cliente.cnpjCpf)
-    : cliente.nomeInterno
-      ? eq(clientesTable.nomeInterno, cliente.nomeInterno)
-      : null;
+async function seed() {
+  for (const { municipioNome, municipioUf, ...cliente } of clientes) {
+    const municipioId = await getMunicipioId(municipioNome, municipioUf);
+    if (!municipioId) {
+      console.warn(`Município não encontrado: ${municipioNome}/${municipioUf}. Execute seed:municipios primeiro.`);
+    }
 
-  if (!keyClause) {
-    console.log(`Ignorado (sem chave única): ${cliente.nomeRazaoSocial}`);
-    continue;
+    const data = { ...cliente, municipioId };
+
+    const keyClause = cliente.cnpjCpf
+      ? eq(clientesTable.cnpjCpf, cliente.cnpjCpf)
+      : cliente.nomeInterno
+        ? eq(clientesTable.nomeInterno, cliente.nomeInterno)
+        : null;
+
+    if (!keyClause) {
+      console.log(`Ignorado (sem chave única): ${cliente.nomeRazaoSocial}`);
+      continue;
+    }
+
+    const [existing] = await db
+      .select({ id: clientesTable.id })
+      .from(clientesTable)
+      .where(keyClause)
+      .limit(1);
+
+    if (existing) {
+      await db.update(clientesTable).set(data).where(eq(clientesTable.id, existing.id));
+      console.log(`Atualizado: ${cliente.nomeRazaoSocial} (id=${existing.id})`);
+    } else {
+      const [inserted] = await db
+        .insert(clientesTable)
+        .values(data)
+        .returning({ id: clientesTable.id });
+      console.log(`Inserido: ${cliente.nomeRazaoSocial} (id=${inserted.id})`);
+    }
   }
 
-  const [existing] = await db
-    .select({ id: clientesTable.id })
-    .from(clientesTable)
-    .where(keyClause)
-    .limit(1);
-
-  if (existing) {
-    await db.update(clientesTable).set(cliente).where(eq(clientesTable.id, existing.id));
-    console.log(`Atualizado: ${cliente.nomeRazaoSocial} (id=${existing.id})`);
-  } else {
-    const [inserted] = await db
-      .insert(clientesTable)
-      .values(cliente)
-      .returning({ id: clientesTable.id });
-    console.log(`Inserido: ${cliente.nomeRazaoSocial} (id=${inserted.id})`);
-  }
+  console.log("Seed de clientes concluído.");
+  process.exit(0);
 }
 
-console.log("Seed de clientes concluído.");
-process.exit(0);
+seed().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

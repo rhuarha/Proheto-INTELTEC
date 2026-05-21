@@ -1,6 +1,7 @@
 import { pgTable, text, serial, timestamp, boolean, integer, numeric, varchar } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
+import { municipiosTable } from "./municipios";
 
 export const TIPO_FATURAMENTO = ["N", "R"] as const;
 export const TIPO_FECHAMENTO = ["IMEDIATO", "POR_VALOR", "POR_VALOR_OU_PRAZO", "POR_PRAZO", "MENSAL_FIXO"] as const;
@@ -24,6 +25,7 @@ export const clientesTable = pgTable("clientes", {
   cidade: text("cidade"),
   cep: text("cep"),
   uf: varchar("uf", { length: 2 }),
+  municipioId: integer("municipio_id").references(() => municipiosTable.id),
 
   emailNfse: text("email_nfse"),
   nomeContato: text("nome_contato"),

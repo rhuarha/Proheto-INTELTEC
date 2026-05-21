@@ -1,13 +1,24 @@
 import { Router } from "express";
-import { db, clientesTable, logsTable } from "@workspace/db";
-import { eq } from "drizzle-orm";
+import { db, clientesTable, municipiosTable, logsTable } from "@workspace/db";
+import { eq, getTableColumns } from "drizzle-orm";
 import { requireAuth, requireRole } from "../middlewares/auth";
 import { CreateClienteBody, UpdateClienteBody } from "@workspace/api-zod";
 
 const router = Router();
 
+const clienteWithMunicipio = () =>
+  db
+    .select({
+      ...getTableColumns(clientesTable),
+      municipioNome: municipiosTable.nome,
+      municipioUf: municipiosTable.uf,
+      municipioCodigoIbge: municipiosTable.codigoIbge,
+    })
+    .from(clientesTable)
+    .leftJoin(municipiosTable, eq(clientesTable.municipioId, municipiosTable.id));
+
 router.get("/clientes", requireAuth, async (req, res) => {
-  const clientes = await db.select().from(clientesTable).orderBy(clientesTable.nomeRazaoSocial);
+  const clientes = await clienteWithMunicipio().orderBy(clientesTable.nomeRazaoSocial);
   res.json(clientes);
 });
 
@@ -37,7 +48,7 @@ router.get("/clientes/:id", requireAuth, async (req, res) => {
   const id = parseInt(req.params.id);
   if (isNaN(id)) { res.status(400).json({ error: "Bad Request" }); return; }
 
-  const results = await db.select().from(clientesTable).where(eq(clientesTable.id, id)).limit(1);
+  const results = await clienteWithMunicipio().where(eq(clientesTable.id, id)).limit(1);
   if (!results[0]) { res.status(404).json({ error: "Not Found" }); return; }
 
   res.json(results[0]);

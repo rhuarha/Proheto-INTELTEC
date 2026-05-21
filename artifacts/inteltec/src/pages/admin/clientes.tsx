@@ -4,6 +4,7 @@ import {
   useCreateCliente,
   useUpdateCliente,
   getListClientesQueryKey,
+  useListMunicipios,
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -65,9 +66,8 @@ const clienteSchema = z.object({
   numero: z.string().optional(),
   complemento: z.string().optional(),
   bairro: z.string().optional(),
-  cidade: z.string().optional(),
   cep: z.string().optional(),
-  uf: z.string().max(2).optional(),
+  municipioId: z.coerce.number().optional().nullable(),
   emailNfse: z.string().optional(),
   nomeContato: z.string().optional(),
   emailContato: z.string().optional(),
@@ -104,9 +104,8 @@ const defaultValues: ClienteFormValues = {
   numero: "",
   complemento: "",
   bairro: "",
-  cidade: "",
   cep: "",
-  uf: "",
+  municipioId: null,
   emailNfse: "",
   nomeContato: "",
   emailContato: "",
@@ -142,9 +141,10 @@ type ClienteRow = {
   numero?: string | null;
   complemento?: string | null;
   bairro?: string | null;
-  cidade?: string | null;
   cep?: string | null;
-  uf?: string | null;
+  municipioId?: number | null;
+  municipioNome?: string | null;
+  municipioUf?: string | null;
   emailNfse?: string | null;
   nomeContato?: string | null;
   emailContato?: string | null;
@@ -206,7 +206,7 @@ export default function ClientesPage() {
                   <TableHead>Nome Interno</TableHead>
                   <TableHead>Tipo</TableHead>
                   <TableHead>CNPJ/CPF</TableHead>
-                  <TableHead>Cidade/UF</TableHead>
+                  <TableHead>Município/UF</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead className="text-right">Ações</TableHead>
                 </TableRow>
@@ -233,7 +233,7 @@ export default function ClientesPage() {
                       </TableCell>
                       <TableCell className="font-mono text-sm">{c.cnpjCpf || "—"}</TableCell>
                       <TableCell>
-                        {c.cidade ? `${c.cidade}${c.uf ? `/${c.uf}` : ""}` : "—"}
+                        {c.municipioNome ? `${c.municipioNome}${c.municipioUf ? `/${c.municipioUf}` : ""}` : "—"}
                       </TableCell>
                       <TableCell>
                         <Badge variant={c.ativo ? "default" : "secondary"}>
@@ -290,9 +290,8 @@ export default function ClientesPage() {
                 numero: editingCliente.numero ?? "",
                 complemento: editingCliente.complemento ?? "",
                 bairro: editingCliente.bairro ?? "",
-                cidade: editingCliente.cidade ?? "",
                 cep: editingCliente.cep ?? "",
-                uf: editingCliente.uf ?? "",
+                municipioId: editingCliente.municipioId ?? null,
                 emailNfse: editingCliente.emailNfse ?? "",
                 nomeContato: editingCliente.nomeContato ?? "",
                 emailContato: editingCliente.emailContato ?? "",
@@ -319,6 +318,39 @@ export default function ClientesPage() {
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+function MunicipioSelectField({ control }: { control: any }) {
+  const { data: municipios = [] } = useListMunicipios();
+  return (
+    <FormField
+      control={control}
+      name="municipioId"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>Município</FormLabel>
+          <Select
+            onValueChange={(v) => field.onChange(v ? Number(v) : null)}
+            value={field.value != null ? String(field.value) : ""}
+          >
+            <FormControl>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione o município..." />
+              </SelectTrigger>
+            </FormControl>
+            <SelectContent>
+              {municipios.map((m) => (
+                <SelectItem key={m.id} value={String(m.id)}>
+                  {m.nome}/{m.uf}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
   );
 }
 
@@ -667,32 +699,7 @@ function ClienteForm({
             )}
           />
         </div>
-        <div className="grid grid-cols-4 gap-4">
-          <div className="col-span-3">
-            <FormField
-              control={form.control}
-              name="cidade"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Cidade</FormLabel>
-                  <FormControl><Input {...field} /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-          <FormField
-            control={form.control}
-            name="uf"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>UF</FormLabel>
-                <FormControl><Input maxLength={2} placeholder="SP" {...field} /></FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+        <MunicipioSelectField control={form.control} />
 
         {/* 4. Faturamento e Fechamento */}
         <SectionHeader title="Faturamento" />

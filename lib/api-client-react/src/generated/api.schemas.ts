@@ -118,10 +118,11 @@ export interface Cliente {
   numero?: string | null;
   complemento?: string | null;
   bairro?: string | null;
-  cidade?: string | null;
   cep?: string | null;
-  /** @maxLength 2 */
-  uf?: string | null;
+  municipioId?: number | null;
+  municipioNome?: string | null;
+  municipioUf?: string | null;
+  municipioCodigoIbge?: string | null;
   emailNfse?: string | null;
   nomeContato?: string | null;
   emailContato?: string | null;
@@ -176,10 +177,8 @@ export interface CreateClienteBody {
   numero?: string;
   complemento?: string;
   bairro?: string;
-  cidade?: string;
   cep?: string;
-  /** @maxLength 2 */
-  uf?: string;
+  municipioId?: number | null;
   emailNfse?: string;
   nomeContato?: string;
   emailContato?: string;
@@ -233,10 +232,8 @@ export interface UpdateClienteBody {
   numero?: string;
   complemento?: string;
   bairro?: string;
-  cidade?: string;
   cep?: string;
-  /** @maxLength 2 */
-  uf?: string;
+  municipioId?: number | null;
   emailNfse?: string;
   nomeContato?: string;
   emailContato?: string;
