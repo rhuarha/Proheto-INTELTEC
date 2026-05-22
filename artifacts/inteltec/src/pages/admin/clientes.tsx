@@ -591,7 +591,7 @@ function ClienteForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>E-mail de Contato</FormLabel>
-                <FormControl><Input type="email" {...field} /></FormControl>
+                <FormControl><Input type="text" {...field} /></FormControl>
                 <FormMessage />
               </FormItem>
             )}
@@ -602,7 +602,7 @@ function ClienteForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>E-mail para NFS-e</FormLabel>
-                <FormControl><Input type="email" {...field} /></FormControl>
+                <FormControl><Input type="text" {...field} /></FormControl>
                 <FormMessage />
               </FormItem>
             )}
@@ -615,7 +615,7 @@ function ClienteForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>E-mail Aprovação Demonstrativo</FormLabel>
-                <FormControl><Input type="email" {...field} /></FormControl>
+                <FormControl><Input type="text" {...field} /></FormControl>
                 <FormMessage />
               </FormItem>
             )}
@@ -629,7 +629,7 @@ function ClienteForm({
                 <FormDescription className="text-xs">
                   Notificado quando o produto estiver embalado e pronto para retirada.
                 </FormDescription>
-                <FormControl><Input type="email" {...field} /></FormControl>
+                <FormControl><Input type="text" {...field} /></FormControl>
                 <FormMessage />
               </FormItem>
             )}

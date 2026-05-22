@@ -28,24 +28,41 @@ router.post("/municipios", requireAuth, requireRole("admin"), async (req, res) =
     return;
   }
 
-  const inserted = await db
-    .insert(municipiosTable)
-    .values({ nome, uf: uf.toUpperCase(), codigoIbge, ativo: ativo ?? true })
-    .returning();
+  try {
+    const inserted = await db
+      .insert(municipiosTable)
+      .values({ nome, uf: uf.toUpperCase(), codigoIbge, ativo: ativo ?? true })
+      .returning();
 
-  await db.insert(logsTable).values({
-    userId: req.user!.userId,
-    acao: "CREATE",
-    entidade: "municipios",
-    entidadeId: inserted[0].id,
-    descricao: `Município criado: ${inserted[0].nome}/${inserted[0].uf}`,
-  });
+    await db.insert(logsTable).values({
+      userId: req.user!.userId,
+      acao: "CREATE",
+      entidade: "municipios",
+      entidadeId: inserted[0].id,
+      descricao: `Município criado: ${inserted[0].nome}/${inserted[0].uf}`,
+    });
 
-  res.status(201).json(inserted[0]);
+    res.status(201).json(inserted[0]);
+  } catch (err: any) {
+    if (err?.cause?.code === "23505" || err?.code === "23505") {
+      const existing = await db
+        .select({ id: municipiosTable.id, nome: municipiosTable.nome, uf: municipiosTable.uf })
+        .from(municipiosTable)
+        .where(eq(municipiosTable.codigoIbge, codigoIbge))
+        .limit(1);
+      const existingName = existing[0] ? `${existing[0].nome}/${existing[0].uf}` : "município desconhecido";
+      res.status(409).json({
+        error: "Conflict",
+        message: `O código IBGE ${codigoIbge} já está cadastrado para ${existingName}.`,
+      });
+      return;
+    }
+    throw err;
+  }
 });
 
 router.get("/municipios/:id", requireAuth, async (req, res) => {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id as string);
   if (isNaN(id)) { res.status(400).json({ error: "Bad Request" }); return; }
 
   const result = await db
@@ -59,7 +76,7 @@ router.get("/municipios/:id", requireAuth, async (req, res) => {
 });
 
 router.put("/municipios/:id", requireAuth, requireRole("admin"), async (req, res) => {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id as string);
   if (isNaN(id)) { res.status(400).json({ error: "Bad Request" }); return; }
 
   const { nome, uf, codigoIbge, ativo } = req.body;
@@ -89,7 +106,7 @@ router.put("/municipios/:id", requireAuth, requireRole("admin"), async (req, res
 });
 
 router.delete("/municipios/:id", requireAuth, requireRole("admin"), async (req, res) => {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id as string);
   if (isNaN(id)) { res.status(400).json({ error: "Bad Request" }); return; }
 
   const updated = await db
