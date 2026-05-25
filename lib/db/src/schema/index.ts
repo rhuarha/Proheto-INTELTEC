@@ -2,6 +2,7 @@ export * from "./municipios";
 export * from "./clientes";
 export * from "./users";
 export * from "./produtos";
+export * from "./recebimentoLote";
 export * from "./producao";
 export * from "./producaoItems";
 export * from "./clienteProdutoPreco";

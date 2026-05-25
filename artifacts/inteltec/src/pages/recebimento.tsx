@@ -27,8 +27,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Package } from "lucide-react";
+import { Package, Layers } from "lucide-react";
 import { nomeCliente } from "@/lib/date";
+import { RecebimentoLoteModal } from "@/components/recebimento-lote-modal";
 
 const recebimentoSchema = z.object({
   clienteId: z.coerce.number().min(1, "Selecione um cliente"),
@@ -43,6 +44,7 @@ export default function RecebimentoPage() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const [, setLocation] = useLocation();
+  const [loteModalOpen, setLoteModalOpen] = useState(false);
 
   const now = new Date();
   const form = useForm<z.infer<typeof recebimentoSchema>>({
@@ -81,10 +83,18 @@ export default function RecebimentoPage() {
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Recebimento</h1>
-        <p className="text-muted-foreground">Registre uma nova entrada de materiais.</p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Recebimento</h1>
+          <p className="text-muted-foreground">Registre uma nova entrada de materiais.</p>
+        </div>
+        <Button variant="outline" onClick={() => setLoteModalOpen(true)}>
+          <Layers className="h-4 w-4 mr-2" />
+          Novo Recebimento em Lote
+        </Button>
       </div>
+
+      <RecebimentoLoteModal open={loteModalOpen} onOpenChange={setLoteModalOpen} />
 
       <Card>
         <CardHeader>

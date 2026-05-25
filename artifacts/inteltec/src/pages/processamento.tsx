@@ -61,7 +61,7 @@ import {
 import { StatusBadge } from "@/components/status-badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
-import { ClipboardList, Plus, Trash2, CheckCircle2, AlertTriangle, DollarSign } from "lucide-react";
+import { ClipboardList, Plus, Trash2, CheckCircle2, AlertTriangle, DollarSign, Layers } from "lucide-react";
 import { formatLocalDate, nomeCliente } from "@/lib/date";
 
 export default function ProcessamentoPage() {
@@ -110,7 +110,17 @@ export default function ProcessamentoPage() {
                   ordens?.map(ordem => (
                     <TableRow key={ordem.id}>
                       <TableCell className="font-medium">#{ordem.id}</TableCell>
-                      <TableCell>{nomeCliente(ordem.cliente as any)}</TableCell>
+                      <TableCell>
+                        <div className="flex flex-col gap-0.5">
+                          <span>{nomeCliente(ordem.cliente as any)}</span>
+                          {ordem.recebimentoLoteId && (
+                            <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                              <Layers className="h-3 w-3" />
+                              Lote #{ordem.recebimentoLoteId}
+                            </span>
+                          )}
+                        </div>
+                      </TableCell>
                       <TableCell>
                         {formatLocalDate(ordem.dataRecebimento)}
                         {(ordem as any).horaRecebimento ? ` ${(ordem as any).horaRecebimento}` : ""}

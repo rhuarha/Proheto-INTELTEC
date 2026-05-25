@@ -301,6 +301,7 @@ export interface ProducaoWithCliente {
   horaRecebimento?: string | null;
   observacoes?: string | null;
   status: ProducaoStatus;
+  recebimentoLoteId?: number | null;
   cliente: Cliente;
   createdAt: string;
   updatedAt: string;
@@ -330,6 +331,7 @@ export interface ProducaoDetail {
   horaRecebimento?: string | null;
   observacoes?: string | null;
   status: ProducaoStatus;
+  recebimentoLoteId?: number | null;
   cliente: Cliente;
   items: ProducaoItemWithProduto[];
   createdAt: string;
@@ -433,6 +435,53 @@ export interface DashboardResumo {
   porStatus: DashboardResumoPorStatus;
   ordensHoje: number;
   ordensRetiradasHoje: number;
+}
+
+export type RecebimentoLoteOrigem =
+  (typeof RecebimentoLoteOrigem)[keyof typeof RecebimentoLoteOrigem];
+
+export const RecebimentoLoteOrigem = {
+  EMAIL: "EMAIL",
+  FTP: "FTP",
+  MANUAL: "MANUAL",
+  OUTRO: "OUTRO",
+} as const;
+
+export interface RecebimentoLote {
+  id: number;
+  dataRecebimento: string;
+  horaRecebimento: string;
+  origem: RecebimentoLoteOrigem;
+  remetente?: string | null;
+  assunto?: string | null;
+  observacoes?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface RecebimentoLoteClientePayload {
+  cliente_id: number;
+  observacoes?: string;
+}
+
+export interface CreateRecebimentoLoteBody {
+  data_recebimento: string;
+  hora_recebimento: string;
+  origem: RecebimentoLoteOrigem;
+  remetente?: string;
+  assunto?: string;
+  observacoes?: string;
+  clientes: RecebimentoLoteClientePayload[];
+}
+
+export interface CreateRecebimentoLoteResponse {
+  lote_id: number;
+  ordens_criadas: number[];
+  total_ordens: number;
+}
+
+export interface RecebimentoLoteDetail extends RecebimentoLote {
+  ordens: ProducaoWithCliente[];
 }
 
 export interface PendentesPorEtapa {

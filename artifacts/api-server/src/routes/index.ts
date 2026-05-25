@@ -8,6 +8,7 @@ import producaoRouter from "./producao";
 import dashboardRouter from "./dashboard";
 import precosRouter from "./precos";
 import municipiosRouter from "./municipios";
+import recebimentoLotesRouter from "./recebimentoLotes";
 
 const router: IRouter = Router();
 
@@ -20,5 +21,6 @@ router.use(producaoRouter);
 router.use(dashboardRouter);
 router.use(precosRouter);
 router.use(municipiosRouter);
+router.use(recebimentoLotesRouter);
 
 export default router;

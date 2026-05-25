@@ -2,6 +2,7 @@ import { pgTable, text, serial, timestamp, integer, date } from "drizzle-orm/pg-
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 import { clientesTable } from "./clientes";
+import { recebimentoLoteTable } from "./recebimentoLote";
 
 export const PRODUCAO_STATUS = ["recebida", "processada", "impressa", "envelopada", "embalada", "retirada", "cancelada"] as const;
 export type ProducaoStatus = typeof PRODUCAO_STATUS[number];
@@ -13,6 +14,7 @@ export const producaoTable = pgTable("producao", {
   horaRecebimento: text("hora_recebimento"),
   observacoes: text("observacoes"),
   status: text("status", { enum: PRODUCAO_STATUS }).notNull().default("recebida"),
+  recebimentoLoteId: integer("recebimento_lote_id").references(() => recebimentoLoteTable.id),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
   deletedAt: timestamp("deleted_at", { withTimezone: true }),
