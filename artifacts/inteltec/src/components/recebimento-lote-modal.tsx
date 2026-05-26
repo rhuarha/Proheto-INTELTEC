@@ -2,7 +2,7 @@ import { useState } from "react";
 import { format } from "date-fns";
 import { useListClientes, useCreateRecebimentoLote, getListProducaoQueryKey } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus, Trash2, Layers } from "lucide-react";
+import { Plus, Trash2, Layers, ChevronsUpDown, Check } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,12 +23,31 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 import { useToast } from "@/hooks/use-toast";
-import { nomeCliente } from "@/lib/date";
+import { cn } from "@/lib/utils";
+
+function labelCliente(c: { nomeInterno?: string | null; nomeRazaoSocial: string }): string {
+  return c.nomeInterno || c.nomeRazaoSocial;
+}
 
 interface ClienteLinha {
   clienteId: string;
   observacoes: string;
+  busca: string;
+  popoverOpen: boolean;
 }
 
 interface RecebimentoLoteModalProps {
@@ -43,6 +62,8 @@ const ORIGENS = [
   { value: "OUTRO", label: "Outro" },
 ] as const;
 
+const LINHA_VAZIA: ClienteLinha = { clienteId: "", observacoes: "", busca: "", popoverOpen: false };
+
 export function RecebimentoLoteModal({ open, onOpenChange }: RecebimentoLoteModalProps) {
   const { data: clientes, isLoading: loadingClientes } = useListClientes();
   const createLote = useCreateRecebimentoLote();
@@ -56,7 +77,7 @@ export function RecebimentoLoteModal({ open, onOpenChange }: RecebimentoLoteModa
   const [remetente, setRemetente] = useState("");
   const [assunto, setAssunto] = useState("");
   const [observacoes, setObservacoes] = useState("");
-  const [linhas, setLinhas] = useState<ClienteLinha[]>([{ clienteId: "", observacoes: "" }]);
+  const [linhas, setLinhas] = useState<ClienteLinha[]>([{ ...LINHA_VAZIA }]);
   const [erros, setErros] = useState<string[]>([]);
 
   function resetForm() {
@@ -67,25 +88,25 @@ export function RecebimentoLoteModal({ open, onOpenChange }: RecebimentoLoteModa
     setRemetente("");
     setAssunto("");
     setObservacoes("");
-    setLinhas([{ clienteId: "", observacoes: "" }]);
+    setLinhas([{ ...LINHA_VAZIA }]);
     setErros([]);
   }
 
-  function handleClose(open: boolean) {
-    if (!open) resetForm();
-    onOpenChange(open);
+  function handleClose(v: boolean) {
+    if (!v) resetForm();
+    onOpenChange(v);
   }
 
   function adicionarLinha() {
-    setLinhas((prev) => [...prev, { clienteId: "", observacoes: "" }]);
+    setLinhas((prev) => [...prev, { ...LINHA_VAZIA }]);
   }
 
   function removerLinha(idx: number) {
     setLinhas((prev) => prev.filter((_, i) => i !== idx));
   }
 
-  function atualizarLinha(idx: number, campo: keyof ClienteLinha, valor: string) {
-    setLinhas((prev) => prev.map((l, i) => (i === idx ? { ...l, [campo]: valor } : l)));
+  function atualizarLinha(idx: number, updates: Partial<ClienteLinha>) {
+    setLinhas((prev) => prev.map((l, i) => (i === idx ? { ...l, ...updates } : l)));
   }
 
   function validar(): string[] {
@@ -93,23 +114,14 @@ export function RecebimentoLoteModal({ open, onOpenChange }: RecebimentoLoteModa
     if (!dataRecebimento) msgs.push("Data de recebimento é obrigatória.");
     if (!horaRecebimento) msgs.push("Hora de recebimento é obrigatória.");
     if (!origem) msgs.push("Origem é obrigatória.");
-
-    const linhasPreenchidas = linhas.filter((l) => l.clienteId !== "");
-    if (linhasPreenchidas.length === 0) msgs.push("Selecione ao menos um cliente.");
-
-    const ids = linhasPreenchidas.map((l) => l.clienteId);
-    const uniq = new Set(ids);
-    if (uniq.size !== ids.length) msgs.push("Há clientes duplicados no lote.");
-
+    const preenchidas = linhas.filter((l) => l.clienteId !== "");
+    if (preenchidas.length === 0) msgs.push("Selecione ao menos um cliente.");
     return msgs;
   }
 
   function handleSalvar() {
     const msgs = validar();
-    if (msgs.length > 0) {
-      setErros(msgs);
-      return;
-    }
+    if (msgs.length > 0) { setErros(msgs); return; }
     setErros([]);
 
     const clientesPayload = linhas
@@ -165,7 +177,7 @@ export function RecebimentoLoteModal({ open, onOpenChange }: RecebimentoLoteModa
         </DialogHeader>
 
         <div className="space-y-6 py-2">
-          {/* Dados gerais do lote */}
+          {/* Dados gerais */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <Label htmlFor="dataRecebimento">Data de Recebimento *</Label>
@@ -236,45 +248,106 @@ export function RecebimentoLoteModal({ open, onOpenChange }: RecebimentoLoteModa
             />
           </div>
 
-          {/* Grade de clientes */}
+          {/* Grade de Ordens de Produção */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <Label className="text-base font-semibold">Clientes do Lote *</Label>
+              <div>
+                <Label className="text-base font-semibold">Ordens de Produção *</Label>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Cada linha abaixo criará uma Ordem de Produção. O mesmo cliente pode aparecer mais de uma vez.
+                </p>
+              </div>
               <Button type="button" variant="outline" size="sm" onClick={adicionarLinha}>
                 <Plus className="h-4 w-4 mr-1" />
-                Adicionar cliente
+                Adicionar linha
               </Button>
             </div>
 
             <div className="space-y-2">
               {linhas.map((linha, idx) => (
-                <div key={idx} className="flex gap-2 items-start">
+                <div key={idx} className="flex gap-2 items-center">
+                  {/* Combobox de cliente com busca */}
                   <div className="flex-1">
-                    <Select
-                      value={linha.clienteId}
-                      onValueChange={(val) => atualizarLinha(idx, "clienteId", val)}
+                    <Popover
+                      open={linha.popoverOpen}
+                      onOpenChange={(v) => atualizarLinha(idx, { popoverOpen: v, busca: v ? linha.busca : "" })}
                     >
-                      <SelectTrigger>
-                        <SelectValue
-                          placeholder={loadingClientes ? "Carregando..." : "Selecione o cliente"}
-                        />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {clientesAtivos.map((c) => (
-                          <SelectItem key={c.id} value={c.id.toString()}>
-                            {nomeCliente(c as any)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          aria-expanded={linha.popoverOpen}
+                          className="w-full justify-between font-normal text-left"
+                        >
+                          <span className="truncate">
+                            {linha.clienteId
+                              ? labelCliente(clientesAtivos.find((c) => c.id.toString() === linha.clienteId)!)
+                              : loadingClientes
+                              ? "Carregando..."
+                              : "Selecione o cliente"}
+                          </span>
+                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent
+                        className="p-0"
+                        style={{ width: "var(--radix-popover-trigger-width)" }}
+                        align="start"
+                      >
+                        <Command shouldFilter={false}>
+                          <CommandInput
+                            placeholder="Buscar por nome interno..."
+                            value={linha.busca}
+                            onValueChange={(v) => atualizarLinha(idx, { busca: v })}
+                          />
+                          <CommandList>
+                            <CommandEmpty>Nenhum cliente encontrado.</CommandEmpty>
+                            <CommandGroup>
+                              {clientesAtivos
+                                .filter((c) => {
+                                  const t = linha.busca.toLowerCase().trim();
+                                  if (!t) return true;
+                                  // Busca pelo mesmo texto que é exibido na lista
+                                  const nome = (c.nomeInterno ?? c.nomeRazaoSocial ?? "").toLowerCase();
+                                  return nome.includes(t);
+                                })
+                                .map((c) => (
+                                  <CommandItem
+                                    key={c.id}
+                                    value={`${c.id}`}
+                                    onSelect={() =>
+                                      atualizarLinha(idx, {
+                                        clienteId: c.id.toString(),
+                                        busca: "",
+                                        popoverOpen: false,
+                                      })
+                                    }
+                                  >
+                                    <Check
+                                      className={cn(
+                                        "mr-2 h-4 w-4",
+                                        linha.clienteId === c.id.toString() ? "opacity-100" : "opacity-0"
+                                      )}
+                                    />
+                                    {labelCliente(c)}
+                                  </CommandItem>
+                                ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
                   </div>
+
+                  {/* Observação da linha */}
                   <div className="flex-1">
                     <Input
                       placeholder="Observação desta ordem (opcional)"
                       value={linha.observacoes}
-                      onChange={(e) => atualizarLinha(idx, "observacoes", e.target.value)}
+                      onChange={(e) => atualizarLinha(idx, { observacoes: e.target.value })}
                     />
                   </div>
+
                   <Button
                     type="button"
                     variant="ghost"
@@ -290,13 +363,11 @@ export function RecebimentoLoteModal({ open, onOpenChange }: RecebimentoLoteModa
             </div>
           </div>
 
-          {/* Erros de validação */}
+          {/* Erros */}
           {erros.length > 0 && (
             <div className="rounded-md bg-destructive/10 border border-destructive/30 p-3 space-y-1">
               {erros.map((msg, i) => (
-                <p key={i} className="text-sm text-destructive">
-                  {msg}
-                </p>
+                <p key={i} className="text-sm text-destructive">{msg}</p>
               ))}
             </div>
           )}

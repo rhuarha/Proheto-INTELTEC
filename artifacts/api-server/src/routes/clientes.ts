@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { db, clientesTable, municipiosTable, logsTable } from "@workspace/db";
-import { eq, getTableColumns } from "drizzle-orm";
+import { eq, asc, getTableColumns } from "drizzle-orm";
 import { requireAuth, requireRole } from "../middlewares/auth";
 import { CreateClienteBody, UpdateClienteBody } from "@workspace/api-zod";
 
@@ -18,7 +18,7 @@ const clienteWithMunicipio = () =>
     .leftJoin(municipiosTable, eq(clientesTable.municipioId, municipiosTable.id));
 
 router.get("/clientes", requireAuth, async (req, res) => {
-  const clientes = await clienteWithMunicipio().orderBy(clientesTable.nomeRazaoSocial);
+  const clientes = await clienteWithMunicipio().orderBy(asc(clientesTable.nomeInterno), asc(clientesTable.id));
   res.json(clientes);
 });
 

@@ -63612,7 +63612,7 @@ var clienteWithMunicipio = () => db.select({
   municipioCodigoIbge: municipiosTable.codigoIbge
 }).from(clientesTable).leftJoin(municipiosTable, eq(clientesTable.municipioId, municipiosTable.id));
 router4.get("/clientes", requireAuth, async (req, res) => {
-  const clientes = await clienteWithMunicipio().orderBy(clientesTable.nomeRazaoSocial);
+  const clientes = await clienteWithMunicipio().orderBy(asc(clientesTable.nomeInterno), asc(clientesTable.id));
   res.json(clientes);
 });
 router4.post("/clientes", requireAuth, requireRole("admin"), async (req, res) => {
@@ -64472,14 +64472,9 @@ router10.post("/recebimento-lotes", requireAuth, requireRole("admin", "apontador
     return;
   }
   const { clientes: clientesPayload, ...loteData } = parsed.data;
-  const clienteIds = clientesPayload.map((c) => c.cliente_id);
-  const uniqueIds = new Set(clienteIds);
-  if (uniqueIds.size !== clienteIds.length) {
-    res.status(400).json({ error: "Bad Request", message: "Cliente duplicado no mesmo lote" });
-    return;
-  }
-  const clientesDb = await db.select().from(clientesTable).where(inArray(clientesTable.id, clienteIds));
-  if (clientesDb.length !== clienteIds.length) {
+  const uniqueClienteIds = [...new Set(clientesPayload.map((c) => c.cliente_id))];
+  const clientesDb = await db.select().from(clientesTable).where(inArray(clientesTable.id, uniqueClienteIds));
+  if (clientesDb.length !== uniqueClienteIds.length) {
     res.status(400).json({ error: "Bad Request", message: "Um ou mais clientes n\xE3o encontrados" });
     return;
   }

@@ -15,21 +15,14 @@ router.post("/recebimento-lotes", requireAuth, requireRole("admin", "apontador")
 
   const { clientes: clientesPayload, ...loteData } = parsed.data;
 
-  // Verificar clientes duplicados no payload
-  const clienteIds = clientesPayload.map((c) => c.cliente_id);
-  const uniqueIds = new Set(clienteIds);
-  if (uniqueIds.size !== clienteIds.length) {
-    res.status(400).json({ error: "Bad Request", message: "Cliente duplicado no mesmo lote" });
-    return;
-  }
-
-  // Validar que todos os clientes existem e estão ativos
+  // Validar que todos os clientes existem e estão ativos (usando IDs únicos para a query)
+  const uniqueClienteIds = [...new Set(clientesPayload.map((c) => c.cliente_id))];
   const clientesDb = await db
     .select()
     .from(clientesTable)
-    .where(inArray(clientesTable.id, clienteIds));
+    .where(inArray(clientesTable.id, uniqueClienteIds));
 
-  if (clientesDb.length !== clienteIds.length) {
+  if (clientesDb.length !== uniqueClienteIds.length) {
     res.status(400).json({ error: "Bad Request", message: "Um ou mais clientes não encontrados" });
     return;
   }
@@ -101,7 +94,7 @@ router.post("/recebimento-lotes", requireAuth, requireRole("admin", "apontador")
 });
 
 router.get("/recebimento-lotes/:id", requireAuth, requireRole("admin", "apontador"), async (req, res) => {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id as string);
   if (isNaN(id)) { res.status(400).json({ error: "Bad Request" }); return; }
 
   const loteResult = await db
