@@ -76,7 +76,7 @@ router.get("/precos/vigente", requireAuth, async (req, res) => {
       eq(clienteProdutoPrecoTable.clienteId, clienteId),
       eq(clienteProdutoPrecoTable.produtoId, produtoId),
       eq(clienteProdutoPrecoTable.ativo, true),
-      lte(clienteProdutoPrecoTable.dataInicialValidade, data),
+      lte(clienteProdutoPrecoTable.dataInicialValidade, data.toISOString().split('T')[0]),
     ))
     .orderBy(desc(clienteProdutoPrecoTable.dataInicialValidade))
     .limit(1);
@@ -103,7 +103,7 @@ router.post("/precos", requireAuth, requireRole("admin", "apontador"), async (re
     .where(and(
       eq(clienteProdutoPrecoTable.clienteId, parsed.data.clienteId),
       eq(clienteProdutoPrecoTable.produtoId, parsed.data.produtoId),
-      eq(clienteProdutoPrecoTable.dataInicialValidade, parsed.data.dataInicialValidade),
+      eq(clienteProdutoPrecoTable.dataInicialValidade, parsed.data.dataInicialValidade.toISOString().split('T')[0]),
       eq(clienteProdutoPrecoTable.ativo, true),
     ))
     .limit(1);
@@ -118,7 +118,7 @@ router.post("/precos", requireAuth, requireRole("admin", "apontador"), async (re
     produtoId: parsed.data.produtoId,
     descricao: parsed.data.descricao ?? null,
     preco: parsed.data.preco,
-    dataInicialValidade: parsed.data.dataInicialValidade,
+    dataInicialValidade: parsed.data.dataInicialValidade.toISOString().split('T')[0],
     usaPapel: (parsed.data.usaPapel as "B" | "I") ?? "B",
     observacoes: parsed.data.observacoes ?? null,
     ativo: parsed.data.ativo ?? true,
@@ -137,7 +137,7 @@ router.post("/precos", requireAuth, requireRole("admin", "apontador"), async (re
 });
 
 router.put("/precos/:id", requireAuth, requireRole("admin", "apontador"), async (req, res) => {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id as string);
   if (isNaN(id)) { res.status(400).json({ error: "Bad Request" }); return; }
 
   const parsed = UpdatePrecoBody.safeParse(req.body);
@@ -146,7 +146,7 @@ router.put("/precos/:id", requireAuth, requireRole("admin", "apontador"), async 
   const updates: Partial<typeof clienteProdutoPrecoTable.$inferInsert> = {};
   if (parsed.data.descricao !== undefined) updates.descricao = parsed.data.descricao;
   if (parsed.data.preco !== undefined) updates.preco = parsed.data.preco;
-  if (parsed.data.dataInicialValidade !== undefined) updates.dataInicialValidade = parsed.data.dataInicialValidade;
+  if (parsed.data.dataInicialValidade !== undefined) updates.dataInicialValidade = parsed.data.dataInicialValidade.toISOString().split('T')[0];
   if (parsed.data.usaPapel !== undefined) updates.usaPapel = parsed.data.usaPapel as "B" | "I";
   if (parsed.data.observacoes !== undefined) updates.observacoes = parsed.data.observacoes;
   if (parsed.data.ativo !== undefined) updates.ativo = parsed.data.ativo;

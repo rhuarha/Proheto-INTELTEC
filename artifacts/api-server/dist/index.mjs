@@ -505,118 +505,44 @@ var require_browser = __commonJS({
   }
 });
 
-// ../../../node_modules/has-flag/index.js
-var require_has_flag = __commonJS({
-  "../../../node_modules/has-flag/index.js"(exports, module) {
-    "use strict";
-    module.exports = (flag, argv = process.argv) => {
-      const prefix = flag.startsWith("-") ? "" : flag.length === 1 ? "-" : "--";
-      const position = argv.indexOf(prefix + flag);
-      const terminatorPosition = argv.indexOf("--");
-      return position !== -1 && (terminatorPosition === -1 || position < terminatorPosition);
-    };
-  }
-});
-
 // ../../../node_modules/supports-color/index.js
 var require_supports_color = __commonJS({
   "../../../node_modules/supports-color/index.js"(exports, module) {
     "use strict";
-    var os = __require("os");
-    var tty = __require("tty");
-    var hasFlag = require_has_flag();
-    var { env } = process;
-    var forceColor;
-    if (hasFlag("no-color") || hasFlag("no-colors") || hasFlag("color=false") || hasFlag("color=never")) {
-      forceColor = 0;
-    } else if (hasFlag("color") || hasFlag("colors") || hasFlag("color=true") || hasFlag("color=always")) {
-      forceColor = 1;
-    }
-    if ("FORCE_COLOR" in env) {
-      if (env.FORCE_COLOR === "true") {
-        forceColor = 1;
-      } else if (env.FORCE_COLOR === "false") {
-        forceColor = 0;
-      } else {
-        forceColor = env.FORCE_COLOR.length === 0 ? 1 : Math.min(parseInt(env.FORCE_COLOR, 10), 3);
+    var argv = process.argv;
+    var terminator = argv.indexOf("--");
+    var hasFlag = function(flag) {
+      flag = "--" + flag;
+      var pos = argv.indexOf(flag);
+      return pos !== -1 && (terminator !== -1 ? pos < terminator : true);
+    };
+    module.exports = (function() {
+      if ("FORCE_COLOR" in process.env) {
+        return true;
       }
-    }
-    function translateLevel(level) {
-      if (level === 0) {
+      if (hasFlag("no-color") || hasFlag("no-colors") || hasFlag("color=false")) {
         return false;
       }
-      return {
-        level,
-        hasBasic: true,
-        has256: level >= 2,
-        has16m: level >= 3
-      };
-    }
-    function supportsColor(haveStream, streamIsTTY) {
-      if (forceColor === 0) {
-        return 0;
+      if (hasFlag("color") || hasFlag("colors") || hasFlag("color=true") || hasFlag("color=always")) {
+        return true;
       }
-      if (hasFlag("color=16m") || hasFlag("color=full") || hasFlag("color=truecolor")) {
-        return 3;
-      }
-      if (hasFlag("color=256")) {
-        return 2;
-      }
-      if (haveStream && !streamIsTTY && forceColor === void 0) {
-        return 0;
-      }
-      const min = forceColor || 0;
-      if (env.TERM === "dumb") {
-        return min;
+      if (process.stdout && !process.stdout.isTTY) {
+        return false;
       }
       if (process.platform === "win32") {
-        const osRelease = os.release().split(".");
-        if (Number(osRelease[0]) >= 10 && Number(osRelease[2]) >= 10586) {
-          return Number(osRelease[2]) >= 14931 ? 3 : 2;
-        }
-        return 1;
+        return true;
       }
-      if ("CI" in env) {
-        if (["TRAVIS", "CIRCLECI", "APPVEYOR", "GITLAB_CI", "GITHUB_ACTIONS", "BUILDKITE"].some((sign) => sign in env) || env.CI_NAME === "codeship") {
-          return 1;
-        }
-        return min;
+      if ("COLORTERM" in process.env) {
+        return true;
       }
-      if ("TEAMCITY_VERSION" in env) {
-        return /^(9\.(0*[1-9]\d*)\.|\d{2,}\.)/.test(env.TEAMCITY_VERSION) ? 1 : 0;
+      if (process.env.TERM === "dumb") {
+        return false;
       }
-      if (env.COLORTERM === "truecolor") {
-        return 3;
+      if (/^screen|^xterm|^vt100|color|ansi|cygwin|linux/i.test(process.env.TERM)) {
+        return true;
       }
-      if ("TERM_PROGRAM" in env) {
-        const version3 = parseInt((env.TERM_PROGRAM_VERSION || "").split(".")[0], 10);
-        switch (env.TERM_PROGRAM) {
-          case "iTerm.app":
-            return version3 >= 3 ? 3 : 2;
-          case "Apple_Terminal":
-            return 2;
-        }
-      }
-      if (/-256(color)?$/i.test(env.TERM)) {
-        return 2;
-      }
-      if (/^screen|^xterm|^vt100|^vt220|^rxvt|color|ansi|cygwin|linux/i.test(env.TERM)) {
-        return 1;
-      }
-      if ("COLORTERM" in env) {
-        return 1;
-      }
-      return min;
-    }
-    function getSupportLevel(stream) {
-      const level = supportsColor(stream, stream && stream.isTTY);
-      return translateLevel(level);
-    }
-    module.exports = {
-      supportsColor: getSupportLevel,
-      stdout: translateLevel(supportsColor(true, tty.isatty(1))),
-      stderr: translateLevel(supportsColor(true, tty.isatty(2)))
-    };
+      return false;
+    })();
   }
 });
 
@@ -63828,7 +63754,7 @@ router6.post("/producao", requireAuth, requireRole("admin", "apontador"), async 
   }
   const inserted = await db.insert(producaoTable).values({
     clienteId: parsed.data.clienteId,
-    dataRecebimento: parsed.data.dataRecebimento,
+    dataRecebimento: parsed.data.dataRecebimento.toISOString().split("T")[0],
     horaRecebimento: parsed.data.horaRecebimento ?? null,
     observacoes: parsed.data.observacoes ?? null,
     status: "recebida"
@@ -63882,7 +63808,7 @@ router6.put("/producao/:id", requireAuth, requireRole("admin", "apontador"), asy
   }
   const updates = {};
   if (parsed.data.clienteId !== void 0) updates.clienteId = parsed.data.clienteId;
-  if (parsed.data.dataRecebimento !== void 0) updates.dataRecebimento = parsed.data.dataRecebimento;
+  if (parsed.data.dataRecebimento !== void 0) updates.dataRecebimento = parsed.data.dataRecebimento.toISOString().split("T")[0];
   if (parsed.data.horaRecebimento !== void 0) updates.horaRecebimento = parsed.data.horaRecebimento;
   if (parsed.data.observacoes !== void 0) updates.observacoes = parsed.data.observacoes;
   if (parsed.data.status !== void 0) updates.status = parsed.data.status;
@@ -64281,7 +64207,7 @@ router8.get("/precos/vigente", requireAuth, async (req, res) => {
     eq(clienteProdutoPrecoTable.clienteId, clienteId),
     eq(clienteProdutoPrecoTable.produtoId, produtoId),
     eq(clienteProdutoPrecoTable.ativo, true),
-    lte(clienteProdutoPrecoTable.dataInicialValidade, data)
+    lte(clienteProdutoPrecoTable.dataInicialValidade, data.toISOString().split("T")[0])
   )).orderBy(desc(clienteProdutoPrecoTable.dataInicialValidade)).limit(1);
   if (!results[0]) {
     res.status(404).json({ error: "Not Found", message: `N\xE3o existe pre\xE7o v\xE1lido para este cliente/produto na data ${data}` });
@@ -64299,7 +64225,7 @@ router8.post("/precos", requireAuth, requireRole("admin", "apontador"), async (r
   const existing = await db.select().from(clienteProdutoPrecoTable).where(and(
     eq(clienteProdutoPrecoTable.clienteId, parsed.data.clienteId),
     eq(clienteProdutoPrecoTable.produtoId, parsed.data.produtoId),
-    eq(clienteProdutoPrecoTable.dataInicialValidade, parsed.data.dataInicialValidade),
+    eq(clienteProdutoPrecoTable.dataInicialValidade, parsed.data.dataInicialValidade.toISOString().split("T")[0]),
     eq(clienteProdutoPrecoTable.ativo, true)
   )).limit(1);
   if (existing[0]) {
@@ -64311,7 +64237,7 @@ router8.post("/precos", requireAuth, requireRole("admin", "apontador"), async (r
     produtoId: parsed.data.produtoId,
     descricao: parsed.data.descricao ?? null,
     preco: parsed.data.preco,
-    dataInicialValidade: parsed.data.dataInicialValidade,
+    dataInicialValidade: parsed.data.dataInicialValidade.toISOString().split("T")[0],
     usaPapel: parsed.data.usaPapel ?? "B",
     observacoes: parsed.data.observacoes ?? null,
     ativo: parsed.data.ativo ?? true
@@ -64340,7 +64266,7 @@ router8.put("/precos/:id", requireAuth, requireRole("admin", "apontador"), async
   const updates = {};
   if (parsed.data.descricao !== void 0) updates.descricao = parsed.data.descricao;
   if (parsed.data.preco !== void 0) updates.preco = parsed.data.preco;
-  if (parsed.data.dataInicialValidade !== void 0) updates.dataInicialValidade = parsed.data.dataInicialValidade;
+  if (parsed.data.dataInicialValidade !== void 0) updates.dataInicialValidade = parsed.data.dataInicialValidade.toISOString().split("T")[0];
   if (parsed.data.usaPapel !== void 0) updates.usaPapel = parsed.data.usaPapel;
   if (parsed.data.observacoes !== void 0) updates.observacoes = parsed.data.observacoes;
   if (parsed.data.ativo !== void 0) updates.ativo = parsed.data.ativo;

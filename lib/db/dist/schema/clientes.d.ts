@@ -279,6 +279,23 @@ export declare const clientesTable: import("drizzle-orm/pg-core").PgTableWithCol
         }, {}, {
             length: 2;
         }>;
+        municipioId: import("drizzle-orm/pg-core").PgColumn<{
+            name: "municipio_id";
+            tableName: "clientes";
+            dataType: "number";
+            columnType: "PgInteger";
+            data: number;
+            driverParam: string | number;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
         emailNfse: import("drizzle-orm/pg-core").PgColumn<{
             name: "email_nfse";
             tableName: "clientes";
@@ -676,6 +693,8 @@ export declare const clientesTable: import("drizzle-orm/pg-core").PgTableWithCol
     dialect: "pg";
 }>;
 export declare const insertClienteSchema: z.ZodObject<{
+    uf: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    ativo: z.ZodOptional<z.ZodBoolean>;
     nomeRazaoSocial: z.ZodString;
     nomeFantasia: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     nomeInterno: z.ZodOptional<z.ZodNullable<z.ZodString>>;
@@ -690,7 +709,7 @@ export declare const insertClienteSchema: z.ZodObject<{
     bairro: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     cidade: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     cep: z.ZodOptional<z.ZodNullable<z.ZodString>>;
-    uf: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    municipioId: z.ZodOptional<z.ZodNullable<z.ZodInt>>;
     emailNfse: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     nomeContato: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     emailContato: z.ZodOptional<z.ZodNullable<z.ZodString>>;
@@ -719,7 +738,6 @@ export declare const insertClienteSchema: z.ZodObject<{
     prazoMaximoDias: z.ZodOptional<z.ZodNullable<z.ZodInt>>;
     diaFechamento: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     fecharAoDisponibilizar: z.ZodOptional<z.ZodBoolean>;
-    ativo: z.ZodOptional<z.ZodBoolean>;
 }, {
     out: {};
     in: {};

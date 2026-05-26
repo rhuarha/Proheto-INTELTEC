@@ -1,0 +1,160 @@
+import { z } from "zod/v4";
+export declare const municipiosTable: import("drizzle-orm/pg-core").PgTableWithColumns<{
+    name: "municipios";
+    schema: undefined;
+    columns: {
+        id: import("drizzle-orm/pg-core").PgColumn<{
+            name: "id";
+            tableName: "municipios";
+            dataType: "number";
+            columnType: "PgSerial";
+            data: number;
+            driverParam: number;
+            notNull: true;
+            hasDefault: true;
+            isPrimaryKey: true;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        nome: import("drizzle-orm/pg-core").PgColumn<{
+            name: "nome";
+            tableName: "municipios";
+            dataType: "string";
+            columnType: "PgText";
+            data: string;
+            driverParam: string;
+            notNull: true;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        uf: import("drizzle-orm/pg-core").PgColumn<{
+            name: "uf";
+            tableName: "municipios";
+            dataType: "string";
+            columnType: "PgVarchar";
+            data: string;
+            driverParam: string;
+            notNull: true;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {
+            length: 2;
+        }>;
+        codigoIbge: import("drizzle-orm/pg-core").PgColumn<{
+            name: "codigo_ibge";
+            tableName: "municipios";
+            dataType: "string";
+            columnType: "PgVarchar";
+            data: string;
+            driverParam: string;
+            notNull: true;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {
+            length: 10;
+        }>;
+        ativo: import("drizzle-orm/pg-core").PgColumn<{
+            name: "ativo";
+            tableName: "municipios";
+            dataType: "boolean";
+            columnType: "PgBoolean";
+            data: boolean;
+            driverParam: boolean;
+            notNull: true;
+            hasDefault: true;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        createdAt: import("drizzle-orm/pg-core").PgColumn<{
+            name: "created_at";
+            tableName: "municipios";
+            dataType: "date";
+            columnType: "PgTimestamp";
+            data: Date;
+            driverParam: string;
+            notNull: true;
+            hasDefault: true;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        updatedAt: import("drizzle-orm/pg-core").PgColumn<{
+            name: "updated_at";
+            tableName: "municipios";
+            dataType: "date";
+            columnType: "PgTimestamp";
+            data: Date;
+            driverParam: string;
+            notNull: true;
+            hasDefault: true;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        deletedAt: import("drizzle-orm/pg-core").PgColumn<{
+            name: "deleted_at";
+            tableName: "municipios";
+            dataType: "date";
+            columnType: "PgTimestamp";
+            data: Date;
+            driverParam: string;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+    };
+    dialect: "pg";
+}>;
+export declare const insertMunicipioSchema: z.ZodObject<{
+    nome: z.ZodString;
+    uf: z.ZodString;
+    codigoIbge: z.ZodString;
+    ativo: z.ZodOptional<z.ZodBoolean>;
+}, {
+    out: {};
+    in: {};
+}>;
+export type InsertMunicipio = z.infer<typeof insertMunicipioSchema>;
+export type Municipio = typeof municipiosTable.$inferSelect;
+//# sourceMappingURL=municipios.d.ts.map

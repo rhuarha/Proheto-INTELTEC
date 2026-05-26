@@ -46,7 +46,7 @@ router.post("/produtos", requireAuth, requireRole("admin"), async (req, res) => 
 });
 
 router.get("/produtos/:id", requireAuth, async (req, res) => {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id as string);
   if (isNaN(id)) { res.status(400).json({ error: "Bad Request" }); return; }
 
   const results = await db.select().from(produtosTable).where(eq(produtosTable.id, id)).limit(1);
@@ -56,7 +56,7 @@ router.get("/produtos/:id", requireAuth, async (req, res) => {
 });
 
 router.put("/produtos/:id", requireAuth, requireRole("admin"), async (req, res) => {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id as string);
   if (isNaN(id)) { res.status(400).json({ error: "Bad Request" }); return; }
 
   const parsed = UpdateProdutoBody.safeParse(req.body);

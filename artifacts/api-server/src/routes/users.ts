@@ -54,7 +54,7 @@ router.post("/users", requireAuth, requireRole("admin"), async (req, res) => {
 });
 
 router.get("/users/:id", requireAuth, requireRole("admin"), async (req, res) => {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id as string);
   if (isNaN(id)) { res.status(400).json({ error: "Bad Request" }); return; }
 
   const users = await db.select().from(usersTable).where(eq(usersTable.id, id)).limit(1);
@@ -64,7 +64,7 @@ router.get("/users/:id", requireAuth, requireRole("admin"), async (req, res) => 
 });
 
 router.put("/users/:id", requireAuth, requireRole("admin"), async (req, res) => {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id as string);
   if (isNaN(id)) { res.status(400).json({ error: "Bad Request" }); return; }
 
   const parsed = UpdateUserBody.safeParse(req.body);

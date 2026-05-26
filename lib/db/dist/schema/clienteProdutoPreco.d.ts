@@ -212,8 +212,8 @@ export declare const clienteProdutoPrecoTable: import("drizzle-orm/pg-core").PgT
 }>;
 export declare const insertClienteProdutoPrecoSchema: z.ZodObject<{
     ativo: z.ZodOptional<z.ZodBoolean>;
-    clienteId: z.ZodInt;
     observacoes: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    clienteId: z.ZodInt;
     descricao: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     produtoId: z.ZodInt;
     preco: z.ZodString;

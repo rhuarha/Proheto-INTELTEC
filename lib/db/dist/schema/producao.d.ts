@@ -107,6 +107,23 @@ export declare const producaoTable: import("drizzle-orm/pg-core").PgTableWithCol
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
+        recebimentoLoteId: import("drizzle-orm/pg-core").PgColumn<{
+            name: "recebimento_lote_id";
+            tableName: "producao";
+            dataType: "number";
+            columnType: "PgInteger";
+            data: number;
+            driverParam: string | number;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
         createdAt: import("drizzle-orm/pg-core").PgColumn<{
             name: "created_at";
             tableName: "producao";
@@ -162,10 +179,10 @@ export declare const producaoTable: import("drizzle-orm/pg-core").PgTableWithCol
     dialect: "pg";
 }>;
 export declare const insertProducaoSchema: z.ZodObject<{
-    clienteId: z.ZodInt;
     dataRecebimento: z.ZodString;
     horaRecebimento: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     observacoes: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    clienteId: z.ZodInt;
     status: z.ZodOptional<z.ZodEnum<{
         recebida: "recebida";
         processada: "processada";
@@ -175,6 +192,7 @@ export declare const insertProducaoSchema: z.ZodObject<{
         retirada: "retirada";
         cancelada: "cancelada";
     }>>;
+    recebimentoLoteId: z.ZodOptional<z.ZodNullable<z.ZodInt>>;
 }, {
     out: {};
     in: {};

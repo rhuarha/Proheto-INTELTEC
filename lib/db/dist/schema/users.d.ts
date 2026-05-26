@@ -160,8 +160,9 @@ export declare const usersTable: import("drizzle-orm/pg-core").PgTableWithColumn
     dialect: "pg";
 }>;
 export declare const insertUserSchema: z.ZodObject<{
-    name: z.ZodString;
     ativo: z.ZodOptional<z.ZodBoolean>;
+    name: z.ZodString;
+    clienteId: z.ZodOptional<z.ZodNullable<z.ZodInt>>;
     email: z.ZodString;
     passwordHash: z.ZodString;
     role: z.ZodOptional<z.ZodEnum<{
@@ -169,7 +170,6 @@ export declare const insertUserSchema: z.ZodObject<{
         apontador: "apontador";
         cliente: "cliente";
     }>>;
-    clienteId: z.ZodOptional<z.ZodNullable<z.ZodInt>>;
 }, {
     out: {};
     in: {};

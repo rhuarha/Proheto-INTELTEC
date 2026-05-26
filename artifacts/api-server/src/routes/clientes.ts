@@ -45,7 +45,7 @@ router.post("/clientes", requireAuth, requireRole("admin"), async (req, res) => 
 });
 
 router.get("/clientes/:id", requireAuth, async (req, res) => {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id as string);
   if (isNaN(id)) { res.status(400).json({ error: "Bad Request" }); return; }
 
   const results = await clienteWithMunicipio().where(eq(clientesTable.id, id)).limit(1);
@@ -55,7 +55,7 @@ router.get("/clientes/:id", requireAuth, async (req, res) => {
 });
 
 router.put("/clientes/:id", requireAuth, requireRole("admin"), async (req, res) => {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id as string);
   if (isNaN(id)) { res.status(400).json({ error: "Bad Request" }); return; }
 
   const parsed = UpdateClienteBody.safeParse(req.body);

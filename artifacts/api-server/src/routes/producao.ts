@@ -150,7 +150,7 @@ router.post("/producao", requireAuth, requireRole("admin", "apontador"), async (
 
   const inserted = await db.insert(producaoTable).values({
     clienteId: parsed.data.clienteId,
-    dataRecebimento: parsed.data.dataRecebimento,
+    dataRecebimento: parsed.data.dataRecebimento.toISOString().split('T')[0],
     horaRecebimento: parsed.data.horaRecebimento ?? null,
     observacoes: parsed.data.observacoes ?? null,
     status: "recebida",
@@ -168,7 +168,7 @@ router.post("/producao", requireAuth, requireRole("admin", "apontador"), async (
 });
 
 router.get("/producao/:id", requireAuth, async (req, res) => {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id as string);
   if (isNaN(id)) { res.status(400).json({ error: "Bad Request" }); return; }
 
   const results = await db
@@ -204,7 +204,7 @@ router.get("/producao/:id", requireAuth, async (req, res) => {
 });
 
 router.put("/producao/:id", requireAuth, requireRole("admin", "apontador"), async (req, res) => {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id as string);
   if (isNaN(id)) { res.status(400).json({ error: "Bad Request" }); return; }
 
   const parsed = UpdateProducaoBody.safeParse(req.body);
@@ -212,7 +212,7 @@ router.put("/producao/:id", requireAuth, requireRole("admin", "apontador"), asyn
 
   const updates: Partial<typeof producaoTable.$inferInsert> = {};
   if (parsed.data.clienteId !== undefined) updates.clienteId = parsed.data.clienteId;
-  if (parsed.data.dataRecebimento !== undefined) updates.dataRecebimento = parsed.data.dataRecebimento;
+  if (parsed.data.dataRecebimento !== undefined) updates.dataRecebimento = parsed.data.dataRecebimento.toISOString().split('T')[0];
   if (parsed.data.horaRecebimento !== undefined) updates.horaRecebimento = parsed.data.horaRecebimento;
   if (parsed.data.observacoes !== undefined) updates.observacoes = parsed.data.observacoes;
   if (parsed.data.status !== undefined) updates.status = parsed.data.status as typeof producaoTable.$inferSelect.status;
@@ -234,7 +234,7 @@ router.put("/producao/:id", requireAuth, requireRole("admin", "apontador"), asyn
 });
 
 router.post("/producao/:id/concluir-processamento", requireAuth, requireRole("admin", "apontador"), async (req, res) => {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id as string);
   if (isNaN(id)) { res.status(400).json({ error: "Bad Request" }); return; }
 
   const itemCount = await db.select({ count: sql<number>`count(*)` })
@@ -267,7 +267,7 @@ router.post("/producao/:id/concluir-processamento", requireAuth, requireRole("ad
 });
 
 router.post("/producao/:id/cancelar", requireAuth, requireRole("admin"), async (req, res) => {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id as string);
   if (isNaN(id)) { res.status(400).json({ error: "Bad Request" }); return; }
 
   const updated = await db.update(producaoTable)
@@ -293,7 +293,7 @@ router.post("/producao/:id/cancelar", requireAuth, requireRole("admin"), async (
 // ============ ITEMS ============
 
 router.get("/producao/:id/items", requireAuth, async (req, res) => {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id as string);
   if (isNaN(id)) { res.status(400).json({ error: "Bad Request" }); return; }
 
   const items = await db
@@ -313,7 +313,7 @@ router.get("/producao/:id/items", requireAuth, async (req, res) => {
 });
 
 router.post("/producao/:id/items", requireAuth, requireRole("admin", "apontador"), async (req, res) => {
-  const producaoId = parseInt(req.params.id);
+  const producaoId = parseInt(req.params.id as string);
   if (isNaN(producaoId)) { res.status(400).json({ error: "Bad Request" }); return; }
 
   const parsed = AddProducaoItemBody.safeParse(req.body);
@@ -356,8 +356,8 @@ router.post("/producao/:id/items", requireAuth, requireRole("admin", "apontador"
 });
 
 router.put("/producao/:id/items/:itemId", requireAuth, requireRole("admin", "apontador"), async (req, res) => {
-  const producaoId = parseInt(req.params.id);
-  const itemId = parseInt(req.params.itemId);
+  const producaoId = parseInt(req.params.id as string);
+  const itemId = parseInt(req.params.itemId as string);
   if (isNaN(producaoId) || isNaN(itemId)) { res.status(400).json({ error: "Bad Request" }); return; }
 
   const parsed = UpdateProducaoItemBody.safeParse(req.body);
@@ -386,8 +386,8 @@ router.put("/producao/:id/items/:itemId", requireAuth, requireRole("admin", "apo
 });
 
 router.delete("/producao/:id/items/:itemId", requireAuth, requireRole("admin", "apontador"), async (req, res) => {
-  const producaoId = parseInt(req.params.id);
-  const itemId = parseInt(req.params.itemId);
+  const producaoId = parseInt(req.params.id as string);
+  const itemId = parseInt(req.params.itemId as string);
   if (isNaN(producaoId) || isNaN(itemId)) { res.status(400).json({ error: "Bad Request" }); return; }
 
   await db.delete(producaoItemsTable)

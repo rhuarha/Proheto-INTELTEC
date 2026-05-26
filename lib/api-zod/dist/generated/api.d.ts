@@ -280,7 +280,6 @@ export declare const UpdateUserResponse: zod.ZodObject<{
 /**
  * @summary List all clients
  */
-export declare const listClientesResponseUfMax = 2;
 export declare const ListClientesResponseItem: zod.ZodObject<{
     id: zod.ZodNumber;
     nomeRazaoSocial: zod.ZodString;
@@ -295,9 +294,11 @@ export declare const ListClientesResponseItem: zod.ZodObject<{
     numero: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     complemento: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     bairro: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
-    cidade: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     cep: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
-    uf: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
+    municipioId: zod.ZodOptional<zod.ZodNullable<zod.ZodNumber>>;
+    municipioNome: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
+    municipioUf: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
+    municipioCodigoIbge: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     emailNfse: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     nomeContato: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     emailContato: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
@@ -338,9 +339,11 @@ export declare const ListClientesResponseItem: zod.ZodObject<{
     numero?: string | null | undefined;
     complemento?: string | null | undefined;
     bairro?: string | null | undefined;
-    cidade?: string | null | undefined;
     cep?: string | null | undefined;
-    uf?: string | null | undefined;
+    municipioId?: number | null | undefined;
+    municipioNome?: string | null | undefined;
+    municipioUf?: string | null | undefined;
+    municipioCodigoIbge?: string | null | undefined;
     emailNfse?: string | null | undefined;
     nomeContato?: string | null | undefined;
     emailContato?: string | null | undefined;
@@ -375,9 +378,11 @@ export declare const ListClientesResponseItem: zod.ZodObject<{
     numero?: string | null | undefined;
     complemento?: string | null | undefined;
     bairro?: string | null | undefined;
-    cidade?: string | null | undefined;
     cep?: string | null | undefined;
-    uf?: string | null | undefined;
+    municipioId?: number | null | undefined;
+    municipioNome?: string | null | undefined;
+    municipioUf?: string | null | undefined;
+    municipioCodigoIbge?: string | null | undefined;
     emailNfse?: string | null | undefined;
     nomeContato?: string | null | undefined;
     emailContato?: string | null | undefined;
@@ -407,9 +412,11 @@ export declare const ListClientesResponse: zod.ZodArray<zod.ZodObject<{
     numero: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     complemento: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     bairro: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
-    cidade: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     cep: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
-    uf: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
+    municipioId: zod.ZodOptional<zod.ZodNullable<zod.ZodNumber>>;
+    municipioNome: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
+    municipioUf: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
+    municipioCodigoIbge: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     emailNfse: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     nomeContato: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     emailContato: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
@@ -450,9 +457,11 @@ export declare const ListClientesResponse: zod.ZodArray<zod.ZodObject<{
     numero?: string | null | undefined;
     complemento?: string | null | undefined;
     bairro?: string | null | undefined;
-    cidade?: string | null | undefined;
     cep?: string | null | undefined;
-    uf?: string | null | undefined;
+    municipioId?: number | null | undefined;
+    municipioNome?: string | null | undefined;
+    municipioUf?: string | null | undefined;
+    municipioCodigoIbge?: string | null | undefined;
     emailNfse?: string | null | undefined;
     nomeContato?: string | null | undefined;
     emailContato?: string | null | undefined;
@@ -487,9 +496,11 @@ export declare const ListClientesResponse: zod.ZodArray<zod.ZodObject<{
     numero?: string | null | undefined;
     complemento?: string | null | undefined;
     bairro?: string | null | undefined;
-    cidade?: string | null | undefined;
     cep?: string | null | undefined;
-    uf?: string | null | undefined;
+    municipioId?: number | null | undefined;
+    municipioNome?: string | null | undefined;
+    municipioUf?: string | null | undefined;
+    municipioCodigoIbge?: string | null | undefined;
     emailNfse?: string | null | undefined;
     nomeContato?: string | null | undefined;
     emailContato?: string | null | undefined;
@@ -508,7 +519,6 @@ export declare const ListClientesResponse: zod.ZodArray<zod.ZodObject<{
 /**
  * @summary Create a new client (admin only)
  */
-export declare const createClienteBodyUfMax = 2;
 export declare const CreateClienteBody: zod.ZodObject<{
     nomeRazaoSocial: zod.ZodString;
     nomeFantasia: zod.ZodOptional<zod.ZodString>;
@@ -522,9 +532,8 @@ export declare const CreateClienteBody: zod.ZodObject<{
     numero: zod.ZodOptional<zod.ZodString>;
     complemento: zod.ZodOptional<zod.ZodString>;
     bairro: zod.ZodOptional<zod.ZodString>;
-    cidade: zod.ZodOptional<zod.ZodString>;
     cep: zod.ZodOptional<zod.ZodString>;
-    uf: zod.ZodOptional<zod.ZodString>;
+    municipioId: zod.ZodOptional<zod.ZodNullable<zod.ZodNumber>>;
     emailNfse: zod.ZodOptional<zod.ZodString>;
     nomeContato: zod.ZodOptional<zod.ZodString>;
     emailContato: zod.ZodOptional<zod.ZodString>;
@@ -558,9 +567,8 @@ export declare const CreateClienteBody: zod.ZodObject<{
     numero?: string | undefined;
     complemento?: string | undefined;
     bairro?: string | undefined;
-    cidade?: string | undefined;
     cep?: string | undefined;
-    uf?: string | undefined;
+    municipioId?: number | null | undefined;
     emailNfse?: string | undefined;
     nomeContato?: string | undefined;
     emailContato?: string | undefined;
@@ -593,9 +601,8 @@ export declare const CreateClienteBody: zod.ZodObject<{
     numero?: string | undefined;
     complemento?: string | undefined;
     bairro?: string | undefined;
-    cidade?: string | undefined;
     cep?: string | undefined;
-    uf?: string | undefined;
+    municipioId?: number | null | undefined;
     emailNfse?: string | undefined;
     nomeContato?: string | undefined;
     emailContato?: string | undefined;
@@ -625,7 +632,6 @@ export declare const GetClienteParams: zod.ZodObject<{
 }, {
     id: number;
 }>;
-export declare const getClienteResponseUfMax = 2;
 export declare const GetClienteResponse: zod.ZodObject<{
     id: zod.ZodNumber;
     nomeRazaoSocial: zod.ZodString;
@@ -640,9 +646,11 @@ export declare const GetClienteResponse: zod.ZodObject<{
     numero: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     complemento: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     bairro: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
-    cidade: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     cep: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
-    uf: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
+    municipioId: zod.ZodOptional<zod.ZodNullable<zod.ZodNumber>>;
+    municipioNome: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
+    municipioUf: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
+    municipioCodigoIbge: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     emailNfse: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     nomeContato: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     emailContato: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
@@ -683,9 +691,11 @@ export declare const GetClienteResponse: zod.ZodObject<{
     numero?: string | null | undefined;
     complemento?: string | null | undefined;
     bairro?: string | null | undefined;
-    cidade?: string | null | undefined;
     cep?: string | null | undefined;
-    uf?: string | null | undefined;
+    municipioId?: number | null | undefined;
+    municipioNome?: string | null | undefined;
+    municipioUf?: string | null | undefined;
+    municipioCodigoIbge?: string | null | undefined;
     emailNfse?: string | null | undefined;
     nomeContato?: string | null | undefined;
     emailContato?: string | null | undefined;
@@ -720,9 +730,11 @@ export declare const GetClienteResponse: zod.ZodObject<{
     numero?: string | null | undefined;
     complemento?: string | null | undefined;
     bairro?: string | null | undefined;
-    cidade?: string | null | undefined;
     cep?: string | null | undefined;
-    uf?: string | null | undefined;
+    municipioId?: number | null | undefined;
+    municipioNome?: string | null | undefined;
+    municipioUf?: string | null | undefined;
+    municipioCodigoIbge?: string | null | undefined;
     emailNfse?: string | null | undefined;
     nomeContato?: string | null | undefined;
     emailContato?: string | null | undefined;
@@ -748,7 +760,6 @@ export declare const UpdateClienteParams: zod.ZodObject<{
 }, {
     id: number;
 }>;
-export declare const updateClienteBodyUfMax = 2;
 export declare const UpdateClienteBody: zod.ZodObject<{
     nomeRazaoSocial: zod.ZodOptional<zod.ZodString>;
     nomeFantasia: zod.ZodOptional<zod.ZodString>;
@@ -762,9 +773,8 @@ export declare const UpdateClienteBody: zod.ZodObject<{
     numero: zod.ZodOptional<zod.ZodString>;
     complemento: zod.ZodOptional<zod.ZodString>;
     bairro: zod.ZodOptional<zod.ZodString>;
-    cidade: zod.ZodOptional<zod.ZodString>;
     cep: zod.ZodOptional<zod.ZodString>;
-    uf: zod.ZodOptional<zod.ZodString>;
+    municipioId: zod.ZodOptional<zod.ZodNullable<zod.ZodNumber>>;
     emailNfse: zod.ZodOptional<zod.ZodString>;
     nomeContato: zod.ZodOptional<zod.ZodString>;
     emailContato: zod.ZodOptional<zod.ZodString>;
@@ -798,9 +808,8 @@ export declare const UpdateClienteBody: zod.ZodObject<{
     numero?: string | undefined;
     complemento?: string | undefined;
     bairro?: string | undefined;
-    cidade?: string | undefined;
     cep?: string | undefined;
-    uf?: string | undefined;
+    municipioId?: number | null | undefined;
     emailNfse?: string | undefined;
     nomeContato?: string | undefined;
     emailContato?: string | undefined;
@@ -833,9 +842,8 @@ export declare const UpdateClienteBody: zod.ZodObject<{
     numero?: string | undefined;
     complemento?: string | undefined;
     bairro?: string | undefined;
-    cidade?: string | undefined;
     cep?: string | undefined;
-    uf?: string | undefined;
+    municipioId?: number | null | undefined;
     emailNfse?: string | undefined;
     nomeContato?: string | undefined;
     emailContato?: string | undefined;
@@ -855,7 +863,6 @@ export declare const UpdateClienteBody: zod.ZodObject<{
     diaFechamento?: string | undefined;
     fecharAoDisponibilizar?: boolean | undefined;
 }>;
-export declare const updateClienteResponseUfMax = 2;
 export declare const UpdateClienteResponse: zod.ZodObject<{
     id: zod.ZodNumber;
     nomeRazaoSocial: zod.ZodString;
@@ -870,9 +877,11 @@ export declare const UpdateClienteResponse: zod.ZodObject<{
     numero: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     complemento: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     bairro: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
-    cidade: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     cep: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
-    uf: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
+    municipioId: zod.ZodOptional<zod.ZodNullable<zod.ZodNumber>>;
+    municipioNome: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
+    municipioUf: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
+    municipioCodigoIbge: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     emailNfse: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     nomeContato: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
     emailContato: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
@@ -913,9 +922,11 @@ export declare const UpdateClienteResponse: zod.ZodObject<{
     numero?: string | null | undefined;
     complemento?: string | null | undefined;
     bairro?: string | null | undefined;
-    cidade?: string | null | undefined;
     cep?: string | null | undefined;
-    uf?: string | null | undefined;
+    municipioId?: number | null | undefined;
+    municipioNome?: string | null | undefined;
+    municipioUf?: string | null | undefined;
+    municipioCodigoIbge?: string | null | undefined;
     emailNfse?: string | null | undefined;
     nomeContato?: string | null | undefined;
     emailContato?: string | null | undefined;
@@ -950,9 +961,11 @@ export declare const UpdateClienteResponse: zod.ZodObject<{
     numero?: string | null | undefined;
     complemento?: string | null | undefined;
     bairro?: string | null | undefined;
-    cidade?: string | null | undefined;
     cep?: string | null | undefined;
-    uf?: string | null | undefined;
+    municipioId?: number | null | undefined;
+    municipioNome?: string | null | undefined;
+    municipioUf?: string | null | undefined;
+    municipioCodigoIbge?: string | null | undefined;
     emailNfse?: string | null | undefined;
     nomeContato?: string | null | undefined;
     emailContato?: string | null | undefined;
@@ -1216,9 +1229,7 @@ export declare const ListProducaoResponseItem: zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -1233,6 +1244,8 @@ export declare const ListProducaoResponseItem: zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     }, {
         id: number;
         ativo: boolean;
@@ -1253,9 +1266,7 @@ export declare const ListProducaoResponseItem: zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -1270,6 +1281,8 @@ export declare const ListProducaoResponseItem: zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     }>;
     createdAt: zod.ZodDate;
     updatedAt: zod.ZodDate;
@@ -1296,9 +1309,7 @@ export declare const ListProducaoResponseItem: zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -1313,6 +1324,8 @@ export declare const ListProducaoResponseItem: zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     };
     clienteId: number;
     createdAt: Date;
@@ -1343,9 +1356,7 @@ export declare const ListProducaoResponseItem: zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -1360,6 +1371,8 @@ export declare const ListProducaoResponseItem: zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     };
     clienteId: number;
     createdAt: Date;
@@ -1432,9 +1445,7 @@ export declare const ListProducaoResponse: zod.ZodArray<zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -1449,6 +1460,8 @@ export declare const ListProducaoResponse: zod.ZodArray<zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     }, {
         id: number;
         ativo: boolean;
@@ -1469,9 +1482,7 @@ export declare const ListProducaoResponse: zod.ZodArray<zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -1486,6 +1497,8 @@ export declare const ListProducaoResponse: zod.ZodArray<zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     }>;
     createdAt: zod.ZodDate;
     updatedAt: zod.ZodDate;
@@ -1512,9 +1525,7 @@ export declare const ListProducaoResponse: zod.ZodArray<zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -1529,6 +1540,8 @@ export declare const ListProducaoResponse: zod.ZodArray<zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     };
     clienteId: number;
     createdAt: Date;
@@ -1559,9 +1572,7 @@ export declare const ListProducaoResponse: zod.ZodArray<zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -1576,6 +1587,8 @@ export declare const ListProducaoResponse: zod.ZodArray<zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     };
     clienteId: number;
     createdAt: Date;
@@ -1679,9 +1692,7 @@ export declare const GetProducaoResponse: zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -1696,6 +1707,8 @@ export declare const GetProducaoResponse: zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     }, {
         id: number;
         ativo: boolean;
@@ -1716,9 +1729,7 @@ export declare const GetProducaoResponse: zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -1733,6 +1744,8 @@ export declare const GetProducaoResponse: zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     }>;
     items: zod.ZodArray<zod.ZodObject<{
         id: zod.ZodNumber;
@@ -1835,9 +1848,7 @@ export declare const GetProducaoResponse: zod.ZodObject<{
                 numero?: string | null | undefined;
                 complemento?: string | null | undefined;
                 bairro?: string | null | undefined;
-                cidade?: string | null | undefined;
                 cep?: string | null | undefined;
-                uf?: string | null | undefined;
                 emailNfse?: string | null | undefined;
                 nomeContato?: string | null | undefined;
                 emailContato?: string | null | undefined;
@@ -1852,6 +1863,8 @@ export declare const GetProducaoResponse: zod.ZodObject<{
                 valorMinimo?: string | null | undefined;
                 prazoMaximoDias?: number | null | undefined;
                 diaFechamento?: string | null | undefined;
+                cidade?: string | null | undefined;
+                uf?: string | null | undefined;
             }, {
                 id: number;
                 ativo: boolean;
@@ -1872,9 +1885,7 @@ export declare const GetProducaoResponse: zod.ZodObject<{
                 numero?: string | null | undefined;
                 complemento?: string | null | undefined;
                 bairro?: string | null | undefined;
-                cidade?: string | null | undefined;
                 cep?: string | null | undefined;
-                uf?: string | null | undefined;
                 emailNfse?: string | null | undefined;
                 nomeContato?: string | null | undefined;
                 emailContato?: string | null | undefined;
@@ -1889,6 +1900,8 @@ export declare const GetProducaoResponse: zod.ZodObject<{
                 valorMinimo?: string | null | undefined;
                 prazoMaximoDias?: number | null | undefined;
                 diaFechamento?: string | null | undefined;
+                cidade?: string | null | undefined;
+                uf?: string | null | undefined;
             }>;
             createdAt: zod.ZodDate;
             updatedAt: zod.ZodDate;
@@ -1915,9 +1928,7 @@ export declare const GetProducaoResponse: zod.ZodObject<{
                 numero?: string | null | undefined;
                 complemento?: string | null | undefined;
                 bairro?: string | null | undefined;
-                cidade?: string | null | undefined;
                 cep?: string | null | undefined;
-                uf?: string | null | undefined;
                 emailNfse?: string | null | undefined;
                 nomeContato?: string | null | undefined;
                 emailContato?: string | null | undefined;
@@ -1932,6 +1943,8 @@ export declare const GetProducaoResponse: zod.ZodObject<{
                 valorMinimo?: string | null | undefined;
                 prazoMaximoDias?: number | null | undefined;
                 diaFechamento?: string | null | undefined;
+                cidade?: string | null | undefined;
+                uf?: string | null | undefined;
             };
             clienteId: number;
             createdAt: Date;
@@ -1962,9 +1975,7 @@ export declare const GetProducaoResponse: zod.ZodObject<{
                 numero?: string | null | undefined;
                 complemento?: string | null | undefined;
                 bairro?: string | null | undefined;
-                cidade?: string | null | undefined;
                 cep?: string | null | undefined;
-                uf?: string | null | undefined;
                 emailNfse?: string | null | undefined;
                 nomeContato?: string | null | undefined;
                 emailContato?: string | null | undefined;
@@ -1979,6 +1990,8 @@ export declare const GetProducaoResponse: zod.ZodObject<{
                 valorMinimo?: string | null | undefined;
                 prazoMaximoDias?: number | null | undefined;
                 diaFechamento?: string | null | undefined;
+                cidade?: string | null | undefined;
+                uf?: string | null | undefined;
             };
             clienteId: number;
             createdAt: Date;
@@ -2032,9 +2045,7 @@ export declare const GetProducaoResponse: zod.ZodObject<{
                 numero?: string | null | undefined;
                 complemento?: string | null | undefined;
                 bairro?: string | null | undefined;
-                cidade?: string | null | undefined;
                 cep?: string | null | undefined;
-                uf?: string | null | undefined;
                 emailNfse?: string | null | undefined;
                 nomeContato?: string | null | undefined;
                 emailContato?: string | null | undefined;
@@ -2049,6 +2060,8 @@ export declare const GetProducaoResponse: zod.ZodObject<{
                 valorMinimo?: string | null | undefined;
                 prazoMaximoDias?: number | null | undefined;
                 diaFechamento?: string | null | undefined;
+                cidade?: string | null | undefined;
+                uf?: string | null | undefined;
             };
             clienteId: number;
             createdAt: Date;
@@ -2102,9 +2115,7 @@ export declare const GetProducaoResponse: zod.ZodObject<{
                 numero?: string | null | undefined;
                 complemento?: string | null | undefined;
                 bairro?: string | null | undefined;
-                cidade?: string | null | undefined;
                 cep?: string | null | undefined;
-                uf?: string | null | undefined;
                 emailNfse?: string | null | undefined;
                 nomeContato?: string | null | undefined;
                 emailContato?: string | null | undefined;
@@ -2119,6 +2130,8 @@ export declare const GetProducaoResponse: zod.ZodObject<{
                 valorMinimo?: string | null | undefined;
                 prazoMaximoDias?: number | null | undefined;
                 diaFechamento?: string | null | undefined;
+                cidade?: string | null | undefined;
+                uf?: string | null | undefined;
             };
             clienteId: number;
             createdAt: Date;
@@ -2154,9 +2167,7 @@ export declare const GetProducaoResponse: zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -2171,6 +2182,8 @@ export declare const GetProducaoResponse: zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     };
     clienteId: number;
     createdAt: Date;
@@ -2220,9 +2233,7 @@ export declare const GetProducaoResponse: zod.ZodObject<{
                 numero?: string | null | undefined;
                 complemento?: string | null | undefined;
                 bairro?: string | null | undefined;
-                cidade?: string | null | undefined;
                 cep?: string | null | undefined;
-                uf?: string | null | undefined;
                 emailNfse?: string | null | undefined;
                 nomeContato?: string | null | undefined;
                 emailContato?: string | null | undefined;
@@ -2237,6 +2248,8 @@ export declare const GetProducaoResponse: zod.ZodObject<{
                 valorMinimo?: string | null | undefined;
                 prazoMaximoDias?: number | null | undefined;
                 diaFechamento?: string | null | undefined;
+                cidade?: string | null | undefined;
+                uf?: string | null | undefined;
             };
             clienteId: number;
             createdAt: Date;
@@ -2272,9 +2285,7 @@ export declare const GetProducaoResponse: zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -2289,6 +2300,8 @@ export declare const GetProducaoResponse: zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     };
     clienteId: number;
     createdAt: Date;
@@ -2338,9 +2351,7 @@ export declare const GetProducaoResponse: zod.ZodObject<{
                 numero?: string | null | undefined;
                 complemento?: string | null | undefined;
                 bairro?: string | null | undefined;
-                cidade?: string | null | undefined;
                 cep?: string | null | undefined;
-                uf?: string | null | undefined;
                 emailNfse?: string | null | undefined;
                 nomeContato?: string | null | undefined;
                 emailContato?: string | null | undefined;
@@ -2355,6 +2366,8 @@ export declare const GetProducaoResponse: zod.ZodObject<{
                 valorMinimo?: string | null | undefined;
                 prazoMaximoDias?: number | null | undefined;
                 diaFechamento?: string | null | undefined;
+                cidade?: string | null | undefined;
+                uf?: string | null | undefined;
             };
             clienteId: number;
             createdAt: Date;
@@ -2462,9 +2475,7 @@ export declare const UpdateProducaoResponse: zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -2479,6 +2490,8 @@ export declare const UpdateProducaoResponse: zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     }, {
         id: number;
         ativo: boolean;
@@ -2499,9 +2512,7 @@ export declare const UpdateProducaoResponse: zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -2516,6 +2527,8 @@ export declare const UpdateProducaoResponse: zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     }>;
     createdAt: zod.ZodDate;
     updatedAt: zod.ZodDate;
@@ -2542,9 +2555,7 @@ export declare const UpdateProducaoResponse: zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -2559,6 +2570,8 @@ export declare const UpdateProducaoResponse: zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     };
     clienteId: number;
     createdAt: Date;
@@ -2589,9 +2602,7 @@ export declare const UpdateProducaoResponse: zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -2606,6 +2617,8 @@ export declare const UpdateProducaoResponse: zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     };
     clienteId: number;
     createdAt: Date;
@@ -2689,9 +2702,7 @@ export declare const ConcluirProcessamentoResponse: zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -2706,6 +2717,8 @@ export declare const ConcluirProcessamentoResponse: zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     }, {
         id: number;
         ativo: boolean;
@@ -2726,9 +2739,7 @@ export declare const ConcluirProcessamentoResponse: zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -2743,6 +2754,8 @@ export declare const ConcluirProcessamentoResponse: zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     }>;
     createdAt: zod.ZodDate;
     updatedAt: zod.ZodDate;
@@ -2769,9 +2782,7 @@ export declare const ConcluirProcessamentoResponse: zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -2786,6 +2797,8 @@ export declare const ConcluirProcessamentoResponse: zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     };
     clienteId: number;
     createdAt: Date;
@@ -2816,9 +2829,7 @@ export declare const ConcluirProcessamentoResponse: zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -2833,6 +2844,8 @@ export declare const ConcluirProcessamentoResponse: zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     };
     clienteId: number;
     createdAt: Date;
@@ -2916,9 +2929,7 @@ export declare const CancelarProducaoResponse: zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -2933,6 +2944,8 @@ export declare const CancelarProducaoResponse: zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     }, {
         id: number;
         ativo: boolean;
@@ -2953,9 +2966,7 @@ export declare const CancelarProducaoResponse: zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -2970,6 +2981,8 @@ export declare const CancelarProducaoResponse: zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     }>;
     createdAt: zod.ZodDate;
     updatedAt: zod.ZodDate;
@@ -2996,9 +3009,7 @@ export declare const CancelarProducaoResponse: zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -3013,6 +3024,8 @@ export declare const CancelarProducaoResponse: zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     };
     clienteId: number;
     createdAt: Date;
@@ -3043,9 +3056,7 @@ export declare const CancelarProducaoResponse: zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -3060,6 +3071,8 @@ export declare const CancelarProducaoResponse: zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     };
     clienteId: number;
     createdAt: Date;
@@ -3180,9 +3193,7 @@ export declare const ListProducaoItemsResponseItem: zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -3197,6 +3208,8 @@ export declare const ListProducaoItemsResponseItem: zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         }, {
             id: number;
             ativo: boolean;
@@ -3217,9 +3230,7 @@ export declare const ListProducaoItemsResponseItem: zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -3234,6 +3245,8 @@ export declare const ListProducaoItemsResponseItem: zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         }>;
         createdAt: zod.ZodDate;
         updatedAt: zod.ZodDate;
@@ -3260,9 +3273,7 @@ export declare const ListProducaoItemsResponseItem: zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -3277,6 +3288,8 @@ export declare const ListProducaoItemsResponseItem: zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         };
         clienteId: number;
         createdAt: Date;
@@ -3307,9 +3320,7 @@ export declare const ListProducaoItemsResponseItem: zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -3324,6 +3335,8 @@ export declare const ListProducaoItemsResponseItem: zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         };
         clienteId: number;
         createdAt: Date;
@@ -3377,9 +3390,7 @@ export declare const ListProducaoItemsResponseItem: zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -3394,6 +3405,8 @@ export declare const ListProducaoItemsResponseItem: zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         };
         clienteId: number;
         createdAt: Date;
@@ -3447,9 +3460,7 @@ export declare const ListProducaoItemsResponseItem: zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -3464,6 +3475,8 @@ export declare const ListProducaoItemsResponseItem: zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         };
         clienteId: number;
         createdAt: Date;
@@ -3575,9 +3588,7 @@ export declare const ListProducaoItemsResponse: zod.ZodArray<zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -3592,6 +3603,8 @@ export declare const ListProducaoItemsResponse: zod.ZodArray<zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         }, {
             id: number;
             ativo: boolean;
@@ -3612,9 +3625,7 @@ export declare const ListProducaoItemsResponse: zod.ZodArray<zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -3629,6 +3640,8 @@ export declare const ListProducaoItemsResponse: zod.ZodArray<zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         }>;
         createdAt: zod.ZodDate;
         updatedAt: zod.ZodDate;
@@ -3655,9 +3668,7 @@ export declare const ListProducaoItemsResponse: zod.ZodArray<zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -3672,6 +3683,8 @@ export declare const ListProducaoItemsResponse: zod.ZodArray<zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         };
         clienteId: number;
         createdAt: Date;
@@ -3702,9 +3715,7 @@ export declare const ListProducaoItemsResponse: zod.ZodArray<zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -3719,6 +3730,8 @@ export declare const ListProducaoItemsResponse: zod.ZodArray<zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         };
         clienteId: number;
         createdAt: Date;
@@ -3772,9 +3785,7 @@ export declare const ListProducaoItemsResponse: zod.ZodArray<zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -3789,6 +3800,8 @@ export declare const ListProducaoItemsResponse: zod.ZodArray<zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         };
         clienteId: number;
         createdAt: Date;
@@ -3842,9 +3855,7 @@ export declare const ListProducaoItemsResponse: zod.ZodArray<zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -3859,6 +3870,8 @@ export declare const ListProducaoItemsResponse: zod.ZodArray<zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         };
         clienteId: number;
         createdAt: Date;
@@ -4020,9 +4033,7 @@ export declare const UpdateProducaoItemResponse: zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -4037,6 +4048,8 @@ export declare const UpdateProducaoItemResponse: zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         }, {
             id: number;
             ativo: boolean;
@@ -4057,9 +4070,7 @@ export declare const UpdateProducaoItemResponse: zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -4074,6 +4085,8 @@ export declare const UpdateProducaoItemResponse: zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         }>;
         createdAt: zod.ZodDate;
         updatedAt: zod.ZodDate;
@@ -4100,9 +4113,7 @@ export declare const UpdateProducaoItemResponse: zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -4117,6 +4128,8 @@ export declare const UpdateProducaoItemResponse: zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         };
         clienteId: number;
         createdAt: Date;
@@ -4147,9 +4160,7 @@ export declare const UpdateProducaoItemResponse: zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -4164,6 +4175,8 @@ export declare const UpdateProducaoItemResponse: zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         };
         clienteId: number;
         createdAt: Date;
@@ -4217,9 +4230,7 @@ export declare const UpdateProducaoItemResponse: zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -4234,6 +4245,8 @@ export declare const UpdateProducaoItemResponse: zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         };
         clienteId: number;
         createdAt: Date;
@@ -4287,9 +4300,7 @@ export declare const UpdateProducaoItemResponse: zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -4304,6 +4315,8 @@ export declare const UpdateProducaoItemResponse: zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         };
         clienteId: number;
         createdAt: Date;
@@ -4442,9 +4455,7 @@ export declare const ListImpressaoItemsResponseItem: zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -4459,6 +4470,8 @@ export declare const ListImpressaoItemsResponseItem: zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         }, {
             id: number;
             ativo: boolean;
@@ -4479,9 +4492,7 @@ export declare const ListImpressaoItemsResponseItem: zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -4496,6 +4507,8 @@ export declare const ListImpressaoItemsResponseItem: zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         }>;
         createdAt: zod.ZodDate;
         updatedAt: zod.ZodDate;
@@ -4522,9 +4535,7 @@ export declare const ListImpressaoItemsResponseItem: zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -4539,6 +4550,8 @@ export declare const ListImpressaoItemsResponseItem: zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         };
         clienteId: number;
         createdAt: Date;
@@ -4569,9 +4582,7 @@ export declare const ListImpressaoItemsResponseItem: zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -4586,6 +4597,8 @@ export declare const ListImpressaoItemsResponseItem: zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         };
         clienteId: number;
         createdAt: Date;
@@ -4639,9 +4652,7 @@ export declare const ListImpressaoItemsResponseItem: zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -4656,6 +4667,8 @@ export declare const ListImpressaoItemsResponseItem: zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         };
         clienteId: number;
         createdAt: Date;
@@ -4709,9 +4722,7 @@ export declare const ListImpressaoItemsResponseItem: zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -4726,6 +4737,8 @@ export declare const ListImpressaoItemsResponseItem: zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         };
         clienteId: number;
         createdAt: Date;
@@ -4837,9 +4850,7 @@ export declare const ListImpressaoItemsResponse: zod.ZodArray<zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -4854,6 +4865,8 @@ export declare const ListImpressaoItemsResponse: zod.ZodArray<zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         }, {
             id: number;
             ativo: boolean;
@@ -4874,9 +4887,7 @@ export declare const ListImpressaoItemsResponse: zod.ZodArray<zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -4891,6 +4902,8 @@ export declare const ListImpressaoItemsResponse: zod.ZodArray<zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         }>;
         createdAt: zod.ZodDate;
         updatedAt: zod.ZodDate;
@@ -4917,9 +4930,7 @@ export declare const ListImpressaoItemsResponse: zod.ZodArray<zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -4934,6 +4945,8 @@ export declare const ListImpressaoItemsResponse: zod.ZodArray<zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         };
         clienteId: number;
         createdAt: Date;
@@ -4964,9 +4977,7 @@ export declare const ListImpressaoItemsResponse: zod.ZodArray<zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -4981,6 +4992,8 @@ export declare const ListImpressaoItemsResponse: zod.ZodArray<zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         };
         clienteId: number;
         createdAt: Date;
@@ -5034,9 +5047,7 @@ export declare const ListImpressaoItemsResponse: zod.ZodArray<zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -5051,6 +5062,8 @@ export declare const ListImpressaoItemsResponse: zod.ZodArray<zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         };
         clienteId: number;
         createdAt: Date;
@@ -5104,9 +5117,7 @@ export declare const ListImpressaoItemsResponse: zod.ZodArray<zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -5121,6 +5132,8 @@ export declare const ListImpressaoItemsResponse: zod.ZodArray<zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         };
         clienteId: number;
         createdAt: Date;
@@ -5256,9 +5269,7 @@ export declare const ListEnvelopamentoItemsResponseItem: zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -5273,6 +5284,8 @@ export declare const ListEnvelopamentoItemsResponseItem: zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         }, {
             id: number;
             ativo: boolean;
@@ -5293,9 +5306,7 @@ export declare const ListEnvelopamentoItemsResponseItem: zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -5310,6 +5321,8 @@ export declare const ListEnvelopamentoItemsResponseItem: zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         }>;
         createdAt: zod.ZodDate;
         updatedAt: zod.ZodDate;
@@ -5336,9 +5349,7 @@ export declare const ListEnvelopamentoItemsResponseItem: zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -5353,6 +5364,8 @@ export declare const ListEnvelopamentoItemsResponseItem: zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         };
         clienteId: number;
         createdAt: Date;
@@ -5383,9 +5396,7 @@ export declare const ListEnvelopamentoItemsResponseItem: zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -5400,6 +5411,8 @@ export declare const ListEnvelopamentoItemsResponseItem: zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         };
         clienteId: number;
         createdAt: Date;
@@ -5453,9 +5466,7 @@ export declare const ListEnvelopamentoItemsResponseItem: zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -5470,6 +5481,8 @@ export declare const ListEnvelopamentoItemsResponseItem: zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         };
         clienteId: number;
         createdAt: Date;
@@ -5523,9 +5536,7 @@ export declare const ListEnvelopamentoItemsResponseItem: zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -5540,6 +5551,8 @@ export declare const ListEnvelopamentoItemsResponseItem: zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         };
         clienteId: number;
         createdAt: Date;
@@ -5651,9 +5664,7 @@ export declare const ListEnvelopamentoItemsResponse: zod.ZodArray<zod.ZodObject<
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -5668,6 +5679,8 @@ export declare const ListEnvelopamentoItemsResponse: zod.ZodArray<zod.ZodObject<
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         }, {
             id: number;
             ativo: boolean;
@@ -5688,9 +5701,7 @@ export declare const ListEnvelopamentoItemsResponse: zod.ZodArray<zod.ZodObject<
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -5705,6 +5716,8 @@ export declare const ListEnvelopamentoItemsResponse: zod.ZodArray<zod.ZodObject<
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         }>;
         createdAt: zod.ZodDate;
         updatedAt: zod.ZodDate;
@@ -5731,9 +5744,7 @@ export declare const ListEnvelopamentoItemsResponse: zod.ZodArray<zod.ZodObject<
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -5748,6 +5759,8 @@ export declare const ListEnvelopamentoItemsResponse: zod.ZodArray<zod.ZodObject<
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         };
         clienteId: number;
         createdAt: Date;
@@ -5778,9 +5791,7 @@ export declare const ListEnvelopamentoItemsResponse: zod.ZodArray<zod.ZodObject<
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -5795,6 +5806,8 @@ export declare const ListEnvelopamentoItemsResponse: zod.ZodArray<zod.ZodObject<
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         };
         clienteId: number;
         createdAt: Date;
@@ -5848,9 +5861,7 @@ export declare const ListEnvelopamentoItemsResponse: zod.ZodArray<zod.ZodObject<
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -5865,6 +5876,8 @@ export declare const ListEnvelopamentoItemsResponse: zod.ZodArray<zod.ZodObject<
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         };
         clienteId: number;
         createdAt: Date;
@@ -5918,9 +5931,7 @@ export declare const ListEnvelopamentoItemsResponse: zod.ZodArray<zod.ZodObject<
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -5935,6 +5946,8 @@ export declare const ListEnvelopamentoItemsResponse: zod.ZodArray<zod.ZodObject<
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         };
         clienteId: number;
         createdAt: Date;
@@ -6070,9 +6083,7 @@ export declare const ListEmbalagemItemsResponseItem: zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -6087,6 +6098,8 @@ export declare const ListEmbalagemItemsResponseItem: zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         }, {
             id: number;
             ativo: boolean;
@@ -6107,9 +6120,7 @@ export declare const ListEmbalagemItemsResponseItem: zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -6124,6 +6135,8 @@ export declare const ListEmbalagemItemsResponseItem: zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         }>;
         createdAt: zod.ZodDate;
         updatedAt: zod.ZodDate;
@@ -6150,9 +6163,7 @@ export declare const ListEmbalagemItemsResponseItem: zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -6167,6 +6178,8 @@ export declare const ListEmbalagemItemsResponseItem: zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         };
         clienteId: number;
         createdAt: Date;
@@ -6197,9 +6210,7 @@ export declare const ListEmbalagemItemsResponseItem: zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -6214,6 +6225,8 @@ export declare const ListEmbalagemItemsResponseItem: zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         };
         clienteId: number;
         createdAt: Date;
@@ -6267,9 +6280,7 @@ export declare const ListEmbalagemItemsResponseItem: zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -6284,6 +6295,8 @@ export declare const ListEmbalagemItemsResponseItem: zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         };
         clienteId: number;
         createdAt: Date;
@@ -6337,9 +6350,7 @@ export declare const ListEmbalagemItemsResponseItem: zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -6354,6 +6365,8 @@ export declare const ListEmbalagemItemsResponseItem: zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         };
         clienteId: number;
         createdAt: Date;
@@ -6465,9 +6478,7 @@ export declare const ListEmbalagemItemsResponse: zod.ZodArray<zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -6482,6 +6493,8 @@ export declare const ListEmbalagemItemsResponse: zod.ZodArray<zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         }, {
             id: number;
             ativo: boolean;
@@ -6502,9 +6515,7 @@ export declare const ListEmbalagemItemsResponse: zod.ZodArray<zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -6519,6 +6530,8 @@ export declare const ListEmbalagemItemsResponse: zod.ZodArray<zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         }>;
         createdAt: zod.ZodDate;
         updatedAt: zod.ZodDate;
@@ -6545,9 +6558,7 @@ export declare const ListEmbalagemItemsResponse: zod.ZodArray<zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -6562,6 +6573,8 @@ export declare const ListEmbalagemItemsResponse: zod.ZodArray<zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         };
         clienteId: number;
         createdAt: Date;
@@ -6592,9 +6605,7 @@ export declare const ListEmbalagemItemsResponse: zod.ZodArray<zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -6609,6 +6620,8 @@ export declare const ListEmbalagemItemsResponse: zod.ZodArray<zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         };
         clienteId: number;
         createdAt: Date;
@@ -6662,9 +6675,7 @@ export declare const ListEmbalagemItemsResponse: zod.ZodArray<zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -6679,6 +6690,8 @@ export declare const ListEmbalagemItemsResponse: zod.ZodArray<zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         };
         clienteId: number;
         createdAt: Date;
@@ -6732,9 +6745,7 @@ export declare const ListEmbalagemItemsResponse: zod.ZodArray<zod.ZodObject<{
             numero?: string | null | undefined;
             complemento?: string | null | undefined;
             bairro?: string | null | undefined;
-            cidade?: string | null | undefined;
             cep?: string | null | undefined;
-            uf?: string | null | undefined;
             emailNfse?: string | null | undefined;
             nomeContato?: string | null | undefined;
             emailContato?: string | null | undefined;
@@ -6749,6 +6760,8 @@ export declare const ListEmbalagemItemsResponse: zod.ZodArray<zod.ZodObject<{
             valorMinimo?: string | null | undefined;
             prazoMaximoDias?: number | null | undefined;
             diaFechamento?: string | null | undefined;
+            cidade?: string | null | undefined;
+            uf?: string | null | undefined;
         };
         clienteId: number;
         createdAt: Date;
@@ -6848,9 +6861,7 @@ export declare const ListRetiradaOrdensResponseItem: zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -6865,6 +6876,8 @@ export declare const ListRetiradaOrdensResponseItem: zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     }, {
         id: number;
         ativo: boolean;
@@ -6885,9 +6898,7 @@ export declare const ListRetiradaOrdensResponseItem: zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -6902,6 +6913,8 @@ export declare const ListRetiradaOrdensResponseItem: zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     }>;
     items: zod.ZodArray<zod.ZodObject<{
         id: zod.ZodNumber;
@@ -7004,9 +7017,7 @@ export declare const ListRetiradaOrdensResponseItem: zod.ZodObject<{
                 numero?: string | null | undefined;
                 complemento?: string | null | undefined;
                 bairro?: string | null | undefined;
-                cidade?: string | null | undefined;
                 cep?: string | null | undefined;
-                uf?: string | null | undefined;
                 emailNfse?: string | null | undefined;
                 nomeContato?: string | null | undefined;
                 emailContato?: string | null | undefined;
@@ -7021,6 +7032,8 @@ export declare const ListRetiradaOrdensResponseItem: zod.ZodObject<{
                 valorMinimo?: string | null | undefined;
                 prazoMaximoDias?: number | null | undefined;
                 diaFechamento?: string | null | undefined;
+                cidade?: string | null | undefined;
+                uf?: string | null | undefined;
             }, {
                 id: number;
                 ativo: boolean;
@@ -7041,9 +7054,7 @@ export declare const ListRetiradaOrdensResponseItem: zod.ZodObject<{
                 numero?: string | null | undefined;
                 complemento?: string | null | undefined;
                 bairro?: string | null | undefined;
-                cidade?: string | null | undefined;
                 cep?: string | null | undefined;
-                uf?: string | null | undefined;
                 emailNfse?: string | null | undefined;
                 nomeContato?: string | null | undefined;
                 emailContato?: string | null | undefined;
@@ -7058,6 +7069,8 @@ export declare const ListRetiradaOrdensResponseItem: zod.ZodObject<{
                 valorMinimo?: string | null | undefined;
                 prazoMaximoDias?: number | null | undefined;
                 diaFechamento?: string | null | undefined;
+                cidade?: string | null | undefined;
+                uf?: string | null | undefined;
             }>;
             createdAt: zod.ZodDate;
             updatedAt: zod.ZodDate;
@@ -7084,9 +7097,7 @@ export declare const ListRetiradaOrdensResponseItem: zod.ZodObject<{
                 numero?: string | null | undefined;
                 complemento?: string | null | undefined;
                 bairro?: string | null | undefined;
-                cidade?: string | null | undefined;
                 cep?: string | null | undefined;
-                uf?: string | null | undefined;
                 emailNfse?: string | null | undefined;
                 nomeContato?: string | null | undefined;
                 emailContato?: string | null | undefined;
@@ -7101,6 +7112,8 @@ export declare const ListRetiradaOrdensResponseItem: zod.ZodObject<{
                 valorMinimo?: string | null | undefined;
                 prazoMaximoDias?: number | null | undefined;
                 diaFechamento?: string | null | undefined;
+                cidade?: string | null | undefined;
+                uf?: string | null | undefined;
             };
             clienteId: number;
             createdAt: Date;
@@ -7131,9 +7144,7 @@ export declare const ListRetiradaOrdensResponseItem: zod.ZodObject<{
                 numero?: string | null | undefined;
                 complemento?: string | null | undefined;
                 bairro?: string | null | undefined;
-                cidade?: string | null | undefined;
                 cep?: string | null | undefined;
-                uf?: string | null | undefined;
                 emailNfse?: string | null | undefined;
                 nomeContato?: string | null | undefined;
                 emailContato?: string | null | undefined;
@@ -7148,6 +7159,8 @@ export declare const ListRetiradaOrdensResponseItem: zod.ZodObject<{
                 valorMinimo?: string | null | undefined;
                 prazoMaximoDias?: number | null | undefined;
                 diaFechamento?: string | null | undefined;
+                cidade?: string | null | undefined;
+                uf?: string | null | undefined;
             };
             clienteId: number;
             createdAt: Date;
@@ -7201,9 +7214,7 @@ export declare const ListRetiradaOrdensResponseItem: zod.ZodObject<{
                 numero?: string | null | undefined;
                 complemento?: string | null | undefined;
                 bairro?: string | null | undefined;
-                cidade?: string | null | undefined;
                 cep?: string | null | undefined;
-                uf?: string | null | undefined;
                 emailNfse?: string | null | undefined;
                 nomeContato?: string | null | undefined;
                 emailContato?: string | null | undefined;
@@ -7218,6 +7229,8 @@ export declare const ListRetiradaOrdensResponseItem: zod.ZodObject<{
                 valorMinimo?: string | null | undefined;
                 prazoMaximoDias?: number | null | undefined;
                 diaFechamento?: string | null | undefined;
+                cidade?: string | null | undefined;
+                uf?: string | null | undefined;
             };
             clienteId: number;
             createdAt: Date;
@@ -7271,9 +7284,7 @@ export declare const ListRetiradaOrdensResponseItem: zod.ZodObject<{
                 numero?: string | null | undefined;
                 complemento?: string | null | undefined;
                 bairro?: string | null | undefined;
-                cidade?: string | null | undefined;
                 cep?: string | null | undefined;
-                uf?: string | null | undefined;
                 emailNfse?: string | null | undefined;
                 nomeContato?: string | null | undefined;
                 emailContato?: string | null | undefined;
@@ -7288,6 +7299,8 @@ export declare const ListRetiradaOrdensResponseItem: zod.ZodObject<{
                 valorMinimo?: string | null | undefined;
                 prazoMaximoDias?: number | null | undefined;
                 diaFechamento?: string | null | undefined;
+                cidade?: string | null | undefined;
+                uf?: string | null | undefined;
             };
             clienteId: number;
             createdAt: Date;
@@ -7323,9 +7336,7 @@ export declare const ListRetiradaOrdensResponseItem: zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -7340,6 +7351,8 @@ export declare const ListRetiradaOrdensResponseItem: zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     };
     clienteId: number;
     createdAt: Date;
@@ -7389,9 +7402,7 @@ export declare const ListRetiradaOrdensResponseItem: zod.ZodObject<{
                 numero?: string | null | undefined;
                 complemento?: string | null | undefined;
                 bairro?: string | null | undefined;
-                cidade?: string | null | undefined;
                 cep?: string | null | undefined;
-                uf?: string | null | undefined;
                 emailNfse?: string | null | undefined;
                 nomeContato?: string | null | undefined;
                 emailContato?: string | null | undefined;
@@ -7406,6 +7417,8 @@ export declare const ListRetiradaOrdensResponseItem: zod.ZodObject<{
                 valorMinimo?: string | null | undefined;
                 prazoMaximoDias?: number | null | undefined;
                 diaFechamento?: string | null | undefined;
+                cidade?: string | null | undefined;
+                uf?: string | null | undefined;
             };
             clienteId: number;
             createdAt: Date;
@@ -7441,9 +7454,7 @@ export declare const ListRetiradaOrdensResponseItem: zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -7458,6 +7469,8 @@ export declare const ListRetiradaOrdensResponseItem: zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     };
     clienteId: number;
     createdAt: Date;
@@ -7507,9 +7520,7 @@ export declare const ListRetiradaOrdensResponseItem: zod.ZodObject<{
                 numero?: string | null | undefined;
                 complemento?: string | null | undefined;
                 bairro?: string | null | undefined;
-                cidade?: string | null | undefined;
                 cep?: string | null | undefined;
-                uf?: string | null | undefined;
                 emailNfse?: string | null | undefined;
                 nomeContato?: string | null | undefined;
                 emailContato?: string | null | undefined;
@@ -7524,6 +7535,8 @@ export declare const ListRetiradaOrdensResponseItem: zod.ZodObject<{
                 valorMinimo?: string | null | undefined;
                 prazoMaximoDias?: number | null | undefined;
                 diaFechamento?: string | null | undefined;
+                cidade?: string | null | undefined;
+                uf?: string | null | undefined;
             };
             clienteId: number;
             createdAt: Date;
@@ -7601,9 +7614,7 @@ export declare const ListRetiradaOrdensResponse: zod.ZodArray<zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -7618,6 +7629,8 @@ export declare const ListRetiradaOrdensResponse: zod.ZodArray<zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     }, {
         id: number;
         ativo: boolean;
@@ -7638,9 +7651,7 @@ export declare const ListRetiradaOrdensResponse: zod.ZodArray<zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -7655,6 +7666,8 @@ export declare const ListRetiradaOrdensResponse: zod.ZodArray<zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     }>;
     items: zod.ZodArray<zod.ZodObject<{
         id: zod.ZodNumber;
@@ -7757,9 +7770,7 @@ export declare const ListRetiradaOrdensResponse: zod.ZodArray<zod.ZodObject<{
                 numero?: string | null | undefined;
                 complemento?: string | null | undefined;
                 bairro?: string | null | undefined;
-                cidade?: string | null | undefined;
                 cep?: string | null | undefined;
-                uf?: string | null | undefined;
                 emailNfse?: string | null | undefined;
                 nomeContato?: string | null | undefined;
                 emailContato?: string | null | undefined;
@@ -7774,6 +7785,8 @@ export declare const ListRetiradaOrdensResponse: zod.ZodArray<zod.ZodObject<{
                 valorMinimo?: string | null | undefined;
                 prazoMaximoDias?: number | null | undefined;
                 diaFechamento?: string | null | undefined;
+                cidade?: string | null | undefined;
+                uf?: string | null | undefined;
             }, {
                 id: number;
                 ativo: boolean;
@@ -7794,9 +7807,7 @@ export declare const ListRetiradaOrdensResponse: zod.ZodArray<zod.ZodObject<{
                 numero?: string | null | undefined;
                 complemento?: string | null | undefined;
                 bairro?: string | null | undefined;
-                cidade?: string | null | undefined;
                 cep?: string | null | undefined;
-                uf?: string | null | undefined;
                 emailNfse?: string | null | undefined;
                 nomeContato?: string | null | undefined;
                 emailContato?: string | null | undefined;
@@ -7811,6 +7822,8 @@ export declare const ListRetiradaOrdensResponse: zod.ZodArray<zod.ZodObject<{
                 valorMinimo?: string | null | undefined;
                 prazoMaximoDias?: number | null | undefined;
                 diaFechamento?: string | null | undefined;
+                cidade?: string | null | undefined;
+                uf?: string | null | undefined;
             }>;
             createdAt: zod.ZodDate;
             updatedAt: zod.ZodDate;
@@ -7837,9 +7850,7 @@ export declare const ListRetiradaOrdensResponse: zod.ZodArray<zod.ZodObject<{
                 numero?: string | null | undefined;
                 complemento?: string | null | undefined;
                 bairro?: string | null | undefined;
-                cidade?: string | null | undefined;
                 cep?: string | null | undefined;
-                uf?: string | null | undefined;
                 emailNfse?: string | null | undefined;
                 nomeContato?: string | null | undefined;
                 emailContato?: string | null | undefined;
@@ -7854,6 +7865,8 @@ export declare const ListRetiradaOrdensResponse: zod.ZodArray<zod.ZodObject<{
                 valorMinimo?: string | null | undefined;
                 prazoMaximoDias?: number | null | undefined;
                 diaFechamento?: string | null | undefined;
+                cidade?: string | null | undefined;
+                uf?: string | null | undefined;
             };
             clienteId: number;
             createdAt: Date;
@@ -7884,9 +7897,7 @@ export declare const ListRetiradaOrdensResponse: zod.ZodArray<zod.ZodObject<{
                 numero?: string | null | undefined;
                 complemento?: string | null | undefined;
                 bairro?: string | null | undefined;
-                cidade?: string | null | undefined;
                 cep?: string | null | undefined;
-                uf?: string | null | undefined;
                 emailNfse?: string | null | undefined;
                 nomeContato?: string | null | undefined;
                 emailContato?: string | null | undefined;
@@ -7901,6 +7912,8 @@ export declare const ListRetiradaOrdensResponse: zod.ZodArray<zod.ZodObject<{
                 valorMinimo?: string | null | undefined;
                 prazoMaximoDias?: number | null | undefined;
                 diaFechamento?: string | null | undefined;
+                cidade?: string | null | undefined;
+                uf?: string | null | undefined;
             };
             clienteId: number;
             createdAt: Date;
@@ -7954,9 +7967,7 @@ export declare const ListRetiradaOrdensResponse: zod.ZodArray<zod.ZodObject<{
                 numero?: string | null | undefined;
                 complemento?: string | null | undefined;
                 bairro?: string | null | undefined;
-                cidade?: string | null | undefined;
                 cep?: string | null | undefined;
-                uf?: string | null | undefined;
                 emailNfse?: string | null | undefined;
                 nomeContato?: string | null | undefined;
                 emailContato?: string | null | undefined;
@@ -7971,6 +7982,8 @@ export declare const ListRetiradaOrdensResponse: zod.ZodArray<zod.ZodObject<{
                 valorMinimo?: string | null | undefined;
                 prazoMaximoDias?: number | null | undefined;
                 diaFechamento?: string | null | undefined;
+                cidade?: string | null | undefined;
+                uf?: string | null | undefined;
             };
             clienteId: number;
             createdAt: Date;
@@ -8024,9 +8037,7 @@ export declare const ListRetiradaOrdensResponse: zod.ZodArray<zod.ZodObject<{
                 numero?: string | null | undefined;
                 complemento?: string | null | undefined;
                 bairro?: string | null | undefined;
-                cidade?: string | null | undefined;
                 cep?: string | null | undefined;
-                uf?: string | null | undefined;
                 emailNfse?: string | null | undefined;
                 nomeContato?: string | null | undefined;
                 emailContato?: string | null | undefined;
@@ -8041,6 +8052,8 @@ export declare const ListRetiradaOrdensResponse: zod.ZodArray<zod.ZodObject<{
                 valorMinimo?: string | null | undefined;
                 prazoMaximoDias?: number | null | undefined;
                 diaFechamento?: string | null | undefined;
+                cidade?: string | null | undefined;
+                uf?: string | null | undefined;
             };
             clienteId: number;
             createdAt: Date;
@@ -8076,9 +8089,7 @@ export declare const ListRetiradaOrdensResponse: zod.ZodArray<zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -8093,6 +8104,8 @@ export declare const ListRetiradaOrdensResponse: zod.ZodArray<zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     };
     clienteId: number;
     createdAt: Date;
@@ -8142,9 +8155,7 @@ export declare const ListRetiradaOrdensResponse: zod.ZodArray<zod.ZodObject<{
                 numero?: string | null | undefined;
                 complemento?: string | null | undefined;
                 bairro?: string | null | undefined;
-                cidade?: string | null | undefined;
                 cep?: string | null | undefined;
-                uf?: string | null | undefined;
                 emailNfse?: string | null | undefined;
                 nomeContato?: string | null | undefined;
                 emailContato?: string | null | undefined;
@@ -8159,6 +8170,8 @@ export declare const ListRetiradaOrdensResponse: zod.ZodArray<zod.ZodObject<{
                 valorMinimo?: string | null | undefined;
                 prazoMaximoDias?: number | null | undefined;
                 diaFechamento?: string | null | undefined;
+                cidade?: string | null | undefined;
+                uf?: string | null | undefined;
             };
             clienteId: number;
             createdAt: Date;
@@ -8194,9 +8207,7 @@ export declare const ListRetiradaOrdensResponse: zod.ZodArray<zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -8211,6 +8222,8 @@ export declare const ListRetiradaOrdensResponse: zod.ZodArray<zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     };
     clienteId: number;
     createdAt: Date;
@@ -8260,9 +8273,7 @@ export declare const ListRetiradaOrdensResponse: zod.ZodArray<zod.ZodObject<{
                 numero?: string | null | undefined;
                 complemento?: string | null | undefined;
                 bairro?: string | null | undefined;
-                cidade?: string | null | undefined;
                 cep?: string | null | undefined;
-                uf?: string | null | undefined;
                 emailNfse?: string | null | undefined;
                 nomeContato?: string | null | undefined;
                 emailContato?: string | null | undefined;
@@ -8277,6 +8288,8 @@ export declare const ListRetiradaOrdensResponse: zod.ZodArray<zod.ZodObject<{
                 valorMinimo?: string | null | undefined;
                 prazoMaximoDias?: number | null | undefined;
                 diaFechamento?: string | null | undefined;
+                cidade?: string | null | undefined;
+                uf?: string | null | undefined;
             };
             clienteId: number;
             createdAt: Date;
@@ -8391,9 +8404,7 @@ export declare const ListPrecosResponseItem: zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -8408,6 +8419,8 @@ export declare const ListPrecosResponseItem: zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     }, {
         id: number;
         ativo: boolean;
@@ -8428,9 +8441,7 @@ export declare const ListPrecosResponseItem: zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -8445,6 +8456,8 @@ export declare const ListPrecosResponseItem: zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     }>>;
     produto: zod.ZodOptional<zod.ZodObject<{
         id: zod.ZodNumber;
@@ -8501,9 +8514,7 @@ export declare const ListPrecosResponseItem: zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -8518,6 +8529,8 @@ export declare const ListPrecosResponseItem: zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     } | undefined;
     descricao?: string | null | undefined;
     observacoes?: string | null | undefined;
@@ -8559,9 +8572,7 @@ export declare const ListPrecosResponseItem: zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -8576,6 +8587,8 @@ export declare const ListPrecosResponseItem: zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     } | undefined;
     descricao?: string | null | undefined;
     observacoes?: string | null | undefined;
@@ -8656,9 +8669,7 @@ export declare const ListPrecosResponse: zod.ZodArray<zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -8673,6 +8684,8 @@ export declare const ListPrecosResponse: zod.ZodArray<zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     }, {
         id: number;
         ativo: boolean;
@@ -8693,9 +8706,7 @@ export declare const ListPrecosResponse: zod.ZodArray<zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -8710,6 +8721,8 @@ export declare const ListPrecosResponse: zod.ZodArray<zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     }>>;
     produto: zod.ZodOptional<zod.ZodObject<{
         id: zod.ZodNumber;
@@ -8766,9 +8779,7 @@ export declare const ListPrecosResponse: zod.ZodArray<zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -8783,6 +8794,8 @@ export declare const ListPrecosResponse: zod.ZodArray<zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     } | undefined;
     descricao?: string | null | undefined;
     observacoes?: string | null | undefined;
@@ -8824,9 +8837,7 @@ export declare const ListPrecosResponse: zod.ZodArray<zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -8841,6 +8852,8 @@ export declare const ListPrecosResponse: zod.ZodArray<zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     } | undefined;
     descricao?: string | null | undefined;
     observacoes?: string | null | undefined;
@@ -8985,9 +8998,7 @@ export declare const UpdatePrecoResponse: zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -9002,6 +9013,8 @@ export declare const UpdatePrecoResponse: zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     }, {
         id: number;
         ativo: boolean;
@@ -9022,9 +9035,7 @@ export declare const UpdatePrecoResponse: zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -9039,6 +9050,8 @@ export declare const UpdatePrecoResponse: zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     }>>;
     produto: zod.ZodOptional<zod.ZodObject<{
         id: zod.ZodNumber;
@@ -9095,9 +9108,7 @@ export declare const UpdatePrecoResponse: zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -9112,6 +9123,8 @@ export declare const UpdatePrecoResponse: zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     } | undefined;
     descricao?: string | null | undefined;
     observacoes?: string | null | undefined;
@@ -9153,9 +9166,7 @@ export declare const UpdatePrecoResponse: zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -9170,6 +9181,8 @@ export declare const UpdatePrecoResponse: zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     } | undefined;
     descricao?: string | null | undefined;
     observacoes?: string | null | undefined;
@@ -9267,9 +9280,7 @@ export declare const GetPrecoVigenteResponse: zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -9284,6 +9295,8 @@ export declare const GetPrecoVigenteResponse: zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     }, {
         id: number;
         ativo: boolean;
@@ -9304,9 +9317,7 @@ export declare const GetPrecoVigenteResponse: zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -9321,6 +9332,8 @@ export declare const GetPrecoVigenteResponse: zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     }>>;
     produto: zod.ZodOptional<zod.ZodObject<{
         id: zod.ZodNumber;
@@ -9377,9 +9390,7 @@ export declare const GetPrecoVigenteResponse: zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -9394,6 +9405,8 @@ export declare const GetPrecoVigenteResponse: zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     } | undefined;
     descricao?: string | null | undefined;
     observacoes?: string | null | undefined;
@@ -9435,9 +9448,7 @@ export declare const GetPrecoVigenteResponse: zod.ZodObject<{
         numero?: string | null | undefined;
         complemento?: string | null | undefined;
         bairro?: string | null | undefined;
-        cidade?: string | null | undefined;
         cep?: string | null | undefined;
-        uf?: string | null | undefined;
         emailNfse?: string | null | undefined;
         nomeContato?: string | null | undefined;
         emailContato?: string | null | undefined;
@@ -9452,6 +9463,8 @@ export declare const GetPrecoVigenteResponse: zod.ZodObject<{
         valorMinimo?: string | null | undefined;
         prazoMaximoDias?: number | null | undefined;
         diaFechamento?: string | null | undefined;
+        cidade?: string | null | undefined;
+        uf?: string | null | undefined;
     } | undefined;
     descricao?: string | null | undefined;
     observacoes?: string | null | undefined;

@@ -245,9 +245,9 @@ export declare const producaoItemsTable: import("drizzle-orm/pg-core").PgTableWi
     dialect: "pg";
 }>;
 export declare const insertProducaoItemSchema: z.ZodObject<{
-    producaoId: z.ZodInt;
     impresso: z.ZodOptional<z.ZodBoolean>;
     envelopado: z.ZodOptional<z.ZodBoolean>;
+    producaoId: z.ZodInt;
     produtoId: z.ZodInt;
     itemNumero: z.ZodInt;
     quantidade: z.ZodInt;
